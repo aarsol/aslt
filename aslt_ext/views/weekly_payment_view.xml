@@ -39,7 +39,7 @@
                             <page name="invoice_details" string="Invoice Details">
                                 <field name="account_weekly_line_ids">
                                     <tree editable="bottom">
-                                        <field name="move_id" domain="[('payment_state','=','cash_paid')]"/>
+                                        <field name="payment_id" domain="[('need_bank_deposit','=', True)]" options="{'no_create': True}"/>
                                         <field name="amount" sum="sum_amount"/>
                                     </tree>
                                 </field>

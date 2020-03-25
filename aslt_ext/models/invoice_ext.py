@@ -3,7 +3,7 @@ from odoo.exceptions import RedirectWarning, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from odoo.tools.misc import formatLang, format_date, get_lang
 
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 from itertools import groupby
 from itertools import zip_longest
 from hashlib import sha256
@@ -17,12 +17,17 @@ import pdb
 class account_payment(models.Model):
     _inherit = 'account.payment'
 
-    payment_types = fields.Selection(related='journal_id.payment_types',selection=[
+    payment_types = fields.Selection(related='journal_id.payment_types', selection=[
         ('paypall', 'Pay Pall'),
         ('cheque', 'Cheque'), ('Exchange_company', 'Exchange Company'), ('cross_settlement', 'Cross Settlement')
     ], string='Payment Type', tracking=True)
     due_date = fields.Date(string='Due Date', default=fields.Date.context_today, required=True, readonly=True,
                            states={'draft': [('readonly', False)]}, copy=False, tracking=True)
+
+    journal_type = fields.Selection(related='journal_id.type', selection=[
+        ('cash', 'Cash'),
+        ('sale', 'Sale'), ('bank', 'Bank'), ('general', 'Miscellaneous'),('purchase','Purchase')
+    ], string='Payment Type', tracking=True)
 
     invoice_ref = fields.Char('Invoice Reference')
     bank_receipt = fields.Binary(string="Bank Receipt", attachment=True)
@@ -35,6 +40,21 @@ class account_payment(models.Model):
     exchange_company_id = fields.Many2one('exchange.company', string='Exchange Company')
     receiver_name = fields.Char('Receiver Name')
     exchange_receipt_no = fields.Char('Receipt No')
+
+    bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
+    need_bank_deposit = fields.Boolean(default=False)
+
+
+    def _compute_saturday(self):
+        for rec in self:
+            rec.bank_deposit_due_date = False
+            if rec.journal_id.type == 'cash':
+                today = date.today()
+                rec.bank_deposit_due_date = today + timedelta((5 - today.weekday()) % 7)
+                rec.need_bank_deposit = True
+            # else:
+            #     rec.need_bank_deposit = False
+
 
     def post(self):
         """ Create the journal items for the payment and update the payment's state to 'posted'.
@@ -83,14 +103,14 @@ class account_payment(models.Model):
                 for inv in rec.invoice_ids:
                     inv.update({'payment_state': 'cash_paid'})
 
-            if rec.payment_difference_handling == 'open':
-                pdb.set_trace()
-                for inv in rec.invoice_ids:
+
+            for inv in rec.invoice_ids:
+  
+                inv.update({'bank_deposit_due_date': self.bank_deposit_due_date})
+                if self.amount != inv.amount_residual:
                     inv.update({'invoice_state': 'partial_paid', 'date': self.due_date})
-
-
-            else:
-                inv.update({'invoice_state' : 'full_paid'})
+                else:
+                    inv.update({'invoice_state': 'full_paid'})
 
             if rec.payment_type in ('inbound', 'outbound'):
                 # ==== 'inbound' / 'outbound' ====
@@ -123,6 +143,24 @@ class AccountMove(models.Model):
     ], string='Payment Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
 
+    bank_deposit_due_date = fields.Date('Bank Deposit Due Date')
+    
+    marked_user_id = fields.Many2one('res.users','Sale Person')
+    marked_duedate = fields.Date('Marked Due Date')
+
+    # def _compute_saturday(self):
+    #     for rec in self:
+    #         today =date.today()
+    #         rec.bank_deposit_due_date = today + timedelta((5 - today.weekday()) % 7)
+
+	
+    def write(self, values):
+        if values.get('marked_user_id',False):
+            if not values.get('marked_duedate',False):
+                today =date.today()
+                values['marked_duedate'] = today + timedelta(days=3)
+        res = super(AccountMove, self).write(values)
+        
     @api.model_create_multi
     def create(self, vals_list):
         # OVERRIDE
@@ -248,28 +286,39 @@ class AccountPaymentweekly(models.Model):
     ], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
 
+    _sql_constraints = [('name_invoice_ref', 'UNIQUE (invoice_ref)', 'Bank Invoice Reference Must be unique.')]
+
     def action_approve(self):
-        pdb.set_trace()
         for rec in self:
             total_amount = 0
             for line in rec.account_weekly_line_ids:
                 total_amount += line.amount
             if total_amount == rec.amount:
-                for inv in rec.account_weekly_line_ids:
-                    inv.move_id.update({'payment_state': 'done_paid'})
-                    search_payment = self.env['account.payment'].search([('communication', '=', inv.move_id.name)])
-                    for pay in search_payment:
-                        pay.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt})
+
+                for pay in rec.account_weekly_line_ids:
+                    search_invoice = self.env['account.move'].search([('name', '=', pay.payment_id.communication)])
+                    if search_invoice:
+                        search_invoice.update({'payment_state': 'done_paid'})
+                    else:
+                        search_invoice = self.env['account.move'].search([('ref', '=', pay.payment_id.communication)])
+                        if search_invoice:
+                            search_invoice.update({'payment_state': 'done_paid'})
+                    pay.payment_id.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt, 'need_bank_deposit' : False})
+                # for inv in rec.account_weekly_line_ids:
+                #     inv.move_id.update({'payment_state': 'done_paid'})
+                #     search_payment = self.env['account.payment'].search([('communication', '=', inv.move_id.name)])
+                #     for pay in search_payment:
+                #         pay.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt})
                 self.update({'state': 'approve'})
             else:
-                raise UserError(_('amount must be equal to sum of total invoice! '))
+                raise UserError(_('Amount must be equal to sum of total Receipt Amount ! '))
 
 
 class AccountPaymentweeklyLine(models.Model):
     _name = 'account.weekly.payment.line'
     _description = 'Account Weekly Payment Line'
-    move_id = fields.Many2one('account.move', string='Invoice')
-    amount = fields.Monetary(related='move_id.amount_total', string='Amount', currency_field='currency_id')
+    payment_id = fields.Many2one('account.payment', string='Payment Receipt No')
+    amount = fields.Monetary(related='payment_id.amount', string='Amount', currency_field='currency_id')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     account_weekly_id = fields.Many2one('account.weekly.payment', string='Weekly Payment')
@@ -278,5 +327,5 @@ class AccountPaymentweeklyLine(models.Model):
 class AccountExchangeCompany(models.Model):
     _name = 'exchange.company'
 
-    name = fields.Char('Exchange Company',reqired=True)
+    name = fields.Char('Exchange Company', reqired=True)
     code = fields.Char('code')
