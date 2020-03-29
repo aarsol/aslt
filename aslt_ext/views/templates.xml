@@ -1,24 +1,22 @@
 <odoo>
     <data>
-<!--
-        <template id="listing">
-          <ul>
-            <li t-foreach="objects" t-as="object">
-              <a t-attf-href="#{ root }/objects/#{ object.id }">
-                <t t-esc="object.display_name"/>
-              </a>
+<template id="portal_submission_message" name="Portal My Home :Submitted">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar"/>
+            <li class="list-group-item">
+                <div id="wrap">
+                    <div class="oe_structure">
+                        <div class="container">
+                            <h1>
+                                <span t-esc="header"/>
+                            </h1>
+                            <p t-esc="message"/>
+                        </div>
+                    </div>
+                </div>
             </li>
-          </ul>
-        </template>
-        <template id="object">
-          <h1><t t-esc="object.display_name"/></h1>
-          <dl>
-            <t t-foreach="object._fields" t-as="field">
-              <dt><t t-esc="field"/></dt>
-              <dd><t t-esc="object[field]"/></dd>
-            </t>
-          </dl>
-        </template>
--->
+        </t>
+    </template>
     </data>
 </odoo>

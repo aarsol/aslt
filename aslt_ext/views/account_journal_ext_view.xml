@@ -13,8 +13,6 @@
                         <group>
                             <field name="payment_types" widget="radio"/>
                         </group>
-
-
                     </xpath>
                 </data>
             </field>
