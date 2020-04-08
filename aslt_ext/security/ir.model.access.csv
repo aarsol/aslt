@@ -9,3 +9,7 @@ access_account_exchange_company_manager,account.exchange.company.manager,model_e
 
 access_account_weekly_payment_line_user,account.weekly.payment.line.user,model_account_weekly_payment_line,account.group_account_user,1,0,0,0
 access_account_weekly_payment_line_manager,account.weekly.payment.line.manager,model_account_weekly_payment_line,account.group_account_manager,1,1,1,1
+
+
+access_account_shipment_company_user,account.shipment.company.user,model_shipment_company,account.group_account_user,1,0,0,0
+access_account_shipment_company_manager,account.shipment.company.manager,model_shipment_company,account.group_account_manager,1,1,1
