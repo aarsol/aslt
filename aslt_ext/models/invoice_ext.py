@@ -26,7 +26,7 @@ class account_payment(models.Model):
 
     journal_type = fields.Selection(related='journal_id.type', selection=[
         ('cash', 'Cash'),
-        ('sale', 'Sale'), ('bank', 'Bank'), ('general', 'Miscellaneous'),('purchase','Purchase')
+        ('sale', 'Sale'), ('bank', 'Bank'), ('general', 'Miscellaneous'), ('purchase', 'Purchase')
     ], string='Payment Type', tracking=True)
 
     invoice_ref = fields.Char('Invoice Reference')
@@ -44,7 +44,6 @@ class account_payment(models.Model):
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
 
-
     def _compute_saturday(self):
         for rec in self:
             rec.bank_deposit_due_date = False
@@ -54,7 +53,6 @@ class account_payment(models.Model):
                 rec.need_bank_deposit = True
             # else:
             #     rec.need_bank_deposit = False
-
 
     def post(self):
         """ Create the journal items for the payment and update the payment's state to 'posted'.
@@ -103,9 +101,8 @@ class account_payment(models.Model):
                 for inv in rec.invoice_ids:
                     inv.update({'payment_state': 'cash_paid'})
 
-
             for inv in rec.invoice_ids:
-  
+
                 inv.update({'bank_deposit_due_date': self.bank_deposit_due_date})
                 if self.amount != inv.amount_residual:
                     inv.update({'invoice_state': 'partial_paid', 'date': self.due_date})
@@ -144,8 +141,8 @@ class AccountMove(models.Model):
         default='draft')
 
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date')
-    
-    marked_user_id = fields.Many2one('res.users','Sale Person')
+
+    marked_user_id = fields.Many2one('res.users', 'Sale Person')
     marked_duedate = fields.Date('Marked Due Date')
 
     # def _compute_saturday(self):
@@ -153,14 +150,13 @@ class AccountMove(models.Model):
     #         today =date.today()
     #         rec.bank_deposit_due_date = today + timedelta((5 - today.weekday()) % 7)
 
-	
     def write(self, values):
-        if values.get('marked_user_id',False):
-            if not values.get('marked_duedate',False):
-                today =date.today()
+        if values.get('marked_user_id', False):
+            if not values.get('marked_duedate', False):
+                today = date.today()
                 values['marked_duedate'] = today + timedelta(days=3)
         res = super(AccountMove, self).write(values)
-        
+
     @api.model_create_multi
     def create(self, vals_list):
         # OVERRIDE
@@ -303,7 +299,8 @@ class AccountPaymentweekly(models.Model):
                         search_invoice = self.env['account.move'].search([('ref', '=', pay.payment_id.communication)])
                         if search_invoice:
                             search_invoice.update({'payment_state': 'done_paid'})
-                    pay.payment_id.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt, 'need_bank_deposit' : False})
+                    pay.payment_id.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt,
+                                           'need_bank_deposit': False})
                 # for inv in rec.account_weekly_line_ids:
                 #     inv.move_id.update({'payment_state': 'done_paid'})
                 #     search_payment = self.env['account.payment'].search([('communication', '=', inv.move_id.name)])
@@ -329,3 +326,6 @@ class AccountExchangeCompany(models.Model):
 
     name = fields.Char('Exchange Company', reqired=True)
     code = fields.Char('code')
+
+
+
