@@ -268,11 +268,11 @@ class AccountExchangeCompany(models.Model):
     code = fields.Char('code')
 
 
-class StockPicking(models.Model):
-    _inherit = 'stock.picking'
-
-    shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
-    tracking_no = fields.Char('Tracking No')
+#class StockPicking(models.Model):
+#    _inherit = 'stock.picking'
+#
+#    shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
+#    tracking_no = fields.Char('Tracking No')
 
 
 class ShipmentCompany(models.Model):
