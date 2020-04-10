@@ -112,7 +112,8 @@
                             <field name="need_bank_deposit" invisible="1"/>
 
                             <field name="note_salesman"/>
-                            <field name="attachment"/>
+                            <field name="invoice_ref"/>
+                            <field name="attachment_ids"  widget="many2many_binary" colspan="2" string="Select Files" nolabel="1"/>
                         </group>
 
                         <group name="other_info">
@@ -184,11 +185,6 @@
                         <field name="due_date" attrs="{'invisible': [('payment_difference_handling', '!=', 'open')]}"/>
                     </xpath>
 
-                    <xpath expr="//field[@name='communication']" position="after">
-                        <field name="invoice_ref"/>
-                        <field name="bank_receipt"/>
-                    </xpath>
-
                 </data>
             </field>
         </record>
@@ -202,7 +198,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='bank_receipt']" position='attributes'>
+                <xpath expr="//field[@name='attachment_ids']" position='attributes'>
                     <attribute name="invisible">1</attribute>
                 </xpath>
 

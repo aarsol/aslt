@@ -31,7 +31,7 @@ class account_payment(models.Model):
     ], string='Journal Type', tracking=True)
 
     invoice_ref = fields.Char('Invoice Reference')
-    bank_receipt = fields.Binary(string="Bank Receipt", attachment=True)
+    attachment_ids = fields.Many2many('ir.attachment', string='Files', help='Attachments for the Payments.')
 
     cheque_no = fields.Char('Cheque No')
     cheque_date = fields.Date('Cheque Date')
@@ -45,7 +45,6 @@ class account_payment(models.Model):
     transaction_id = fields.Char('Transaction ID')
     note_salesman = fields.Char('Note By Salesmen')
     note_accountant = fields.Char('Note By Accountant')
-    attachment = fields.Binary(string="Attachment", attachment=True)
     credit_reference_no = fields.Char('Reference No')
 
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
@@ -215,7 +214,7 @@ class AccountPaymentweekly(models.Model):
     invoice_ref = fields.Char('Bank Deposit Slip No')
     account_weekly_line_ids = fields.One2many('account.weekly.payment.line', 'account_weekly_id',
                                               string='Weekly Payment')
-    bank_receipt = fields.Binary(string="Bank Receipt", attachment=True)
+    attachment_ids = fields.Many2many('ir.attachment', string='Files', required=1, help='Attachments for the Payments.')
     state = fields.Selection(selection=[
         ('draft', 'Draft'),
         ('approve', 'approve')
@@ -239,13 +238,16 @@ class AccountPaymentweekly(models.Model):
                         search_invoice = self.env['account.move'].search([('ref', '=', pay.payment_id.communication)])
                         if search_invoice:
                             search_invoice.update({'payment_state': 'done_paid'})
-                    pay.payment_id.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt,
-                                           'need_bank_deposit': False})
+                    pay.payment_id.update({
+                        'invoice_ref': self.invoice_ref,
+                        'attachment_ids': self.attachment_ids,
+                        'need_bank_deposit': False
+                    })
                 # for inv in rec.account_weekly_line_ids:
                 #     inv.move_id.update({'payment_state': 'done_paid'})
                 #     search_payment = self.env['account.payment'].search([('communication', '=', inv.move_id.name)])
                 #     for pay in search_payment:
-                #         pay.update({'invoice_ref': self.invoice_ref, 'bank_receipt': self.bank_receipt})
+                #         pay.update({'invoice_ref': self.invoice_ref, 'attachment_ids': self.attachment_ids})
                 self.update({'state': 'approve'})
             else:
                 raise UserError(_('Amount must be equal to sum of total Receipt Amount ! '))
