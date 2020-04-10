@@ -42,7 +42,7 @@ odoo many branches for single company odoo
     "price": 129.00,
     'sequence': 3,
     "currency": 'EUR',
-    'depends': ['base', 'sale_management', 'purchase', 'account',],   #'stock', 'purchase_stock'
+    'depends': ['base', 'sale_management', 'purchase', 'account',],
     'data': [
         'security/branch_security.xml',
         'security/ir.model.access.csv',
