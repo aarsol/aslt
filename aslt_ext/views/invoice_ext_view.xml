@@ -9,7 +9,7 @@
                 <data>
                     <xpath expr="//field[@name='state']" position="after">
                         <field name="invoice_state"/>
-                        <field name="payment_state"/>
+                        <field name="payment_state" attrs="{'invisible': [('payment_state', '!=', 'cash_paid')]}"/>
                     </xpath>
                     <xpath expr="//field[@name='invoice_user_id']" position="after">
                         <field name="marked_user_id"/>
