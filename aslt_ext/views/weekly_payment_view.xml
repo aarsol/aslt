@@ -33,7 +33,7 @@
                          <group col="4">
 
                             <field name="amount" required="1"/>
-                             <field name="bank_receipt" required="1"/>
+                            <field name="attachment_ids"  widget="many2many_binary" colspan="2" string="Select Files" nolabel="1"/>
                         </group>
                         <notebook>
                             <page name="invoice_details" string="Invoice Details">
