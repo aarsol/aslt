@@ -9,7 +9,6 @@
     odoo Multiple Unit operation management for single company Mutiple Branch management for single company
     odoo multiple operation for single company. branching company in odoo multiple store multiple company in odoo
     odoo Branch for POS Branch for Sales Branch for Purchase Branch for all Branch for Accounting Branch for invoicing Branch for Payment order Branch for point of sales Branch for voucher 
-    odoo Branch for All Accounting reports Branch Accounting filter Branch for warehouse branch for sale stock branch for location
     odoo Unit for POS Unit for Sales Unit for Purchase Unit for all Unit for Accounting Unit for invoicing Unit for Payment order
     odoo Unit for point of sales Unit for voucher Unit for All Accounting reports Unit Accounting filter
 
@@ -30,7 +29,7 @@
   odoo multi branches management application multi operation mangement operating Unit for POS operating Unit for Sales
   odoo operating Units for Purchase operating Unit for all operating Unit for Accounting operating Unit for invoicing
   odoo operating Unit for Payment order operating Unit for point of sales operating Unit for voucher operating Unit for All Accounting reports operating Unit Accounting filter.
-  odoo Operating unit for picking operating unit for warehouse operaing unit for sale stock operating unit for location
+
 odoo operating-Unit Operation for POS operating-Unit Operation for Sales operating-Unit operation for Purchase operating-Unit operation for all 
 odoo operating-Unit operation for Accounting operating-Unit Operation for invoicing operating-Unit operation for Payment order operating-Unit operation for point of sales 
 odoo operating-Unit operation for voucher operating-Unit operation for All Accounting reports operating-Unit operation Accounting filter.

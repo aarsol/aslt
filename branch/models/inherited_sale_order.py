@@ -13,17 +13,10 @@ class SaleOrder(models.Model):
         branch_id = warehouse_id = False
         if self.env.user.branch_id:
             branch_id = self.env.user.branch_id.id
-        if branch_id:
-            branched_warehouse = self.env['stock.warehouse'].search([('branch_id','=',branch_id)])
-            if branched_warehouse:
-                warehouse_id = branched_warehouse.ids[0]
-        else:
-            warehouse_id = self._default_warehouse_id()
-            warehouse_id = warehouse_id.id
 
         res.update({
             'branch_id' : branch_id,
-            'warehouse_id' : warehouse_id
+            
             })
 
         return res
