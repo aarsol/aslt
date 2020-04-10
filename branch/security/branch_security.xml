@@ -41,7 +41,7 @@
     <record id="sale.sale_order_personal_rule" model="ir.rule">
         <field name="name">Personal Orders</field>
         <field ref="model_sale_order" name="model_id"/>
-        <field name="domain_force">[('partner_id.assigned_user_id','=',user.id)]</field>
+        <field name="domain_force">[('partner_id.user_id','=',user.id)]</field>
         <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
     </record>
     
@@ -91,7 +91,7 @@
         <field name="name">Account Branch</field>
         <field name="model_id" ref="model_account_move"/>
         <field name="global" eval="True"/>
-        <field name="domain_force">['|',('marked_user_id','=',user.id),('partner_id.assigned_user_id','=',user.id)]</field>
+        <field name="domain_force">['|',('marked_user_id','=',user.id),('partner_id.user_id','=',user.id)]</field>
         <field name="groups" eval="[(4, ref('branch.group_branch_user'))]"/>
     </record>
 
@@ -257,37 +257,13 @@
     </record>
 
      <record id="res_partner_branch_rule" model="ir.rule">
-        <field name="name">Res Partner Branch</field>
+        <field name="name">Partner Branch User</field>
         <field name="model_id" ref="base.model_res_partner"/>
         <field name="global" eval="True"/>
-        <field name="domain_force">[('assigned_user_id','=',user.id)]</field>
+        <field name="domain_force">['|','|',('user_id','=',user.id),'&',('user_id','=',False),('branch_id','=',user.branch_id.id),'&',('user_id','=',False),('branch_id','=',False)]</field>
         <field name="groups" eval="[(4, ref('branch.group_branch_user'))]"/>
     </record>
 
-<!--     <record id="res_users_branch_user_rule" model="ir.rule">
-        <field name="name">Res Users Branch User</field>
-        <field name="model_id" ref="base.model_res_users"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('branch_id','=',False),('branch_id','=',user.branch_id.id)]</field>
-        <field name="groups" eval="[(4, ref('branch.group_branch_user'))]"/>
-    </record>
- -->
-
-    <!-- <record id="res_partner_branch_manager_rule" model="ir.rule">
-        <field name="name">Res Partner Branch Manager</field>
-        <field name="model_id" ref="model_res_partner"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('branch_id','=',False),('branch_id','in',[branch.id for branch in user.branch_ids])]</field>
-        <field name="groups" eval="[(4, ref('branch.group_branch_user_manager'))]"/>
-    </record>
-    
-    <record id="res_partner_branch_rule" model="ir.rule">
-        <field name="name">Res Partner Branch</field>
-        <field name="model_id" ref="model_res_partner"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('branch_id','=',False),('branch_id','=',user.branch_id.id)]</field>
-        <field name="groups" eval="[(4, ref('branch.group_branch_user'))]"/>
-    </record> -->
     
 </data>
 
