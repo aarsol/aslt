@@ -261,20 +261,20 @@
 
         <!--        Delivery Order Inherit View-->
 
-        <record id="aslt_ext_view_picking_form_inherit" model="ir.ui.view">
-            <field name="name">stock.picking.form.inherit</field>
-            <field name="model">stock.picking</field>
-            <field name="inherit_id" ref="stock.view_picking_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//group[@name='other_infos']" position='after'>
-                    <group string="Shipment Information">
-                        <field name="shipment_company_id"/>
-                        <field name="tracking_no"/>
-                    </group>
+<!--        <record id="aslt_ext_view_picking_form_inherit" model="ir.ui.view">-->
+<!--            <field name="name">stock.picking.form.inherit</field>-->
+<!--            <field name="model">stock.picking</field>-->
+<!--            <field name="inherit_id" ref="stock.view_picking_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//group[@name='other_infos']" position='after'>-->
+<!--                    <group string="Shipment Information">-->
+<!--                        <field name="shipment_company_id"/>-->
+<!--                        <field name="tracking_no"/>-->
+<!--                    </group>-->
 
-                </xpath>
-            </field>
-        </record>
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
 
 
         <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
