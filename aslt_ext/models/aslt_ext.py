@@ -296,15 +296,15 @@ class Partner(models.Model):
         ('name', 'unique(name)', "Name already exists"), ]
 
 
-class User(models.Model):
-    _inherit = 'res.users'
-
-    def name_get(self):
-        res = []
-        for record in self:
-            name = str(record.name) + ' - ' + str(record.branch_id.name)
-            res.append((record.id, name))
-        return res
+# class User(models.Model):
+#     _inherit = 'res.users'
+#
+#     def name_get(self):
+#         res = []
+#         for record in self:
+#             name = str(record.name) + ' - ' + str(record.branch_id.name)
+#             res.append((record.id, name))
+#         return res
 
 
 
