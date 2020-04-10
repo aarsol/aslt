@@ -2,7 +2,7 @@
 
 {
     'name': 'Multiple Branch(Unit) Operation Setup for All Applications Odoo/OpenERP',
-    'version': '12.0.3.0',
+    'version': '13.0.3.0',
     'category': 'Sales',
     'summary': 'Multiple Branch/Unit Operation on Sales,Purchases,Accounting/Invoicing,Voucher,Paymemt,POS, Accounting Reports for single company',
     "description": """
@@ -12,7 +12,7 @@
     odoo Branch for All Accounting reports Branch Accounting filter Branch for warehouse branch for sale stock branch for location
     odoo Unit for POS Unit for Sales Unit for Purchase Unit for all Unit for Accounting Unit for invoicing Unit for Payment order
     odoo Unit for point of sales Unit for voucher Unit for All Accounting reports Unit Accounting filter
-    odoo branch unit for warehouse branch unit for sale stock branch unit for location
+
   odoo Unit Operation for POS Unit Operation for Sales Unit operation for Purchase Unit operation for all Unit operation for Accounting 
   odoo Unit Operation for invoicing Unit operation for Payment order Unit operation for point of sales Unit operation for voucher Unit operation for All Accounting reports
   odoo Unit operation Accounting filter Branch Operation for POS Branch Operation for Sales 
@@ -42,22 +42,20 @@ odoo many branches for single company odoo
     "price": 129.00,
     'sequence': 3,
     "currency": 'EUR',
-    'depends': ['base', 'sale_management', 'purchase', 'stock', 'account', 'purchase_stock'],
+    'depends': ['base', 'sale_management', 'purchase', 'account',],   #'stock', 'purchase_stock'
     'data': [
         'security/branch_security.xml',
         'security/ir.model.access.csv',
         'views/res_branch_view.xml',
         'views/inherited_res_users.xml',
         'views/inherited_sale_order.xml',
-        'views/inherited_stock_picking.xml',
-        'views/inherited_stock_move.xml',
+       
         'views/inherited_account_invoice.xml',
         'views/inherited_purchase_order.xml',
-        'views/inherited_stock_warehouse.xml',
-        'views/inherited_stock_location.xml',
+       
         'views/inherited_account_bank_statement.xml',
         # 'wizard/inherited_account_payment.xml',
-        'views/inherited_stock_inventory.xml',
+      
         'views/inherited_product.xml',
         'views/inherited_partner.xml',
 
@@ -67,7 +65,6 @@ odoo many branches for single company odoo
     'installable': True,
     'auto_install': False,
     'application': True,
-    'live_test_url': 'https://youtu.be/f-nqKb_jELg',
     "images": ['static/description/Banner.png'],
     'post_init_hook': 'post_init_hook',
 }
