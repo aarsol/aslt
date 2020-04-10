@@ -17,7 +17,6 @@
                 
                 <field name="partner_id" position="replace">
 		            <field name="partner_id" widget="res_partner_many2one" nolabel="1"
-		                domain="[('branch_id','=',branch_id)]"
 		                context="{
 		                  'res_partner_search_mode': 
 		                  	(context.get('default_type', 'entry') in ('out_invoice', 'out_refund', 'out_receipt') and 'customer') 

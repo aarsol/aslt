@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="view_ais_bank_tree" model="ir.ui.view">
+            <field name="name">ais.bank.tree</field>
+            <field name="model">ais.bank</field>
+            <field name="priority" eval="8" />
+            <field name="arch" type="xml">
+                <tree string="Bank">
+                    <field name="name"/>
+                    <field name="account"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_ais_bank_form" model="ir.ui.view">
+        <field name="name">ais.bank.form</field>
+        <field name="model">ais.bank</field>
+        <field name="priority" eval="8" />
+        <field name="arch" type="xml">
+            <form string="Bank">
+                <sheet>
+                    <group>
+                        <group>
+                             <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="account"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+        </record>
+
+        <record id="view_ais_bank_search" model="ir.ui.view">
+            <field name="name">ais.bank.search</field>
+            <field name="model">ais.bank</field>
+            <field name="priority" eval="8" />
+            <field name="arch" type="xml">
+                <search string="Bank">
+                    <field name="name"/>
+                    <field name="account"/>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_ais_bank">
+            <field name="name">AIS Bank</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ais.bank</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ais_bank_search" />
+            <field name="domain">[]</field>
+        </record>
+
+    </data>
+</odoo>

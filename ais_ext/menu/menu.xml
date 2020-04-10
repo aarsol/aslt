@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- HR -->
+    <menuitem
+            name ="Employment Status"
+            id="menu_hr_employment_status"
+            action="action_hr_employment_status_view"
+            parent="hr.menu_human_resources_configuration"
+            sequence="120"/>
+
+    <!-- Loan and Advances -->
+    <menuitem
+            name="Employee Loan Rules"
+            id="menu_action_hr_loans"
+            action="hr_loans_action_view"
+            parent="aarsol_hr_ext.menu_hr_emp_salary_inputs_main"
+            sequence="15"
+            groups="hr.group_hr_manager,hr_payroll.group_hr_payroll_manager"/>
+
+    <menuitem
+             name="Employee Loans"
+             id="menu_action_hr_loan"
+             action="hr_loan_action_view"
+             parent="aarsol_hr_ext.menu_hr_emp_salary_inputs_main"
+             sequence="20"
+             groups="hr.group_hr_manager,hr_payroll.group_hr_payroll_manager"/>
+
+    <menuitem
+            name ="Employee Advances"
+            id="menu_hr_employee_advance"
+            action="hr_staff_advance_action_view"
+            parent="aarsol_hr_ext.menu_hr_emp_salary_inputs_main"
+            sequence="25"/>
+
+
+    <!-- Banks -->
+    <menuitem
+            name="Banks"
+            action="act_ais_bank"
+            id="menu_ais_bank"
+            sequence="100"
+            parent="hr.menu_human_resources_configuration"
+            groups="hr.group_hr_manager,account.group_account_manager"/>
+
+    <!-- Menu Payment Advice -->
+    <menuitem
+            action="l10n_in_hr_payroll.action_view_hr_bank_advice_tree"
+            id="l10n_in_hr_payroll.hr_menu_payment_advice"
+            parent="hr_payroll.menu_hr_payroll_payslips"
+            sequence="90"
+            groups="hr.group_hr_manager,account.group_account_manager"/>
+
+
+    <!-- Employee Exit Form -->
+    <menuitem
+            action="act_hr_employee_exit_form"
+            id="hr_employee_exit_form_menu"
+            parent="hr.menu_hr_employee_payroll"
+            sequence="30"
+            groups="hr.group_hr_manager,account.group_account_manager"/>
+
+</odoo>
+

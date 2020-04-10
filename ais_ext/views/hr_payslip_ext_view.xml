@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- HR Payslip -->
+        <record id="ais_hr_payslip_view_form_inherit" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.payslip.form.view</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <field name="struct_id" position="after">
+                    <field name="city_id"/>
+                    <field name="branch_id"/>
+                </field>
+
+                <field name="name" position="after">
+                    <field name="salary_transfer_mode" readonly="0"/>
+                    <field name="bank_id"  readonly="0" attrs="{'invisible':[('salary_transfer_mode','!=', 'Bank')]}"/>
+                    <field name="bank_account_title"  readonly="0" attrs="{'invisible':[('salary_transfer_mode','!=', 'Bank')]}"/>
+                    <field name="bank_account_no"  readonly="0" attrs="{'invisible':[('salary_transfer_mode','!=', 'Bank')]}"/>
+                </field>
+                <field name="payscale_id" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </field>
+            </field>
+        </record>
+
+        <!-- HR Payslip -->
+        <record id="ais_hr_payslip_view_tree_inherit" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.payslip.tree.view</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree"/>
+            <field name="arch" type="xml">
+                <field name="employee_id" position="before">
+                    <field name="employee_code"/>
+                </field>
+
+                <field name="payscale_id" position="replace">
+                    <field name="city_id"/>
+                    <field name="branch_id"/>
+                </field>
+            </field>
+        </record>
+
+         <!-- HR Payslip -->
+        <record id="ais_hr_payslip_view_filter_inherit" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.payslip.filter.view</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                   <field name="employee_code" string="Employee Code"/>
+                   <field name="branch_id"/>
+                   <field name="city_id"/>
+               </field>
+                <filter name="company_id" position="after">
+                    <separator/>
+                    <filter string="City" name="group_by_city" context="{'group_by': 'city_id'}"/>
+                    <filter string="Branch" name="group_by_branch" context="{'group_by': 'branch_id'}"/>
+                </filter>
+
+                <xpath expr="//search" position="inside">
+                    <searchpanel>
+                        <field name="city_id"/>
+                        <field name="branch_id" select="multi" domain="[('city_id','=',city_id)]"/>
+                    </searchpanel>
+                </xpath>
+            </field>
+        </record>
+
+
+        <!-- HR EMP Salary Inputs -->
+        <record id="ais_hr_emp_salary_inputs_inherit_form" model="ir.ui.view">
+			<field name="name">ais.hr.emp.salary.inputs.inherit.form</field>
+			<field name="model">hr.emp.salary.inputs</field>
+            <field name="inherit_id" ref="aarsol_hr_ext.view_hr_emp_salary_inputs_form"/>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+                <field name="employee_id" position="after">
+                    <field name="employee_code"/>
+                    <field name="department_id"/>
+                    <field name="city_id"/>
+                    <field name="branch_id"/>
+                </field>
+
+			</field>
+		</record>
+
+
+        <record id="ais_hr_emp_salary_inputs_inherit_tree" model="ir.ui.view">
+			<field name="name">ais.hr.emp.salary.inputs.inherit.tree</field>
+			<field name="model">hr.emp.salary.inputs</field>
+            <field name="inherit_id" ref="aarsol_hr_ext.view_hr_emp_salary_inputs_tree"/>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+                <field name="employee_id" position="before">
+                    <field name="employee_code"/>
+                </field>
+                <field name="slip_id" position="after">
+                    <field name="department_id"  attrs="{'readonly':[('state','!=','draft')]}"/>
+					<field name="city_id"  attrs="{'readonly':[('state','!=','draft')]}"/>
+					<field name="branch_id"  attrs="{'readonly':[('state','!=','draft')]}"/>
+                </field>
+
+			</field>
+		</record>
+
+
+         <record id="ais_hr_emp_salary_inputs_inherit_filter" model="ir.ui.view">
+			<field name="name">ais.hr.emp.salary.inputs.inherit.filter</field>
+			<field name="model">hr.emp.salary.inputs</field>
+            <field name="inherit_id" ref="aarsol_hr_ext.view_emp_hr_salary_inputs_search"/>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+                <field name="state" position="after">
+                    <field name="employee_code"/>
+					<field name="department_id"/>
+					<field name="city_id"/>
+					<field name="branch_id"/>
+                </field>
+
+                <filter name="group_month" position="after">
+                    <separator/>
+						<filter name="group_by_department" string="Department" domain="[]" context="{'group_by':'department_id'}" />
+						<filter name="group_by_city" string="City" domain="[]" context="{'group_by':'city_id'}" />
+						<filter name="group_by_branch" string="Branch" domain="[]" context="{'group_by':'branch_id'}" />
+                </filter>
+			</field>
+		</record>
+
+        <record id="view_emp_hr_salary_inputs_pivot_view" model="ir.ui.view">
+            <field name="name">hr.emp.salary.inputs.pivot</field>
+            <field name="model">hr.emp.salary.inputs</field>
+            <field name="arch" type="xml">
+                <pivot string="Benefits And Deductions" display_quantity="true">
+                    <field name="branch_id" type="row"/>
+					<field name="date" interval="month" type="col"/>
+					<field name="amount" type="measure" widget="monetary"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_emp_hr_salary_inputs_graph_view" model="ir.ui.view">
+            <field name="name">hr.emp.salary.inputs.graph</field>
+            <field name="model">hr.emp.salary.inputs</field>
+            <field name="arch" type="xml">
+                <graph string="Benefits And Deductions">
+                    <field name="branch_id" type="row"/>
+					<field name="date" interval="month" type="col"/>
+					<field name="amount" type="measure" widget="monetary"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="aarsol_hr_ext.act_hr_emp_salary_inputs" model="ir.actions.act_window" >
+			<field name="name">Employee Incentives</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.emp.salary.inputs</field>
+			<field name="view_mode">tree,form,pivot,graph</field>
+			<field name="context">{'search_default_draft':1}</field>
+		</record>
+
+
+    </data>
+</odoo>

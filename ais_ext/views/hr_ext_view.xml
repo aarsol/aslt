@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="inherit_view_department_tree" model="ir.ui.view">
+            <field name="name">hr.department.inherit.tree.view</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_tree"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="analytic_account_id"/>
+				    <field name="analytic_tag_id"/>
+                    <field name="old_id" groups="base.group_no_one"/>
+                </field>
+                  <xpath expr="//field[@name='parent_id']" position="after">
+                    <field name="analytic_account_id"/>
+				    <field name="analytic_tag_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="inherit_view_department_form" model="ir.ui.view">
+            <field name="name">hr.department.inherit.form.view</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_form"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="old_id" groups="base.group_no_one"/>
+                </field>
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="analytic_account_id"/>
+				    <field name="analytic_tag_id"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <!-- HR JOB-->
+        <record id="inherit_view_hr_job_tree" model="ir.ui.view">
+            <field name="name">hr.job.inherit.tree.view</field>
+            <field name="model">hr.job</field>
+            <field name="inherit_id" ref="hr.view_hr_job_tree"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="old_id" groups="base.group_no_one"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- ***** HR Employment Status -->
+        <record id="hr_employment_status_tree" model="ir.ui.view">
+            <field name="name">hr.employment.status.tree</field>
+            <field name="model">hr.employment.status</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="rank"/>
+                    <field name="old_id" groups="base.group_no_one"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="hr_employment_status_form" model="ir.ui.view">
+            <field name="name">hr.employment.status.form</field>
+            <field name="model">hr.employment.status</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="rank"/>
+                                <field name="old_id" groups="base.group_no_one"/>
+                            </group>
+                            <group></group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hr_employment_status_view" model="ir.actions.act_window">
+             <field name="name">Employment Status</field>
+             <field name="res_model">hr.employment.status</field>
+             <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <record id="ais_inherit_hr_employee_form_view" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.employee.form.view</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='parent_id']" position="after">
+                    <field name="birthday"/>
+                    <field name="age"/>
+                    <field name="analytic_account_id" readonly="1" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,'no_create':True,}"/>
+				    <field name="analytic_tag_id" readonly="1" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,'no_create':True,}"/>
+                    <field name="city_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,'no_create':True,}"/>
+                </xpath>
+
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="old_code" string="Old Code"/>
+                </xpath>
+
+                <xpath expr="//field[@name='mobile_phone']" position="before">
+                    <field name="father_name"/>
+                    <field name="cnic"/>
+                </xpath>
+
+                <field name="company_id" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </field>
+
+                  <xpath expr="//field[@name='joining_date']" position="after">
+                    <field name="appointment_date"/>
+                    <field name="confirmation_date"/>
+                </xpath>
+
+                <xpath expr="//field[@name='marital']" position="before">
+                    <field name="gender"/>
+                </xpath>
+                 <xpath expr="//field[@name='work_location']" position="after">
+                    <field name="branch_id" options="{'no_quick_create':True,'no_create_edit':True,'no_create':True,}"/>
+                </xpath>
+
+                <xpath expr="//page[@name='employee_transfer_history']//field[@name='to_job_id']" position="after">
+                    <field name="from_branch_id"/>
+                    <field name="to_branch_id"/>
+                </xpath>
+
+                <xpath expr="//page[@name='hr_settings']//group[@name='identification_group']" position="after">
+                    <group string="Bio Metric">
+                        <field name="biometric_code"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+
+
+        <record id="ais_inherit_hr_employee_tree_view" model="ir.ui.view">
+            <field name="name">ais.hr.employee.inherit.tree.view</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree"/>
+            <field name="arch" type="xml">
+
+                <field name="company_id" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </field>
+
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="code"/>
+                    <field name="father_name"/>
+                    <field name="cnic"/>
+                    <field name="active" invisible="1"/>
+                </xpath>
+
+                <field name="payscale_id" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </field>
+                 <field name="category_id" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </field>
+
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-success">active==True</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='parent_id']" position="after">
+                    <field name="branch_id"/>
+                    <field name="city_id"/>
+                    <field name="old_code" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="ais_inherit_hr_employee_filter_view" model="ir.ui.view">
+            <field name="name">ais.hr.employee.inherit.filter.view</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="code" string="Employee Code"/>
+                    <field name="old_code" string="Employee Old Code"/>
+                </xpath>
+                <xpath expr="//filter[@name='group_job']" position="after">
+                    <filter name="group_city" string="City" domain="[]" context="{'group_by': 'city_id'}"/>
+                    <filter name="group_branch" string="Campus" domain="[]" context="{'group_by': 'branch_id'}"/>
+                </xpath>
+
+                <xpath expr="//searchpanel/field[@name='department_id']" position="replace">
+                    <field name="city_id"/>
+                    <field name="branch_id" select="multi" domain="[('city_id','=',city_id)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Employee Transfer Form-->
+        <record id="ais_inherit_hr_employee_transfer_form_view" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.employee.transfer.form.view</field>
+            <field name="model">hr.employee.transfer</field>
+            <field name="inherit_id" ref="aarsol_hr_ext.view_hr_employee_transfer_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='from_job_id']" position="after">
+                    <field name="from_branch_id" required="1" attrs="{'readonly':[('state','!=','Draft')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='to_job_id']" position="after">
+                    <field name="to_branch_id" required="1" attrs="{'readonly':[('state','!=','Draft')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Employee Transfer Tree-->
+        <record id="ais_inherit_hr_employee_transfer_search_view" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.employee.transfer.tree.view</field>
+            <field name="model">hr.employee.transfer</field>
+            <field name="inherit_id" ref="aarsol_hr_ext.view_hr_employee_transfer_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='to_job_id']" position="after">
+                    <field name="from_branch_id"/>
+                    <field name="to_branch_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Employee Transfer Filter -->
+        <record id="ais_inherit_hr_employee_transfer_tree_view" model="ir.ui.view">
+            <field name="name">ais.inherit.hr.employee.transfer.tree.view</field>
+            <field name="model">hr.employee.transfer</field>
+            <field name="inherit_id" ref="aarsol_hr_ext.view_hr_employee_transfer_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='to_job_id']" position="after">
+                    <field name="from_branch_id"/>
+                    <field name="to_branch_id"/>
+                </xpath>
+                <xpath expr="//filter[@name='group_by_status']" position="before">
+                    <filter name="group_by_from_branch_id" string="From Branch" domain="[]" context="{'group_by':'from_branch_id'}" />
+                    <filter name="group_by_to_branch_id" string="To Branch" domain="[]" context="{'group_by':'to_branch_id'}" />
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
