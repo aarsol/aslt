@@ -285,6 +285,13 @@ class ShipmentCompany(models.Model):
 class Partner(models.Model):
     _inherit = 'res.partner'
 
+    payment_methods = fields.Selection([
+        ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
+        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
+        ('cash_over_counter', 'Cash Over The Counter'),
+        ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
+        string='Payment Methods')
+    
     _sql_constraints = [
         ('name', 'unique(name)', "Name already exists"), ]
 
@@ -299,18 +306,5 @@ class User(models.Model):
             res.append((record.id, name))
         return res
 
-
-
-
-class Partner(models.Model):
-    _inherit = 'res.partner'
-
-    payment_methods = fields.Selection([
-        ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
-        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
-        ('cash_over_counter', 'Cash Over The Counter'),
-        ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
-        string='Payment Methods')
-    assigned_user_id = fields.Many2one('res.users',string='Assigned User')
 
 
