@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- *****  Floors Management***** -->
+        <record id="view_account_weekly_payment_tree" model="ir.ui.view">
+            <field name="name">account.weekly.payment.tree</field>
+            <field name="model">account.weekly.payment</field>
+            <field name="arch" type="xml">
+                <tree string="Weekly Payment Details">
+                    <field name="invoice_ref"/>
+                    <field name="date"/>
+                    <field name="amount"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_weekly_payment_form" model="ir.ui.view">
+            <field name="name">account.weekly.payment.form</field>
+            <field name="model">account.weekly.payment</field>
+            <field name="arch" type="xml">
+                <form string="Weekly Payment">
+                     <header>
+                        <button name='action_approve' string="Approve" type="object" class='oe_highlight' states="draft"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group col="4">
+                            <field name="invoice_ref" required="1"/>
+                            <field name="date" required="1"/>
+                        </group>
+                         <group col="4">
+
+                            <field name="amount" required="1"/>
+                             <field name="bank_receipt" required="1"/>
+                        </group>
+                        <notebook>
+                            <page name="invoice_details" string="Invoice Details">
+                                <field name="account_weekly_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="payment_id" domain="[('need_bank_deposit','=', True)]" options="{'no_create': True}"/>
+                                        <field name="amount" sum="sum_amount"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+         <record model="ir.actions.act_window" id="action_account_weekly_payment">
+            <field name="name">Weekly Payment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.weekly.payment</field>
+            <field name="view_mode">tree,form</field>
+             <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click Here Create Floors.
+                </p>
+             </field>
+        </record>
+
+        <menuitem
+            id="account_weekly_payment"
+            name="Weekly Payment"
+            parent="account.menu_finance"
+            action="action_account_weekly_payment"
+            sequence="10"/>
+
+    </data>
+</odoo>
