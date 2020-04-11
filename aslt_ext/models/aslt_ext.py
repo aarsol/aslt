@@ -134,7 +134,9 @@ class AccountMove(models.Model):
         default='draft')
 
     payment_count = fields.Integer(compute="_compute_payment_ids")
-
+    shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
+    tracking_no = fields.Char('Tracking No')
+    
     def _compute_payment_ids(self):
         for rec in self:
             rec.payment_count = False
@@ -188,6 +190,8 @@ class SaleOrder(models.Model):
         return moves
 
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
+    tracking_no = fields.Char('Tracking No')
+    
     payment_methods = fields.Selection([
         ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
         ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
@@ -268,14 +272,7 @@ class AccountExchangeCompany(models.Model):
 
     name = fields.Char('Exchange Company', reqired=True)
     code = fields.Char('code')
-
-
-#class StockPicking(models.Model):
-#    _inherit = 'stock.picking'
-#
-#    shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
-#    tracking_no = fields.Char('Tracking No')
-
+    
 
 class ShipmentCompany(models.Model):
     _name = 'shipment.company'

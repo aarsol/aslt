@@ -65,6 +65,13 @@
                         </page>
                     </xpath>
 
+                    <xpath expr="//page[@name='other_info']/group/group[@name='payments_info_group']" position="after">
+                        <group id="courier_group" string="Delivery Information">
+                            <field name="shipment_company_id"/>
+                            <field name="tracking_no"/>
+                        </group>
+                    </xpath>
+
 
                 </data>
             </field>
