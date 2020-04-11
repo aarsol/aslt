@@ -151,8 +151,9 @@ class AccountMove(models.Model):
 
         res = super(AccountMove, self).write(values)
 
-        template = self.env.ref('aslt_ext.email_template_invoice_transfer')
-        send = template.with_context(mail_create_nolog=True).send_mail(self.id, force_send=True)
+        if values.get('marked_user_id', False):
+            template = self.env.ref('aslt_ext.email_template_invoice_transfer')
+            send = template.with_context(mail_create_nolog=True).send_mail(self.id, force_send=True)
 
         # activity = self.env.ref('aslt_ext.mail_act_account_request_approval')
         # if not values.get('marked_user_id', False):
