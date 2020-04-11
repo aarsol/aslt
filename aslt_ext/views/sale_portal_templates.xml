@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_frontend" inherit_id="portal.assets_frontend" name="Portal Assets" priority="15">
+        <xpath expr="//script[@src='/portal/static/src/js/portal_signature.js']" position="replace">
+            <script type="text/javascript" src="/aslt_ext/static/src/js/portal_signature.js"></script>
+        </xpath>
+    </template>
+
+    <template id="assets_common" inherit_id="web.assets_common">
+        <xpath expr="//script[@src='/web/static/src/js/widgets/name_and_signature.js']" position="replace">
+            <script type="text/javascript" src="/aslt_ext/static/src/js/name_and_signature.js"></script>
+        </xpath>
+    </template>
+
+    
+</odoo>
