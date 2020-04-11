@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Template for the widget webSignNameAndDraw. -->
+    <t t-name="aslt_ext.sign_name_and_signature">
+        <div class="o_web_sign_name_and_signature">
+            <div class="o_web_sign_name_group form-group">
+                <label class="col-form-label" t-att-for="'o_web_sign_name_input_' + widget.htmlId">Full Name</label>
+                <input type="text" name="signer" t-att-id="'o_web_sign_name_input_' + widget.htmlId" class="o_web_sign_name_input form-control" t-att-value="widget.defaultName" placeholder="Your name" required=""/>
+            </div>
+
+            <div class="dropdown-item-text o_generator_menu">
+                <label class="col-form-label">Payment Method</label>
+                <select class="w-auto o_input o_group_selector o_add_group" name="sale_order_payment_method" id="sale_order_payment_method">
+                    <option value="">Select Payment Method</option>
+                    <option value="paypall">PayPall Link</option>
+                    <option value="credit_card_link">Credit Card Link</option>
+                    <option value="online_bank_transfer">Online Bank Transfer(Multiple)</option>
+                    <option value="cash_deposit">Cash Deposit</option>
+                    <option value="cash_over_counter">Cash Over The Counter</option>
+                    <option value="cheque">Cheque</option>
+                    <option value="card_swipe_machine">Card Swipe Machine</option>
+                    <option value="exchange_company">Exchange Company</option>
+                </select>
+            </div>
+
+            <!--
+                Overflow hidden is necessary because the card has a rounded
+                border, but we remove the padding from the body, so the canvas
+                will overflow on the corners without this rule.
+            -->
+            <div class="o_web_sign_signature_group card mt-3" style="overflow: hidden;">
+                <div class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-auto">
+                            <a role="button" href="#" t-attf-class="o_web_sign_draw_button mr-2 btn btn-light {{ widget.signMode === 'draw' ? 'active': '' }}">
+                                Draw
+                            </a>
+                        </div>
+                        <div class="col-auto">
+                            <a role="button" href="#" t-attf-class="o_web_sign_auto_button mr-2 btn btn-light {{ widget.signMode === 'auto' ? 'active': '' }}">
+                                Auto
+                            </a>
+                        </div>
+                        <div class="col-auto">
+                            <a role="button" href="#" t-attf-class="o_web_sign_load_button mr-2 btn btn-light {{ widget.signMode === 'load' ? 'active': '' }}">
+                                Load
+                            </a>
+                        </div>
+                        <div t-attf-class="o_web_sign_draw_clear col-auto ml-auto {{ widget.signMode !== 'draw' ? 'd-none' : '' }}">
+                            <a role="button" href="#" class="btn btn-link">
+                                Clear
+                            </a>
+                        </div>
+                        <div t-attf-class="o_web_sign_auto_select_style col-auto ml-auto {{ widget.signMode !== 'auto' ? 'd-none' : '' }}">
+                            <a role="button" href="#" class="btn btn-link">
+                                Style
+                            </a>
+                        </div>
+                        <div t-attf-class="o_web_sign_load_file col-auto {{ widget.signMode !== 'load' ? 'd-none' : '' }}">
+                            <input type="file" role="button" name="files[]" class="btn btn-link py-0"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="o_web_sign_signature card-body p-0"/>
+
+                <div t-attf-class="o_web_sign_load_invalid card-footer d-none">
+                    <div class="alert alert-danger mb-0" role="alert">
+                        This file is invalid. Please select an image.
+                    </div>
+                </div>
+            </div>
+
+            <div class="o_web_sign_auto_font_selection card d-none h-100 flex-column">
+                <div class="card-header">Styles</div>
+                <div class="o_web_sign_auto_font_list card-body text-center p-3 flex-grow-1"/>
+            </div>
+        </div>
+    </t>
+    <div t-name="web.signature_dialog">
+        <div class="o_web_sign_name_and_signature"/>
+
+        <div class="mt16 small">By clicking Adopt and Sign, I agree that the chosen signature/initials will be a valid electronic representation of my hand-written signature/initials for all purposes when it is used on documents, including legally binding contracts.</div>
+    </div>
+</templates>

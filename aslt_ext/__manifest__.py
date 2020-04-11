@@ -23,6 +23,7 @@
         'views/account_journal_ext_view.xml',
         'views/customer_ext_view.xml',
         'views/templates.xml',
+        'views/sale_portal_templates.xml',
         'wizard/merge_customer_wiz.xml',
         'data/invoice_mail_template.xml',
 
