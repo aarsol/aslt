@@ -14,6 +14,9 @@
                     <xpath expr="//field[@name='invoice_user_id']" position="after">
                         <field name="marked_user_id"/>
                     </xpath>
+                    <xpath expr="//field[@name='company_id']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
                 </data>
             </field>
         </record>
@@ -201,13 +204,13 @@
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='invoice_ref']" position='attributes'>
-                    <attribute name="invisible">1</attribute>
-                </xpath>
+<!--                <xpath expr="//field[@name='invoice_ref']" position='attributes'>-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
 
-                <xpath expr="//field[@name='attachment_ids']" position='attributes'>
-                    <attribute name="invisible">1</attribute>
-                </xpath>
+<!--                <xpath expr="//field[@name='attachment_ids']" position='attributes'>-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
 
                 <xpath expr="//field[@name='note_accountant']" position='attributes'>
                     <attribute name="invisible">1</attribute>
@@ -279,6 +282,35 @@
 <!--            </field>-->
 <!--        </record>-->
 
+      <template id="web.external_layout">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="branch_id">
+                <t t-set="company" t-value="branch_id"/>
+            </t>
+            <t t-elif="o and 'branch_id' in o">
+                <t t-set="company" t-value="o.branch_id.sudo()"/>
+            </t>
+            <t t-elif="o and 'user_id' in o">
+                <t t-set="company" t-value="o.user_id.branch_id.sudo()"/>
+            </t>
+            <t t-elif="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}"><t t-raw="0"/></t>
+        <t t-else="else" t-call="web.external_layout_standard"><t t-raw="0"/></t>
+
+    </template>
 
         <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
             <xpath expr="//div[@id='total']//table[1]/tr[1]" position='after'>

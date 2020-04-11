@@ -191,6 +191,8 @@ class SaleOrder(models.Model):
 
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
+    completion_time = fields.Datetime('Completion Time')
+    city = fields.Char('City')
     
     payment_methods = fields.Selection([
         ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
@@ -269,6 +271,7 @@ class AccountPaymentweeklyLine(models.Model):
 
 class AccountExchangeCompany(models.Model):
     _name = 'exchange.company'
+    _description = 'Exchange Company'
 
     name = fields.Char('Exchange Company', reqired=True)
     code = fields.Char('code')
@@ -276,6 +279,7 @@ class AccountExchangeCompany(models.Model):
 
 class ShipmentCompany(models.Model):
     _name = 'shipment.company'
+    _description = 'Shipment Company'
 
     name = fields.Char('Name', reqired=True)
     code = fields.Char('code')
@@ -300,7 +304,7 @@ class User(models.Model):
 
     def name_get(self):
         res = []
-        for record in self:
+        for record in self.sudo():
             name = str(record.name) + ' - ' + str(record.branch_id.name)
             res.append((record.id, name))
         return res
