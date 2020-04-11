@@ -13,7 +13,7 @@
     'category': 'Accounts',
     'version': '0.1',
     'sequence': 2,
-    'depends': ['base', 'account', 'sale'],
+    'depends': ['base', 'account', 'sale','branch'],
 
     # always loaded
     'data': [

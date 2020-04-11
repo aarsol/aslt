@@ -23,8 +23,6 @@ class CustomerMergeWiz(models.TransientModel):
 
     def merge_customer(self):
         for rec in self:
-            pdb.set_trace()
-
             sale_search = self.env['sale.order'].search([('partner_id', '=', rec.customer_id.id)])
             purchase_search = self.env['purchase.order'].search([('partner_id', '=', rec.customer_id.id)])
             account_move_search = self.env['account.move'].search([('partner_id', '=', rec.customer_id.id)])
