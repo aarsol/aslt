@@ -150,6 +150,12 @@
                             		'required': [('payment_types', '=', 'paypall')] 
                             	}"/>
 
+                            <field name="reference_cc"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'online_credit_card')],
+                            		'required': [('payment_types', '=', 'online_credit_card')]
+                            	}"/>
+
                             <field name="cross_vendor"
                                    domain="[('supplier_rank','!=','0')]"
                                    attrs="{
@@ -185,8 +191,7 @@
                                 }"/>
                             <field name="bank_deposit_due_date"
                                    attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
-                            <field name="credit_reference_no"
-                                   attrs="{'invisible': [('payment_types', '!=', 'online_credit_card')]}"/>
+
 
                         </group>
                     </xpath>

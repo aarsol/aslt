@@ -35,17 +35,21 @@ class account_payment(models.Model):
 
     cheque_no = fields.Char('Cheque No')
     cheque_date = fields.Date('Cheque Date')
+    
     cross_vendor = fields.Many2one('res.partner', string='Vendor Name')
     cross_invoice = fields.Many2one('account.move', string='Invoice No')
     cross_amount = fields.Monetary(related='cross_invoice.amount_total', string='Invoice Amount')
+    
     exchange_company_id = fields.Many2one('exchange.company', string='Exchange Company')
     receiver_name = fields.Char('Receiver Name')
     exchange_receipt_no = fields.Char('Receipt No')
+    
     approval_code = fields.Char('Approval Code')
     transaction_id = fields.Char('Transaction ID')
+    reference_cc = fields.Char('Reference No')
+    
     note_salesman = fields.Char('Note By Salesmen')
     note_accountant = fields.Char('Note By Accountant')
-    credit_reference_no = fields.Char('Reference No')
 
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
