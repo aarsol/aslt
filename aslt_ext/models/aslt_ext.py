@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import RedirectWarning, UserError, ValidationError
+from odoo.exceptions import Warning, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from datetime import datetime, date, timedelta
 import pdb
@@ -129,17 +129,18 @@ class AccountMove(models.Model):
     due_date = fields.Date('Due Date')
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date')
 
-    marked_user_id = fields.Many2one('res.users', 'Marked SalesPerson')
-    marked_duedate = fields.Date('Marked Due Date')
+    marked_user_id = fields.Many2one('res.users', 'Transferred Liability')
+    marked_duedate = fields.Date('Liability Due Date')
     marked_state = fields.Selection(selection=[
         ('draft', 'Draft'),
         ('accept', 'Accept'), ('cancel', 'Cancel')
-    ], string='Marked Status', required=True, readonly=True, copy=False, tracking=True,
+    ], string='Liability Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
 
     payment_count = fields.Integer(compute="_compute_payment_ids")
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
+    service_type= fields.Selection([('one_way','One Way'),('written','Written')],'Service Type',default='one_way')
     
     def _compute_payment_ids(self):
         for rec in self:
@@ -194,8 +195,25 @@ class SaleOrder(models.Model):
         moves.post()
         return moves
 
+    def _get_partner_domain(self):
+        if self.env.user.id < 3:
+            domain = [(1, '=',1)]
+        else:
+            domain = [('user_id', '=', self.env.user.id)]
+            # domain = ['|', '|',
+            #     ('user_id', '=', self.env.user.id),
+            #     '&', ('user_id', '=', False), ('branch_id', '=', self.env.user.branch_id.id),
+            #     '&', ('user_id', '=', False), ('branch_id', '=', False)]
+            
+        partners = self.env['res.partner'].search(domain)
+        partner_list = [x.id for x in partners]
+        return partner_list
+
+    partner_list = fields.Many2many('res.partner', default=_get_partner_domain)
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
+    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Written')], 'Service Type', default='one_way')
+
     completion_time = fields.Datetime('Completion Time')
     city = fields.Char('City')
     
@@ -209,7 +227,7 @@ class SaleOrder(models.Model):
     @api.onchange('partner_id')
     def _onchange_partner_id_payment(self):
         self.payment_methods = self.partner_id.payment_methods
-
+        
 
 class AccountPaymentweekly(models.Model):
     _name = 'account.weekly.payment'
@@ -299,9 +317,21 @@ class Partner(models.Model):
         ('cash_over_counter', 'Cash Over The Counter'),
         ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
         string='Payment Methods')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('is_company',False):
+                nme = vals.get('name',False)
+                ids = self.env['res.partner'].sudo().search([('name', 'ilike', nme)])
+                if ids:
+                    raise Warning('Name already Exist')
+        
+        rec = super(Partner, self).create(vals_list)
+        return rec
     
-    _sql_constraints = [
-        ('name', 'unique(name)', "Name already exists"), ]
+    # _sql_constraints = [
+    #     ('name', 'unique(name)', "Name already exists"), ]
 
 
 class User(models.Model):

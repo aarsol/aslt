@@ -2,13 +2,6 @@
 <odoo>
     <data>
         <!-- Partner -->
-        <record id="base.action_partner_form" model="ir.actions.act_window">
-            <field name="domain">['|','|',('user_id','=',user.id),'&amp;',('user_id','=',False),('branch_id','=',user.branch_id.id),'&amp;',('user_id','=',False),('branch_id','=',False)]</field>
-        </record>
-
-        <record id="base.action_partner_customer_form" model="ir.actions.act_window">
-            <field name="domain">['|','|',('user_id','=',user.id),'&amp;',('user_id','=',False),('branch_id','=',user.branch_id.id),'&amp;',('user_id','=',False),('branch_id','=',False)]</field>
-        </record>
 
         <record id="aslt_ext_view_partner_property_form" model="ir.ui.view">
             <field name="name">res.partner.Form</field>
@@ -37,21 +30,11 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <data>
-
-					<!--
-                    <xpath expr="//field[@name='partner_id']" position="replace">
-                        <field name="customer" invisible="1"/>
-                        <field name="supplier" invisible="1"/>
-                        <field name="partner_id" widget="res_partner_many2one" 
-                        	context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" 
-                        	domain="['|',('customer', '=', 1),  ('supplier', '=', 1)]"                                   
-                        	options='{"always_reload": True}'/>                        
-                    </xpath>
-					-->
 					<xpath expr="//field[@name='partner_id']" position="replace">
+                        <field name="partner_list" invisible="1"/>
                         <field name="partner_id" widget="res_partner_many2one"
                         	context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
-                        	domain="[('user_id','=',uid)]"
+                        	domain="[('id','in',partner_list)]"
                         	options='{"always_reload": True}'/>
                     </xpath>
 
@@ -60,7 +43,7 @@
                     </xpath>
 
                     <xpath expr="//field[@name='date_order']" position="after">
-                        <field name="completion_time"/>
+                        <field name="completion_time" required="1"/>
                     </xpath>
 
                     <xpath expr="//field[@name='payment_term_id']" position="after">
