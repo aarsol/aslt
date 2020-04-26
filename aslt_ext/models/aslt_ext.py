@@ -35,19 +35,19 @@ class account_payment(models.Model):
 
     cheque_no = fields.Char('Cheque No')
     cheque_date = fields.Date('Cheque Date')
-    
+
     cross_vendor = fields.Many2one('res.partner', string='Vendor Name')
     cross_invoice = fields.Many2one('account.move', string='Invoice No')
     cross_amount = fields.Monetary(related='cross_invoice.amount_total', string='Invoice Amount')
-    
+
     exchange_company_id = fields.Many2one('exchange.company', string='Exchange Company')
     receiver_name = fields.Char('Receiver Name')
     exchange_receipt_no = fields.Char('Receipt No')
-    
+
     approval_code = fields.Char('Approval Code')
     transaction_id = fields.Char('Transaction ID')
     reference_cc = fields.Char('Reference No')
-    
+
     note_salesman = fields.Char('Note By Salesmen')
     note_accountant = fields.Char('Note By Accountant')
 
@@ -140,8 +140,8 @@ class AccountMove(models.Model):
     payment_count = fields.Integer(compute="_compute_payment_ids")
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
-    service_type= fields.Selection([('one_way','One Way'),('written','Written')],'Service Type',default='one_way')
-    
+    service_type = fields.Selection([('one_way', 'One Way'), ('return', 'Return')], 'Service Type', default='one_way')
+
     def _compute_payment_ids(self):
         for rec in self:
             rec.payment_count = False
@@ -197,14 +197,14 @@ class SaleOrder(models.Model):
 
     def _get_partner_domain(self):
         if self.env.user.id < 3:
-            domain = [(1, '=',1)]
+            domain = [(1, '=', 1)]
         else:
             domain = [('user_id', '=', self.env.user.id)]
             # domain = ['|', '|',
             #     ('user_id', '=', self.env.user.id),
             #     '&', ('user_id', '=', False), ('branch_id', '=', self.env.user.branch_id.id),
             #     '&', ('user_id', '=', False), ('branch_id', '=', False)]
-            
+
         partners = self.env['res.partner'].search(domain)
         partner_list = [x.id for x in partners]
         return partner_list
@@ -212,11 +212,11 @@ class SaleOrder(models.Model):
     partner_list = fields.Many2many('res.partner', default=_get_partner_domain)
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
-    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Written')], 'Service Type', default='one_way')
+    service_type = fields.Selection([('one_way', 'One Way'), ('return', 'Return')], 'Service Type', default='one_way')
 
     completion_time = fields.Datetime('Completion Time')
     city = fields.Char('City')
-    
+
     payment_methods = fields.Selection([
         ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
         ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
@@ -227,7 +227,7 @@ class SaleOrder(models.Model):
     @api.onchange('partner_id')
     def _onchange_partner_id_payment(self):
         self.payment_methods = self.partner_id.payment_methods
-        
+
 
 class AccountPaymentweekly(models.Model):
     _name = 'account.weekly.payment'
@@ -298,7 +298,7 @@ class AccountExchangeCompany(models.Model):
 
     name = fields.Char('Exchange Company', reqired=True)
     code = fields.Char('code')
-    
+
 
 class ShipmentCompany(models.Model):
     _name = 'shipment.company'
@@ -321,15 +321,15 @@ class Partner(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('is_company',False):
-                nme = vals.get('name',False)
+            if vals.get('is_company', False):
+                nme = vals.get('name', False)
                 ids = self.env['res.partner'].sudo().search([('name', 'ilike', nme)])
                 if ids:
                     raise Warning('Name already Exist')
-        
+
         rec = super(Partner, self).create(vals_list)
         return rec
-    
+
     # _sql_constraints = [
     #     ('name', 'unique(name)', "Name already exists"), ]
 
@@ -345,4 +345,13 @@ class User(models.Model):
         return res
 
 
+class ResBranch(models.Model):
+    _inherit = 'res.branch'
 
+    bank_name = fields.Char('Branch Bank Name')
+    iban_account_no = fields.Char('IBAN Account No')
+    account_no = fields.Char('Account No')
+    swift = fields.Char('SWIFT')
+    account_type = fields.Char('Account Type')
+    bank_address = fields.Char('Bank Address')
+    paypal_id = fields.Char('Paypal ID')
