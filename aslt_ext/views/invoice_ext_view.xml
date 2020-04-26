@@ -124,7 +124,8 @@
 
                             <field name="note_salesman"/>
                             <field name="invoice_ref"/>
-                            <field name="attachment_ids"  widget="many2many_binary" colspan="2" string="Select Files" nolabel="1"/>
+                            <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files"
+                                   nolabel="1"/>
                         </group>
 
                         <group name="other_info">
@@ -210,13 +211,13 @@
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
             <field name="arch" type="xml">
-<!--                <xpath expr="//field[@name='invoice_ref']" position='attributes'>-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
+                <!--                <xpath expr="//field[@name='invoice_ref']" position='attributes'>-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
 
-<!--                <xpath expr="//field[@name='attachment_ids']" position='attributes'>-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
+                <!--                <xpath expr="//field[@name='attachment_ids']" position='attributes'>-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
 
                 <xpath expr="//field[@name='note_accountant']" position='attributes'>
                     <attribute name="invisible">1</attribute>
@@ -268,32 +269,101 @@
             </field>
         </record>
 
-      <template id="web.external_layout">
-        <t t-if="not o" t-set="o" t-value="doc"/>
-        <t t-if="not company">
-            <!-- Multicompany -->
-            <t t-if="branch_id">
-                <t t-set="company" t-value="branch_id"/>
+
+        <!--  Branch Ext      -->
+
+
+        <record id="aslt_ext_branch_view_form_inherit" model="ir.ui.view">
+            <field name="name">res.branch.inherit</field>
+            <field name="model">res.branch</field>
+            <field name="inherit_id" ref="branch.branch_res_branch_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[1]//group[2]" position="after">
+                    <group>
+                        <field name="bank_name"/>
+                        <field name="iban_account_no"/>
+                        <field name="account_no"/>
+                        <field name="swift"/>
+                        <field name="account_type"/>
+                        <field name="bank_address"/>
+                        <field name="paypal_id"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="paperformat_aarsol" model="report.paperformat">
+            <field name="name">AARSOL</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">300</field>
+            <field name="page_width">220</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">38</field>
+            <field name="dpi">90</field>
+        </record>
+
+
+        <!--         <report-->
+        <!--            id="account_invoices_without_payment"-->
+        <!--            model="account.move"-->
+        <!--            string="Invoices without Payment"-->
+        <!--            report_type="qweb-pdf"-->
+        <!--            paperformat="paperformat_aarsol"-->
+        <!--            name="account.report_invoice"-->
+        <!--            file="account.report_invoice"-->
+        <!--            attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"-->
+        <!--            print_report_name="(object._get_report_base_filename())"-->
+        <!--        />-->
+        <report
+                id="account.account_invoices"
+                model="account.move"
+                string="Invoices"
+                report_type="qweb-pdf"
+                paperformat="paperformat_aarsol"
+                name="account.report_invoice_with_payments"
+                file="account.report_invoice_with_payments"
+                attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"
+                print_report_name="(object._get_report_base_filename())"
+                groups="account.group_account_invoice"
+        />
+
+        <template id="web.external_layout">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+            <t t-if="not company">
+                <!-- Multicompany -->
+                <t t-if="branch_id">
+                    <t t-set="company" t-value="branch_id"/>
+                </t>
+                <t t-elif="o and 'branch_id' in o">
+                    <t t-set="company" t-value="o.branch_id.sudo()"/>
+                </t>
+                <t t-elif="o and 'user_id' in o">
+                    <t t-set="company" t-value="o.user_id.branch_id.sudo()"/>
+                </t>
+                <t t-elif="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
             </t>
-            <t t-elif="o and 'branch_id' in o">
-                <t t-set="company" t-value="o.branch_id.sudo()"/>
+            <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}">
+                <t t-raw="0"/>
             </t>
-            <t t-elif="o and 'user_id' in o">
-                <t t-set="company" t-value="o.user_id.branch_id.sudo()"/>
+            <t t-else="else" t-call="web.external_layout_standard">
+                <t t-raw="0"/>
             </t>
-            <t t-elif="company_id">
-                <t t-set="company" t-value="company_id"/>
-            </t>
-            <t t-elif="o and 'company_id' in o">
-                <t t-set="company" t-value="o.company_id.sudo()"/>
-            </t>
-            <t t-else="else">
-                <t t-set="company" t-value="res_company"/>
-            </t>
-        </t>
-        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}"><t t-raw="0"/></t>
-        <t t-else="else" t-call="web.external_layout_standard"><t t-raw="0"/></t>
-    </template>
+        </template>
 
         <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
             <xpath expr="//div[@id='informations']//div[1]" position='before'>
@@ -301,21 +371,113 @@
                     <strong>VAT TRN No.:</strong>
                     <p class="m-0" t-esc="o.branch_id.vat or o.company_id.vat"/>
                 </div>
+
             </xpath>
+
+            <xpath expr="//div[@class='page']/p[1]" position='replace'>
+                <p style="font-weight:bold;">
+                    Terms
+                </p>
+
+            </xpath>
+            <xpath expr="//div[@class='page']/p[3]" position='after'>
+
+                <p name="payment_methods">
+                    Payment Method:
+                    <span t-field="o.partner_id.payment_methods"/>
+                </p>
+                <p name="telegraphic">
+                    Telegraphic transfer detail:
+                    <br></br>
+                    COMPANY BANK ACCOUNT DETAIL:
+                    <br></br>
+                    (<span t-field="o.branch_id.bank_name"/>)
+                    <br></br>
+                    Bank Name:
+                    <span t-field="o.branch_id.bank_name"/>
+                    <br></br>
+                    Account BENEFICIARY:
+                    <span t-field="o.branch_id.name"/>
+                    <br></br>
+                    IBAN Account No :
+                    <span t-field="o.branch_id.iban_account_no"/>
+                    <br></br>
+                    Account No :
+                    <span t-field="o.branch_id.account_no"/>
+                    <br></br>
+                    SWIFt :
+                    <span t-field="o.branch_id.swift"/>
+                    <br></br>
+                    Account Type :
+                    <span t-field="o.branch_id.account_type"/>
+                    <br></br>
+                    Postal Code :
+                    <span t-field="o.branch_id.zip"/>
+                    <br></br>
+                    City :
+                    <span t-field="o.branch_id.city"/>
+                    <br></br>
+                    Country :
+                    <span t-field="o.branch_id.country_id.name"/>
+                    <br></br>
+                    Bank Address :
+                    <span t-field="o.branch_id.bank_address"/>
+                    <br></br>
+                    Company Address :
+                    <span t-field="o.branch_id.street"/>
+                    <br></br>
+                    Email ID :
+                    <span t-field="o.branch_id.email"/>
+                    <br></br>
+                    Country :
+                    <span t-field="o.branch_id.country_id.name"/>
+                    <br></br>
+                    <br></br>
+                    Paypal ID :
+                    <span t-field="o.branch_id.paypal_id"/>
+                    <br></br>
+                    Thank You for your time and consideration in our services!
+
+                </p>
+
+            </xpath>
+
+
+            <!--            <xpath expr="//t[@t-set='address']" position='replace'>-->
+            <!--                <br></br>-->
+            <!--                <br></br>-->
+
+
+            <!--                <t t-set="address">-->
+            <!--                    <address t-field="o.partner_id"-->
+            <!--                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>-->
+            <!--                    <div t-if="o.partner_id.vat" class="mt16">-->
+            <!--                        <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label"-->
+            <!--                           id="inv_tax_id_label"/>-->
+            <!--                        <t t-else="">Tax ID</t>:-->
+            <!--                        <span t-field="o.partner_id.vat"/>-->
+            <!--                    </div>-->
+            <!--                </t>-->
+
+            <!--            </xpath>-->
             <xpath expr="//div[@id='total']//table[1]/t" position='replace'>
                 <t t-foreach="o.amount_by_group" t-as="amount_by_group">
                     <tr style="">
                         <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) == 1 and o.amount_untaxed == amount_by_group[2]">
-                            <td><span t-esc="amount_by_group[0]"/> (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)</td>
+                            <td>
+                                <span t-esc="amount_by_group[0]"/>
+                                (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)
+                            </td>
                             <td class="text-right o_price_total">
-                                <span t-esc="amount_by_group[3]" />
+                                <span t-esc="amount_by_group[3]"/>
                             </td>
                         </t>
                         <t t-else="">
                             <td>
                                 (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)
                                 <span t-esc="amount_by_group[0]"/>
-                                <span>&amp;nbsp;<span>on</span>
+                                <span>&amp;nbsp;
+                                    <span>on</span>
                                     <t t-esc="amount_by_group[4]"/>
                                 </span>
                             </td>
@@ -328,12 +490,24 @@
             </xpath>
         </template>
 
-         <template id="aslt_ext_external_layout_standard" inherit_id="web.external_layout_standard">
+        <template id="aslt_ext_external_layout_standard" inherit_id="web.external_layout_standard">
             <xpath expr="//div[@name='company_address']//div[1]" position='replace'>
                 <div t-field="company.partner_id.name"/>
-                <div>VAT TRN No.<span t-field="company.partner_id.vat"/></div>
+                <div>VAT TRN No.
+                    <span t-field="company.partner_id.vat"/>
+                </div>
                 <div t-field="company.partner_id.street"/>
-                <div><span t-field="company.partner_id.city"/> <span t-field="company.partner_id.zip"/> , <span t-field="company.partner_id.country_id.name"/></div>
+                <div>Mobile:<span t-field="company.partner_id.phone"/>|
+                    <span t-field="company.partner_id.city"/>|
+                    <span t-field="company.partner_id.zip"/>
+                </div>
+                <div>
+                    <span t-field="company.partner_id.email"/>
+                    |
+                    <span t-field="company.partner_id.country_id.name"/>
+                </div>
+
+
             </xpath>
         </template>
 
@@ -346,13 +520,12 @@
             </xpath>
 
             <td name="td_amount_by_group_label" position="replace">
-                <td name="td_amount_by_group_label"> (<span t-esc="doc.branch_id.vat or doc.company_id.vat"/>)
+                <td name="td_amount_by_group_label">(<span t-esc="doc.branch_id.vat or doc.company_id.vat"/>)
                     <span t-esc="amount_by_group[0]"/>
                 </td>
             </td>
 
         </template>
-
 
 
     </data>
