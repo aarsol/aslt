@@ -321,18 +321,7 @@
         <!--            attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"-->
         <!--            print_report_name="(object._get_report_base_filename())"-->
         <!--        />-->
-        <report
-                id="account.account_invoices"
-                model="account.move"
-                string="Invoices"
-                report_type="qweb-pdf"
-                paperformat="paperformat_aarsol"
-                name="account.report_invoice_with_payments"
-                file="account.report_invoice_with_payments"
-                attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"
-                print_report_name="(object._get_report_base_filename())"
-                groups="account.group_account_invoice"
-        />
+
 
         <template id="web.external_layout">
             <t t-if="not o" t-set="o" t-value="doc"/>
@@ -374,14 +363,65 @@
 
             </xpath>
 
-            <xpath expr="//div[@class='page']/p[1]" position='replace'>
-                <p style="font-weight:bold;">
-                    Terms
-                </p>
+
+
+
+            <xpath expr="//t[@t-set='address']" position="replace">
+                 <t t-set="address">
+                     <br></br>
+                     <br></br>
+                     <br></br>
+                    <address t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                     <div t-if="o.partner_id.vat" class="mt16">
+                        <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label" id="inv_tax_id_label"/>
+                        <t t-else="">Tax ID</t>: <span t-field="o.partner_id.vat"/></div>
+                </t>
 
             </xpath>
-            <xpath expr="//div[@class='page']/p[3]" position='after'>
 
+
+            <xpath expr="//div[@class='page']/p[1]" position='replace'>
+                <p >
+                  <span style="font-weight:bold;" >Terms</span>
+                    <br></br>
+                    Payment mode: Cash , Cheque , Bank Transfer ( Emirates NBD &amp; Mashreqbank) , Paypal , Western
+                    <br></br>
+                    Union, Ansari Exchange or any other exchange office ( Receiver's name will be provided as per client's
+                    <br></br>
+                    request).
+                </p>
+
+
+            </xpath>
+            <xpath expr="//div[@class='page']/p[3]" position='replace'>
+
+                <p>
+                    Cheque beneficiary:<span t-field="o.branch_id.name"/>
+                </p>
+                <p>
+                    Bank Transfer: Bank detail is provided as per client's request.
+                </p>
+                <p>
+                    Paypal : Paypal id is provided as per client's request.
+                </p>
+                 <p name="payment_terms">
+                    Payment Terms:
+                    <br></br>
+                     1- Payment to be released 100% upfront
+                     <br></br>
+                     2 - 50% to be released in advance and 50% upon completion &amp; receipt of project (Conditions apply)
+                     <br></br>
+                     3 - 100% payment upon completion &amp; receipt of projects (PO to be issued mentioning the payment terms
+                     <br></br>
+                     and project deadline) &amp; other conditions apply.
+                     <br></br>
+                     4 - 30 days credit payment (Only for permanent clients)
+                     <br></br>
+                     Late payment charges: 5% (max. 15 days) - only for permanent clients &amp; clients paying 100% upon
+                     <br></br>
+                     receipt of translation.
+
+                </p>
                 <p name="payment_methods">
                     Payment Method:
                     <span t-field="o.partner_id.payment_methods"/>
@@ -497,7 +537,7 @@
                     <span t-field="company.partner_id.vat"/>
                 </div>
                 <div t-field="company.partner_id.street"/>
-                <div>Mobile:<span t-field="company.partner_id.phone"/>|
+                <div>
                     <span t-field="company.partner_id.city"/>|
                     <span t-field="company.partner_id.zip"/>
                 </div>
@@ -509,6 +549,12 @@
 
 
             </xpath>
+
+             <xpath expr="//div[@class='row']//div[1]" position='replace'>
+                 <div class="col-3 mb4">
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"  style="display:block; width: 160px;"  alt="Logo"/>
+                </div>
+             </xpath>
         </template>
 
         <template id="report_saleorder_document_aslt" inherit_id="sale.report_saleorder_document">
