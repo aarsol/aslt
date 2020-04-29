@@ -120,13 +120,13 @@
             </xpath>
 
 
-            <xpath expr="//div[@class='page']/p[1]" position='replace'>
+            <xpath expr="//p[@name='comment']" position='replace'>
                 <span></span>
             </xpath>
-            <xpath expr="//div[@class='page']/p[2]" position='replace'>
+            <xpath expr="//p[@name='payment_term']" position='replace'>
                 <span></span>
             </xpath>
-            <xpath expr="//div[@class='page']/p[3]" position='replace'>
+            <xpath expr="//p[@name='note']" position='replace'>
                 <span t-esc="o.branch_id.other_details" t-options='{"widget": "html"}'/>
             </xpath>
 

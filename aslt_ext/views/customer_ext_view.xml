@@ -108,6 +108,10 @@
                         <field name="completion_time" required="1"/>
                     </xpath>
 
+                    <xpath expr="//field[@name='user_id']" position="attributes">
+                        <attribute name="readonly">1</attribute>
+                    </xpath>
+
                     <xpath expr="//field[@name='payment_term_id']" position="after">
                         <field string="Payment Methods" name="payment_methods" widget="selection"
                                groups="account.group_account_invoice" required="0"/>
