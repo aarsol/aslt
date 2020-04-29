@@ -18,6 +18,68 @@
                         <field string="Payment Methods" name="payment_methods" widget="selection"
                                groups="account.group_account_invoice" required="0"/>
                     </xpath>
+                    <xpath expr="//group[@name='fiscal_information']" position="replace">
+                        <group name="fiscal_information" string="Fiscal Information" invisible="1">
+                        </group>
+                    </xpath>
+                    <xpath expr="//page[@name='accounting']" position="replace">
+                        <page string="Invoicing" name="accounting" invisible="1">
+                        <group>
+                            <group string="Bank Accounts" name="banks" groups="account.group_account_invoice">
+                                <field name="bank_ids" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="bank_id"/>
+                                        <field name="acc_number"/>
+                                        <field name="acc_holder_name" invisible="1"/>
+                                    </tree>
+                                </field>
+                                <button type="action" class="btn-link"
+                                    name="%(base.action_res_partner_bank_account_form)d"
+                                    context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}"
+                                    string="View accounts detail"
+                                    colspan="2"
+                                />
+                            </group>
+                            <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_user">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="property_account_receivable_id"/>
+                                <field name="property_account_payable_id"/>
+                            </group>
+                        </group>
+                    </page>
+                    </xpath>
+
+                </data>
+            </field>
+        </record>
+
+        <record id="aslt_ext_view_partner_form" model="ir.ui.view">
+            <field name="name">res.partner.Form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='vat']" position="replace">
+                        <field name="vat" invisible="1"/>
+                    </xpath>
+                    <xpath expr="//field[@name='mobile']" position="replace">
+                        <field name="mobile" invisible="1" widget="phone"/>
+                    </xpath>
+                    <xpath expr="//field[@name='email']" position="replace">
+                        <field name="email" invisible="1" required="0" widget="email"/>
+                    </xpath>
+                    <xpath expr="//field[@name='user_id']" position="replace">
+                        <field name="user_id" invisible="True"/>
+                    </xpath>
+                    <xpath expr="//group[@name='misc']" position="replace">
+                        <group name="misc" string="Misc" invisible="1">
+                        </group>
+                    </xpath>
+                    <xpath expr="//group[@name='purchase']" position="replace">
+                        <group name="purchase" string="Purchase" invisible="1">
+                        </group>
+                    </xpath>
 
                 </data>
             </field>

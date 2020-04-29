@@ -13,12 +13,13 @@
     'category': 'Accounts',
     'version': '0.1',
     'sequence': 2,
-    'depends': ['base', 'account', 'sale','branch'],
+    'depends': ['base', 'account', 'sale', 'branch'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/invoice_ext_view.xml',
+        'views/invoice_ext_template.xml',
         'views/weekly_payment_view.xml',
         'views/account_journal_ext_view.xml',
         'views/customer_ext_view.xml',
@@ -27,7 +28,7 @@
         'wizard/merge_customer_wiz.xml',
         'data/invoice_mail_template.xml',
 
-    ],    
+    ],
     "installable": True,
     "auto_install": False,
     'application': True,

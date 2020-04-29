@@ -141,7 +141,7 @@ class AccountMove(models.Model):
     payment_count = fields.Integer(compute="_compute_payment_ids")
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
-    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Written')], 'Service Type', default='one_way')
+    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Return')], 'Service Type', default='one_way')
 
     def _compute_payment_ids(self):
         for rec in self:
@@ -349,10 +349,11 @@ class User(models.Model):
 class ResBranch(models.Model):
     _inherit = 'res.branch'
 
-    bank_name = fields.Char('Branch Bank Name')
-    iban_account_no = fields.Char('IBAN Account No')
-    account_no = fields.Char('Account No')
-    swift = fields.Char('SWFT')
-    account_type = fields.Char('Account Type')
-    bank_address = fields.Char('Bank Address')
-    paypal_id = fields.Char('Paypal ID')
+    # bank_name = fields.Char('Branch Bank Name')
+    # iban_account_no = fields.Char('IBAN Account No')
+    # account_no = fields.Char('Account No')
+    # swift = fields.Char('SWFT')
+    # account_type = fields.Char('Account Type')
+    # bank_address = fields.Char('Bank Address')
+    # paypal_id = fields.Char('Paypal ID')
+    other_details = fields.Html('Other Details')
