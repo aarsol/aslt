@@ -42,6 +42,10 @@
                         <field name="due_date" attrs="{'invisible': [('due_date', '=', False)]}"/>
                     </xpath>
 
+                    <xpath expr="//field[@name='invoice_date']" position="after">
+                        <field name="completion_time"/>
+                    </xpath>
+
                     <!-- added required attribute -->
                     <xpath expr="//field[@name='invoice_payment_term_id']" position="replace">
                         <field name="invoice_payment_term_id" placeholder="Terms"
@@ -49,6 +53,17 @@
 
                     </xpath>
 
+                     <xpath expr="//page[@name='other_info']//field[@name='invoice_user_id']" position="replace">
+                        <field name="invoice_user_id" readonly="1" default="uid"/>
+                    </xpath>
+
+                    <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+
+                    <xpath expr="//page[@name='other_info']//group[@name='payments_info_group']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
 
                     <xpath expr="//page[@name='other_info']" position="before">
                         <page id="transfer_liability_info" string="Transfer Liability" name="transfer_liability_info">
@@ -160,11 +175,13 @@
 
                             <field name="cross_vendor"
                                    domain="[('supplier_rank','!=','0')]"
+                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
                                    attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
                                		'required': [('payment_types', '=', 'cross_settlement')]
                                	}"/>
                             <field name="cross_invoice"
+                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
                                    domain="[('partner_id','=',cross_vendor),('type', '=', 'in_invoice')]"
                                    attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],

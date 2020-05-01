@@ -37,8 +37,14 @@
                     <div class="col-9" name="company_address" style="vertical-align:middle; display: table-cell;">
                         <div t-field="company.partner_id.street"/>
                         <div>
-                            <span t-field="company.partner_id.city"/>
-                            <span t-field="company.partner_id.state_id.code"/>
+                            <span>
+                                <span t-field="company.phone"/>
+                                |
+                                <span t-field="company.email"/>
+                                |
+                                <span t-field="company.partner_id.city"/>
+                                <span t-field="company.partner_id.state_id.name"/>
+                            </span>
                         </div>
                         <div>
                             <span t-field="company.partner_id.zip"/>
@@ -48,7 +54,7 @@
                         </div>
                     </div>
                     <div class="col-3 mb4 text-left" style="vertical-align:middle; display: table-cell;" t-field="company.report_header" name="moto">
-                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="display:block; height: 100px;" alt="Logo" />
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="display:block; height: 100px;" alt="Logo"/>
                         <div style="margin-left:25px;">VAT TRN No.
                             <span t-field="company.partner_id.vat"/>
                         </div>
@@ -71,18 +77,18 @@
                     <ul class="list-inline mb4">
                         <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
                              adding d-inline class fixes the problem-->
-                        <li t-if="company.phone" class="list-inline-item d-inline">Phone:
+                        <!--<li t-if="company.phone" class="list-inline-item d-inline">Phone:
                             <span t-field="company.phone"/>
                         </li>
                         <li t-if="company.email" class="list-inline-item d-inline">Email:
                             <span t-field="company.email"/>
-                        </li>
-                        <li t-if="company.website" class="list-inline-item d-inline">Web:
+                        </li>-->
+                        <!--<li t-if="company.website" class="list-inline-item d-inline">Web:
                             <span t-field="company.website"/>
-                        </li>
-                        <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                        </li>-->
+                        <!--<li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
                             <span t-field="company.vat"/>
-                        </li>
+                        </li>-->
                     </ul>
 
                     <div name="financial_infos">
@@ -101,9 +107,9 @@
 
         <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
             <xpath expr="//div[@id='informations']//div[1]" position='before'>
-                <div t-if="o.branch_id.vat or o.company_id.vat" class="col-auto mw-100 mb-2">
-                    <strong>VAT TRN No.:</strong>
-                    <p class="m-0" t-esc="o.branch_id.vat or o.company_id.vat"/>
+                <div class="col-auto mw-100 mb-2">
+                    <strong>Completion Time:</strong>
+                    <p class="m-0" t-esc="o.completion_time" t-if="o.completion_time"/>
                 </div>
             </xpath>
 
@@ -120,13 +126,13 @@
             </xpath>
 
 
-            <xpath expr="//p[@name='comment']" position='replace'>
+            <xpath expr="//div[@class='page']/p[1]" position='replace'>
                 <span></span>
             </xpath>
-            <xpath expr="//p[@name='payment_term']" position='replace'>
+            <xpath expr="//div[@class='page']/p[2]" position='replace'>
                 <span></span>
             </xpath>
-            <xpath expr="//p[@name='note']" position='replace'>
+            <xpath expr="//div[@class='page']/p[3]" position='replace'>
                 <span t-esc="o.branch_id.other_details" t-options='{"widget": "html"}'/>
             </xpath>
 
@@ -135,7 +141,8 @@
                     <tr style="">
                         <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) == 1 and o.amount_untaxed == amount_by_group[2]">
                             <td>
-                                <span t-esc="amount_by_group[0]"/>
+                                VAT
+                                <span t-esc="amount_by_group[0][3:]"/>
                                 (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)
                             </td>
                             <td class="text-right o_price_total">
@@ -144,8 +151,9 @@
                         </t>
                         <t t-else="">
                             <td>
+                                VAT
                                 (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)
-                                <span t-esc="amount_by_group[0]"/>
+                                <span t-esc="amount_by_group[0][3:]"/>
                                 <span>&amp;nbsp;
                                     <span>on</span>
                                     <t t-esc="amount_by_group[4]"/>
@@ -158,22 +166,6 @@
                     </tr>
                 </t>
             </xpath>
-        </template>
-
-        <template id="report_saleorder_document_aslt" inherit_id="sale.report_saleorder_document">
-            <xpath expr="//div[@id='informations']//div[1]" position='before'>
-                <div t-if="doc.branch_id.vat or doc.company_id.vat" class="col-auto mw-100 mb-2">
-                    <strong>VAT TRN No.:</strong>
-                    <p class="m-0" t-esc="doc.branch_id.vat or doc.company_id.vat"/>
-                </div>
-            </xpath>
-
-            <td name="td_amount_by_group_label" position="replace">
-                <td name="td_amount_by_group_label">(<span t-esc="doc.branch_id.vat or doc.company_id.vat"/>)
-                    <span t-esc="amount_by_group[0]"/>
-                </td>
-            </td>
-
         </template>
 
     </data>

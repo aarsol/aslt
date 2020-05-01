@@ -13,7 +13,7 @@
     'category': 'Accounts',
     'version': '0.1',
     'sequence': 2,
-    'depends': ['base', 'account', 'sale', 'branch'],
+    'depends': ['base', 'account', 'sale', 'sale_management', 'branch'],
 
     # always loaded
     'data': [
@@ -25,7 +25,10 @@
         'views/customer_ext_view.xml',
         'views/templates.xml',
         'views/sale_portal_templates.xml',
+
         'wizard/merge_customer_wiz.xml',
+
+        'report/sale_report_templates.xml',
         'data/invoice_mail_template.xml',
 
     ],

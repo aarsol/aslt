@@ -128,6 +128,7 @@ class AccountMove(models.Model):
         default='draft')
 
     due_date = fields.Date('Due Date')
+    completion_time = fields.Datetime('Completion Time')
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date')
 
     marked_user_id = fields.Many2one('res.users', 'Transferred Liability')
