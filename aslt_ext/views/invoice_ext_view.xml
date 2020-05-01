@@ -42,6 +42,10 @@
                         <field name="due_date" attrs="{'invisible': [('due_date', '=', False)]}"/>
                     </xpath>
 
+                    <xpath expr="//field[@name='invoice_date']" position="after">
+                        <field name="completion_time"/>
+                    </xpath>
+
                     <!-- added required attribute -->
                     <xpath expr="//field[@name='invoice_payment_term_id']" position="replace">
                         <field name="invoice_payment_term_id" placeholder="Terms"
@@ -49,6 +53,17 @@
 
                     </xpath>
 
+                     <xpath expr="//page[@name='other_info']//field[@name='invoice_user_id']" position="replace">
+                        <field name="invoice_user_id" readonly="1" default="uid"/>
+                    </xpath>
+
+                    <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+
+                    <xpath expr="//page[@name='other_info']//group[@name='payments_info_group']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
 
                     <xpath expr="//page[@name='other_info']" position="before">
                         <page id="transfer_liability_info" string="Transfer Liability" name="transfer_liability_info">
@@ -160,11 +175,13 @@
 
                             <field name="cross_vendor"
                                    domain="[('supplier_rank','!=','0')]"
+                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
                                    attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
                                		'required': [('payment_types', '=', 'cross_settlement')]
                                	}"/>
                             <field name="cross_invoice"
+                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
                                    domain="[('partner_id','=',cross_vendor),('type', '=', 'in_invoice')]"
                                    attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
@@ -278,15 +295,10 @@
             <field name="model">res.branch</field>
             <field name="inherit_id" ref="branch.branch_res_branch_view_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//group[1]//group[2]" position="after">
+                <xpath expr="//group[1]" position="after">
                     <group>
-                        <field name="bank_name"/>
-                        <field name="iban_account_no"/>
-                        <field name="account_no"/>
-                        <field name="swift"/>
-                        <field name="account_type"/>
-                        <field name="bank_address"/>
-                        <field name="paypal_id"/>
+                        <label for="other_details" string="Other Details"/>
+                        <field name="other_details" widget="html" nolabel="1"/>
                     </group>
                 </xpath>
 
@@ -308,271 +320,5 @@
             <field name="header_spacing">38</field>
             <field name="dpi">90</field>
         </record>
-
-
-        <!--         <report-->
-        <!--            id="account_invoices_without_payment"-->
-        <!--            model="account.move"-->
-        <!--            string="Invoices without Payment"-->
-        <!--            report_type="qweb-pdf"-->
-        <!--            paperformat="paperformat_aarsol"-->
-        <!--            name="account.report_invoice"-->
-        <!--            file="account.report_invoice"-->
-        <!--            attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"-->
-        <!--            print_report_name="(object._get_report_base_filename())"-->
-        <!--        />-->
-
-
-        <template id="web.external_layout">
-            <t t-if="not o" t-set="o" t-value="doc"/>
-            <t t-if="not company">
-                <!-- Multicompany -->
-                <t t-if="branch_id">
-                    <t t-set="company" t-value="branch_id"/>
-                </t>
-                <t t-elif="o and 'branch_id' in o">
-                    <t t-set="company" t-value="o.branch_id.sudo()"/>
-                </t>
-                <t t-elif="o and 'user_id' in o">
-                    <t t-set="company" t-value="o.user_id.branch_id.sudo()"/>
-                </t>
-                <t t-elif="company_id">
-                    <t t-set="company" t-value="company_id"/>
-                </t>
-                <t t-elif="o and 'company_id' in o">
-                    <t t-set="company" t-value="o.company_id.sudo()"/>
-                </t>
-                <t t-else="else">
-                    <t t-set="company" t-value="res_company"/>
-                </t>
-            </t>
-            <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.key}}">
-                <t t-raw="0"/>
-            </t>
-            <t t-else="else" t-call="web.external_layout_standard">
-                <t t-raw="0"/>
-            </t>
-        </template>
-
-        <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
-            <xpath expr="//div[@id='informations']//div[1]" position='before'>
-                <div t-if="o.branch_id.vat or o.company_id.vat" class="col-auto mw-100 mb-2">
-                    <strong>VAT TRN No.:</strong>
-                    <p class="m-0" t-esc="o.branch_id.vat or o.company_id.vat"/>
-                </div>
-
-            </xpath>
-
-
-
-
-            <xpath expr="//t[@t-set='address']" position="replace">
-                 <t t-set="address">
-                     <br></br>
-                     <br></br>
-                     <br></br>
-                    <address t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
-                     <div t-if="o.partner_id.vat" class="mt16">
-                        <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label" id="inv_tax_id_label"/>
-                        <t t-else="">Tax ID</t>: <span t-field="o.partner_id.vat"/></div>
-                </t>
-
-            </xpath>
-
-
-            <xpath expr="//div[@class='page']/p[1]" position='replace'>
-                <p >
-                  <span style="font-weight:bold;" >Terms</span>
-                    <br></br>
-                    Payment mode: Cash , Cheque , Bank Transfer ( Emirates NBD &amp; Mashreqbank) , Paypal , Western
-                    <br></br>
-                    Union, Ansari Exchange or any other exchange office ( Receiver's name will be provided as per client's
-                    <br></br>
-                    request).
-                </p>
-
-
-            </xpath>
-            <xpath expr="//div[@class='page']/p[3]" position='replace'>
-
-                <p>
-                    Cheque beneficiary:<span t-field="o.branch_id.name"/>
-                </p>
-                <p>
-                    Bank Transfer: Bank detail is provided as per client's request.
-                </p>
-                <p>
-                    Paypal : Paypal id is provided as per client's request.
-                </p>
-                 <p name="payment_terms">
-                    Payment Terms:
-                    <br></br>
-                     1- Payment to be released 100% upfront
-                     <br></br>
-                     2 - 50% to be released in advance and 50% upon completion &amp; receipt of project (Conditions apply)
-                     <br></br>
-                     3 - 100% payment upon completion &amp; receipt of projects (PO to be issued mentioning the payment terms
-                     <br></br>
-                     and project deadline) &amp; other conditions apply.
-                     <br></br>
-                     4 - 30 days credit payment (Only for permanent clients)
-                     <br></br>
-                     Late payment charges: 5% (max. 15 days) - only for permanent clients &amp; clients paying 100% upon
-                     <br></br>
-                     receipt of translation.
-
-                </p>
-                <p name="payment_methods">
-                    Payment Method:
-                    <span t-field="o.partner_id.payment_methods"/>
-                </p>
-                <p name="telegraphic">
-                    Telegraphic transfer detail:
-                    <br></br>
-                    COMPANY BANK ACCOUNT DETAIL:
-                    <br></br>
-                    (<span t-field="o.branch_id.bank_name"/>)
-                    <br></br>
-                    Bank Name:
-                    <span t-field="o.branch_id.bank_name"/>
-                    <br></br>
-                    Account BENEFICIARY:
-                    <span t-field="o.branch_id.name"/>
-                    <br></br>
-                    IBAN Account No :
-                    <span t-field="o.branch_id.iban_account_no"/>
-                    <br></br>
-                    Account No :
-                    <span t-field="o.branch_id.account_no"/>
-                    <br></br>
-                    SWIFt :
-                    <span t-field="o.branch_id.swift"/>
-                    <br></br>
-                    Account Type :
-                    <span t-field="o.branch_id.account_type"/>
-                    <br></br>
-                    Postal Code :
-                    <span t-field="o.branch_id.zip"/>
-                    <br></br>
-                    City :
-                    <span t-field="o.branch_id.city"/>
-                    <br></br>
-                    Country :
-                    <span t-field="o.branch_id.country_id.name"/>
-                    <br></br>
-                    Bank Address :
-                    <span t-field="o.branch_id.bank_address"/>
-                    <br></br>
-                    Company Address :
-                    <span t-field="o.branch_id.street"/>
-                    <br></br>
-                    Email ID :
-                    <span t-field="o.branch_id.email"/>
-                    <br></br>
-                    Country :
-                    <span t-field="o.branch_id.country_id.name"/>
-                    <br></br>
-                    <br></br>
-                    Paypal ID :
-                    <span t-field="o.branch_id.paypal_id"/>
-                    <br></br>
-                    Thank You for your time and consideration in our services!
-
-                </p>
-
-            </xpath>
-
-
-            <!--            <xpath expr="//t[@t-set='address']" position='replace'>-->
-            <!--                <br></br>-->
-            <!--                <br></br>-->
-
-
-            <!--                <t t-set="address">-->
-            <!--                    <address t-field="o.partner_id"-->
-            <!--                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>-->
-            <!--                    <div t-if="o.partner_id.vat" class="mt16">-->
-            <!--                        <t t-if="o.company_id.country_id.vat_label" t-esc="o.company_id.country_id.vat_label"-->
-            <!--                           id="inv_tax_id_label"/>-->
-            <!--                        <t t-else="">Tax ID</t>:-->
-            <!--                        <span t-field="o.partner_id.vat"/>-->
-            <!--                    </div>-->
-            <!--                </t>-->
-
-            <!--            </xpath>-->
-            <xpath expr="//div[@id='total']//table[1]/t" position='replace'>
-                <t t-foreach="o.amount_by_group" t-as="amount_by_group">
-                    <tr style="">
-                        <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) == 1 and o.amount_untaxed == amount_by_group[2]">
-                            <td>
-                                <span t-esc="amount_by_group[0]"/>
-                                (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)
-                            </td>
-                            <td class="text-right o_price_total">
-                                <span t-esc="amount_by_group[3]"/>
-                            </td>
-                        </t>
-                        <t t-else="">
-                            <td>
-                                (<span t-esc="o.branch_id.vat or o.company_id.vat"/>)
-                                <span t-esc="amount_by_group[0]"/>
-                                <span>&amp;nbsp;
-                                    <span>on</span>
-                                    <t t-esc="amount_by_group[4]"/>
-                                </span>
-                            </td>
-                            <td class="text-right o_price_total">
-                                <span t-esc="amount_by_group[3]"/>
-                            </td>
-                        </t>
-                    </tr>
-                </t>
-            </xpath>
-        </template>
-
-        <template id="aslt_ext_external_layout_standard" inherit_id="web.external_layout_standard">
-            <xpath expr="//div[@name='company_address']//div[1]" position='replace'>
-                <div t-field="company.partner_id.name"/>
-                <div>VAT TRN No.
-                    <span t-field="company.partner_id.vat"/>
-                </div>
-                <div t-field="company.partner_id.street"/>
-                <div>
-                    <span t-field="company.partner_id.city"/>|
-                    <span t-field="company.partner_id.zip"/>
-                </div>
-                <div>
-                    <span t-field="company.partner_id.email"/>
-                    |
-                    <span t-field="company.partner_id.country_id.name"/>
-                </div>
-
-
-            </xpath>
-
-             <xpath expr="//div[@class='row']//div[1]" position='replace'>
-                 <div class="col-3 mb4">
-                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"  style="display:block; width: 160px;"  alt="Logo"/>
-                </div>
-             </xpath>
-        </template>
-
-        <template id="report_saleorder_document_aslt" inherit_id="sale.report_saleorder_document">
-            <xpath expr="//div[@id='informations']//div[1]" position='before'>
-                <div t-if="doc.branch_id.vat or doc.company_id.vat" class="col-auto mw-100 mb-2">
-                    <strong>VAT TRN No.:</strong>
-                    <p class="m-0" t-esc="doc.branch_id.vat or doc.company_id.vat"/>
-                </div>
-            </xpath>
-
-            <td name="td_amount_by_group_label" position="replace">
-                <td name="td_amount_by_group_label">(<span t-esc="doc.branch_id.vat or doc.company_id.vat"/>)
-                    <span t-esc="amount_by_group[0]"/>
-                </td>
-            </td>
-
-        </template>
-
-
     </data>
 </odoo>
