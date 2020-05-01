@@ -24,30 +24,30 @@
                     </xpath>
                     <xpath expr="//page[@name='accounting']" position="replace">
                         <page string="Invoicing" name="accounting" invisible="1">
-                        <group>
-                            <group string="Bank Accounts" name="banks" groups="account.group_account_invoice">
-                                <field name="bank_ids" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="bank_id"/>
-                                        <field name="acc_number"/>
-                                        <field name="acc_holder_name" invisible="1"/>
-                                    </tree>
-                                </field>
-                                <button type="action" class="btn-link"
-                                    name="%(base.action_res_partner_bank_account_form)d"
-                                    context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}"
-                                    string="View accounts detail"
-                                    colspan="2"
-                                />
+                            <group>
+                                <group string="Bank Accounts" name="banks" groups="account.group_account_invoice">
+                                    <field name="bank_ids" nolabel="1">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="bank_id"/>
+                                            <field name="acc_number"/>
+                                            <field name="acc_holder_name" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                    <button type="action" class="btn-link"
+                                            name="%(base.action_res_partner_bank_account_form)d"
+                                            context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}"
+                                            string="View accounts detail"
+                                            colspan="2"
+                                    />
+                                </group>
+                                <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_user">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="property_account_receivable_id"/>
+                                    <field name="property_account_payable_id"/>
+                                </group>
                             </group>
-                            <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_user">
-                                <field name="currency_id" invisible="1"/>
-                                <field name="property_account_receivable_id"/>
-                                <field name="property_account_payable_id"/>
-                            </group>
-                        </group>
-                    </page>
+                        </page>
                     </xpath>
 
                 </data>
@@ -62,6 +62,10 @@
                 <data>
                     <xpath expr="//field[@name='vat']" position="replace">
                         <field name="vat" invisible="1"/>
+                    </xpath>
+
+                    <xpath expr="//field[@name='phone']" position="attributes">
+                        <attribute name="required">1</attribute>
                     </xpath>
                     <xpath expr="//field[@name='mobile']" position="replace">
                         <field name="mobile" invisible="1" widget="phone"/>
@@ -80,6 +84,12 @@
                         <group name="purchase" string="Purchase" invisible="1">
                         </group>
                     </xpath>
+                    <xpath expr="//field[@name='child_ids']" position="attributes">
+                        <attribute name="context">{'default_parent_id': active_id, 'default_title': title, 'default_function': function, 'default_lang': lang, 'default_user_id': user_id, 'default_type': 'contact'}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='child_ids']//form//field[@name='mobile']" position="attributes">
+                        <attribute name="required">1</attribute>
+                    </xpath>
 
                 </data>
             </field>
@@ -92,15 +102,15 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <data>
-					<xpath expr="//field[@name='partner_id']" position="replace">
+                    <xpath expr="//field[@name='partner_id']" position="replace">
                         <field name="partner_list" invisible="1"/>
                         <field name="partner_id" widget="res_partner_many2one"
-                        	context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
-                        	domain="[('id','in',partner_list)]"
-                        	options='{"always_reload": True}'/>
+                               context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
+                               domain="[('id','in',partner_list)]"
+                               options='{"always_reload": True}'/>
                     </xpath>
 
-					<xpath expr="//field[@name='payment_term_id']" position="replace">
+                    <xpath expr="//field[@name='payment_term_id']" position="replace">
                         <field name="payment_term_id" options="{'no_open':True,'no_create': True}" required="1"/>
                     </xpath>
 
@@ -108,16 +118,34 @@
                         <field name="completion_time" required="1"/>
                     </xpath>
 
-                    <xpath expr="//field[@name='user_id']" position="attributes">
-                        <attribute name="readonly">1</attribute>
-                    </xpath>
-
                     <xpath expr="//field[@name='payment_term_id']" position="after">
                         <field string="Payment Methods" name="payment_methods" widget="selection"
                                groups="account.group_account_invoice" required="0"/>
-                        <field name="city"/>
+                        <field name="city" required="1"/>
                     </xpath>
+
+                    <xpath expr="//page[@name='other_information']//field[@name='require_signature']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+                    <xpath expr="//page[@name='other_information']//field[@name='require_payment']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+                    <xpath expr="//group[@name='sale_info']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+
                 </data>
+            </field>
+        </record>
+
+        <record id="slt_ext_sale_order_form_quote" model="ir.ui.view">
+            <field name="name">sale.order.form.payment</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_management.sale_order_form_quote"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='optional_products']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -130,11 +158,12 @@
             <field name="context">{'res_partner_search_mode': 'customer', 'default_is_company': True}</field>
             <field name="filter" eval="True"/>
             <field name="help" type="html">
-              <p class="o_view_nocontent_smiling_face">
-                Create a new customer in your address book
-              </p><p>
-                Odoo helps you easily track all activities related to a customer.
-              </p>
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new customer in your address book
+                </p>
+                <p>
+                    Odoo helps you easily track all activities related to a customer.
+                </p>
             </field>
         </record>
         <record id="action_partner_customer_form_view1" model="ir.actions.act_window.view">
@@ -157,9 +186,9 @@
         </record>
 
         <menuitem id="res_partner_menu"
-            parent="sale.sale_order_menu" name="All Customers"
-            action="action_partner_customer_form"
-            sequence="4" groups="base.group_erp_manager"/>
+                  parent="sale.sale_order_menu" name="All Customers"
+                  action="action_partner_customer_form"
+                  sequence="4" groups="base.group_erp_manager"/>
 
     </data>
 </odoo>
