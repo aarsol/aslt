@@ -36,14 +36,18 @@
                                 string="Register Payment" groups="account.group_account_invoice"/>
                     </xpath>
 
+                    <xpath expr="//field[@name='ref']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+
                     <xpath expr="//field[@name='date']" position="after">
                         <field name="invoice_state" invisible="1"/>
-                        <field name="bank_deposit_due_date" readonly="1"/>
+                        <field name="bank_deposit_due_date" invisible="1"/>
                         <field name="due_date" attrs="{'invisible': [('due_date', '=', False)]}"/>
                     </xpath>
 
                     <xpath expr="//field[@name='invoice_date']" position="after">
-                        <field name="completion_time"/>
+                        <field name="days_to_complete" readonly="1"/>
                     </xpath>
 
                     <!-- added required attribute -->
@@ -107,12 +111,19 @@
                             domain="[('invoice_state', '=', 'partial_paid')]"/>
                     <filter string="Needs Bank Deposit" name="need_bank_deposit"
                             domain="[('bank_deposit_due_date', '!=', False)]"/>
+                    <filter string="Liability Accept" name="marked_state_accept"
+                            domain="[('marked_state', '=', 'partial_paid')]"/>
+                    <filter string="Liability Cancel" name="marked_state_cancel"
+                            domain="[('marked_state', '=', 'cancel')]"/>
                 </xpath>
+
+                <!--Gourp by-->
                 <xpath expr="//filter[@name='salesperson']" position='after'>
                     <filter name="invoice_state" string="Payment Status" context="{'group_by':'invoice_state'}"/>
                     <filter name="bank_deposit_due_date" string="Bank Deposit Due Date"
                             context="{'group_by':'bank_deposit_due_date'}"
                             domain="[('bank_deposit_due_date', '!=', False)]"/>
+                    <filter name="marked_user_id" string="Transferred Liability" context="{'group_by':'marked_user_id'}"/>
                 </xpath>
 
             </field>
@@ -178,14 +189,12 @@
                                    options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
                                    attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
-                               		'required': [('payment_types', '=', 'cross_settlement')]
                                	}"/>
                             <field name="cross_invoice"
                                    options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
                                    domain="[('partner_id','=',cross_vendor),('type', '=', 'in_invoice')]"
                                    attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
-                               		'required': [('payment_types', '=', 'cross_settlement')]
                                	}"/>
                             <field name="cross_amount"
                                    attrs="{

@@ -129,6 +129,7 @@ class AccountMove(models.Model):
 
     due_date = fields.Date('Due Date')
     completion_time = fields.Datetime('Completion Time')
+    days_to_complete = fields.Integer('No of Days to Complete')
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date')
 
     marked_user_id = fields.Many2one('res.users', 'Transferred Liability')
@@ -211,12 +212,32 @@ class SaleOrder(models.Model):
         partner_list = [x.id for x in partners]
         return partner_list
 
+    def action_confirm(self):
+        if self._get_forbidden_state_confirm() & set(self.mapped('state')):
+            raise UserError(_(
+                'It is not allowed to confirm an order in the following states: %s'
+            ) % (', '.join(self._get_forbidden_state_confirm())))
+
+        for order in self.filtered(lambda order: order.partner_id not in order.message_partner_ids):
+            order.message_subscribe([order.partner_id.id])
+        self.write({
+            'state': 'sale',
+            'date_order': fields.Datetime.now()
+        })
+        self._action_confirm()
+        if self.env.user.has_group('sale.group_auto_done_setting'):
+            self.action_done()
+        invoice = self._create_invoices(final=True)
+        invoice.days_to_complete = self.days_to_complete
+        return self.action_view_invoice()
+
     partner_list = fields.Many2many('res.partner', default=_get_partner_domain)
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
     service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Written')], 'Service Type', default='one_way')
 
     completion_time = fields.Datetime('Completion Time')
+    days_to_complete = fields.Integer('No of Days to Complete')
     city = fields.Char('City')
 
     payment_methods = fields.Selection([
@@ -319,6 +340,7 @@ class Partner(models.Model):
         ('cash_over_counter', 'Cash Over The Counter'),
         ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
         string='Payment Methods')
+    additional_user_ids = fields.Many2many('res.users', 'sale_person_id', string='Additional Sales Person')
 
     @api.model_create_multi
     def create(self, vals_list):
