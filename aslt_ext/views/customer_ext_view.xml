@@ -9,10 +9,12 @@
             <field name="inherit_id" ref="account.view_partner_property_form"/>
             <field name="arch" type="xml">
                 <data>
+                    <xpath expr="//field[@name='property_payment_term_id']" position="before">
+                        <field name="additional_user_ids" widget="many2many_tags" domain="['id', '!=', user_id]"/>
+                    </xpath>
                     <xpath expr="//field[@name='property_payment_term_id']" position="replace">
                         <field string="Payment Terms" name="property_payment_term_id" widget="selection"
                                groups="account.group_account_invoice" required="1"/>
-
                     </xpath>
                     <xpath expr="//field[@name='property_payment_term_id']" position="after">
                         <field string="Payment Methods" name="payment_methods" widget="selection"
@@ -115,7 +117,7 @@
                     </xpath>
 
                     <xpath expr="//field[@name='date_order']" position="after">
-                        <field name="completion_time" required="1"/>
+                        <field name="days_to_complete" required="1"/>
                     </xpath>
 
                     <xpath expr="//field[@name='payment_term_id']" position="after">

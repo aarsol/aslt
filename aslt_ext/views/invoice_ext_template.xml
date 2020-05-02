@@ -35,6 +35,10 @@
             <div t-attf-class="header o_company_#{company.id}_layout">
                 <div class="row" style="height: auto; display: table;">
                     <div class="col-9" name="company_address" style="vertical-align:middle; display: table-cell;">
+                        <div t-field="company.name"/>
+                        <div style="">VAT TRN No.
+                            <span t-field="company.partner_id.vat"/>
+                        </div>
                         <div t-field="company.partner_id.street"/>
                         <div>
                             <span>
@@ -55,9 +59,6 @@
                     </div>
                     <div class="col-3 mb4 text-left" style="vertical-align:middle; display: table-cell;" t-field="company.report_header" name="moto">
                         <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="display:block; height: 100px;" alt="Logo"/>
-                        <div style="margin-left:25px;">VAT TRN No.
-                            <span t-field="company.partner_id.vat"/>
-                        </div>
                     </div>
                 </div>
                 <div t-if="company.logo or company.report_header" class="row zero_min_height">
@@ -108,8 +109,8 @@
         <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
             <xpath expr="//div[@id='informations']//div[1]" position='before'>
                 <div class="col-auto mw-100 mb-2">
-                    <strong>Completion Time:</strong>
-                    <p class="m-0" t-esc="o.completion_time" t-if="o.completion_time"/>
+                    <strong>Completion Days:</strong>
+                    <p class="m-0" t-esc="o.days_to_complete" t-if="o.days_to_complete"/>
                 </div>
             </xpath>
 
