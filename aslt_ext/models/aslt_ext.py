@@ -341,6 +341,7 @@ class Partner(models.Model):
         ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
         string='Payment Methods')
     additional_user_ids = fields.Many2many('res.users', 'sale_person_id', string='Additional Sales Person')
+    fax = fields.Char('Fax')
 
     @api.model_create_multi
     def create(self, vals_list):
