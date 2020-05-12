@@ -268,6 +268,10 @@
                             domain="[('bank_deposit_due_date', '!=', False)]"/>
                 </xpath>
 
+                <xpath expr="//field[@name='name']" position='before'>
+                    <field string="Sale Person Note" name="note_salesman"/>
+                </xpath>
+
             </field>
         </record>
 
