@@ -54,7 +54,6 @@ class account_payment(models.Model):
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
 
-
     @api.depends('journal_id')
     def _compute_saturday(self):
         for rec in self:
@@ -264,6 +263,8 @@ class AccountPaymentweekly(models.Model):
     amount = fields.Monetary(string="Amount",
                              currency_field='currency_id')
     invoice_ref = fields.Char('Bank Deposit Slip No')
+
+    note_salesman = fields.Char('Note By Salesmen')
     account_weekly_line_ids = fields.One2many('account.weekly.payment.line', 'account_weekly_id',
                                               string='Weekly Payment')
     attachment_ids = fields.Many2many('ir.attachment', string='Files', required=1, help='Attachments for the Payments.')
@@ -274,6 +275,12 @@ class AccountPaymentweekly(models.Model):
         default='draft')
 
     _sql_constraints = [('name_invoice_ref', 'UNIQUE (invoice_ref)', 'Bank Deposit Slip No Must be unique.')]
+
+    # def write(self, vals):
+    #     if vals.get('note_salesman', False):
+    #
+    #     res = super(AccountPaymentweekly, self).write(vals)
+    #     return res
 
     def action_approve(self):
         for rec in self:
@@ -291,9 +298,10 @@ class AccountPaymentweekly(models.Model):
                         if search_invoice:
                             search_invoice.update({'payment_state': 'done_paid'})
                     pay.payment_id.update({
-                        'invoice_ref': self.invoice_ref,
-                        'attachment_ids': self.attachment_ids,
-                        'need_bank_deposit': False
+                        'invoice_ref': rec.invoice_ref,
+                        'attachment_ids': rec.attachment_ids,
+                        'need_bank_deposit': False,
+                        'note_salesman': rec.note_salesman,
                     })
                 # for inv in rec.account_weekly_line_ids:
                 #     inv.move_id.update({'payment_state': 'done_paid'})
