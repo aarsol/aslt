@@ -54,6 +54,7 @@ class account_payment(models.Model):
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
 
+
     @api.depends('journal_id')
     def _compute_saturday(self):
         for rec in self:
