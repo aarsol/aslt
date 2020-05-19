@@ -143,6 +143,8 @@
             </field>
         </record>
 
+
+
         <record id="slt_ext_sale_order_form_quote" model="ir.ui.view">
             <field name="name">sale.order.form.payment</field>
             <field name="model">sale.order</field>
@@ -154,12 +156,29 @@
             </field>
         </record>
 
+        <record id="base.action_partner_form" model="ir.actions.act_window">
+            <field name="name">Customers</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'res_partner_search_mode': 'customer'}</field>
+            <field name="domain">[('type','=','invoice')]</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new customer in your address book
+              </p><p>
+                Odoo helps you easily track all activities related to a customer.
+              </p>
+            </field>
+        </record>
+
         <record id="action_partner_customer_form" model="ir.actions.act_window">
             <field name="name">All Customers</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="domain">[]</field>
+            <field name="domain">[('type','=','invoice')]</field>
             <field name="context">{'res_partner_search_mode': 'customer', 'default_is_company': True}</field>
             <field name="filter" eval="True"/>
             <field name="help" type="html">
