@@ -265,7 +265,7 @@ class AccountPaymentweekly(models.Model):
                              currency_field='currency_id')
     invoice_ref = fields.Char('Bank Deposit Slip No')
 
-    note_salesman = fields.Char('Note By Salesmen')
+    note_accountant = fields.Char('Note By Accountant')
     account_weekly_line_ids = fields.One2many('account.weekly.payment.line', 'account_weekly_id',
                                               string='Weekly Payment')
     attachment_ids = fields.Many2many('ir.attachment', string='Files', required=1, help='Attachments for the Payments.')
@@ -276,12 +276,6 @@ class AccountPaymentweekly(models.Model):
         default='draft')
 
     _sql_constraints = [('name_invoice_ref', 'UNIQUE (invoice_ref)', 'Bank Deposit Slip No Must be unique.')]
-
-    # def write(self, vals):
-    #     if vals.get('note_salesman', False):
-    #
-    #     res = super(AccountPaymentweekly, self).write(vals)
-    #     return res
 
     def action_approve(self):
         for rec in self:
@@ -302,7 +296,7 @@ class AccountPaymentweekly(models.Model):
                         'invoice_ref': rec.invoice_ref,
                         'attachment_ids': rec.attachment_ids,
                         'need_bank_deposit': False,
-                        'note_salesman': rec.note_salesman,
+                        'note_accountant': rec.note_accountant,
                     })
                 # for inv in rec.account_weekly_line_ids:
                 #     inv.move_id.update({'payment_state': 'done_paid'})
