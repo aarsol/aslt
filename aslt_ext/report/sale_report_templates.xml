@@ -22,6 +22,15 @@
             </td>
         </xpath>
 
+        <xpath expr="th[@name = 'th_description']" position='before'>
+            <th name="th_product_name" class="text-left"><span>Code</span></th>
+        </xpath>
+
+        <xpath expr="td[@name = 'td_name']" position='before'>
+             <td name="product_name"><span t-field="line.product_id.name" t-options="{'widget': 'text'}" t-if="line.product_id"/></td>
+        </xpath>
+
+
         <xpath expr="//div[@class='page']//p[2]" position='replace'>
             <span t-esc="doc.branch_id.other_details" t-options='{"widget": "html"}' t-if="doc.branch_id"/>
         </xpath>
