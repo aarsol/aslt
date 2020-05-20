@@ -21,7 +21,7 @@
         <field name="model">account.weekly.payment</field>
         <field name="arch" type="xml">
             <search string="Weekly Payments">
-                <field name="note_salesman" />
+                <field name="note_accountant" />
             </search>
         </field>
     </record>
@@ -31,7 +31,8 @@
             <field name="arch" type="xml">
                 <form string="Weekly Payment">
                      <header>
-                        <button name='action_approve' string="Approve" type="object" class='oe_highlight' states="draft"/>
+                        <button name='action_approve' string="Approve" type="object" class='oe_highlight'
+                            groups="account.group_account_manager" states="draft"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -42,7 +43,7 @@
                          <group col="4">
 
                             <field name="amount" required="1"/>
-                             <field name="note_salesman"/>
+                             <field name="note_accountant"/>
                             <field name="attachment_ids"  widget="many2many_binary" colspan="2" string="Select Files" nolabel="1"/>
                         </group>
                         <notebook>
