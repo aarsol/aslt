@@ -56,12 +56,19 @@
             </field>
         </record>
 
+
         <record id="aslt_ext_view_partner_form" model="ir.ui.view">
             <field name="name">res.partner.Form</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <data>
+                    <field name="type" position="replace">
+                         <field name="type" groups="base.group_user" />
+                        <!-- attrs="{'invisible': [('is_company','=', True)], 'readonly': [('user_ids', '!=', [])]}" -->
+
+                    </field>
+
                     <xpath expr="//field[@name='vat']" position="replace">
                         <field name="vat" invisible="1"/>
                     </xpath>
