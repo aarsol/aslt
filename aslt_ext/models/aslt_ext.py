@@ -251,14 +251,14 @@ class SaleOrder(models.Model):
 
     def _get_partner_domain(self):
         if self.env.user.id < 3:
-            domain = [(1, '=', 1)]
+            domain = [('type', '=', 'invoice'), ]
         else:
-            domain = [('user_id', '=', self.env.user.id)]
+            domain = [('type', '=', 'invoice'), '|', ('additional_user_ids', 'in', self.env.user.id), ('user_id', '=', self.env.user.id)]
             # domain = ['|', '|',
             #     ('user_id', '=', self.env.user.id),
             #     '&', ('user_id', '=', False), ('branch_id', '=', self.env.user.branch_id.id),
             #     '&', ('user_id', '=', False), ('branch_id', '=', False)]
-
+    
         partners = self.env['res.partner'].search(domain)
         partner_list = [x.id for x in partners]
         return partner_list
