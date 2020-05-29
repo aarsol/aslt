@@ -111,6 +111,57 @@ class account_payment(models.Model):
         return True
 
 
+class account_payment_register(models.TransientModel):
+    _inherit = 'account.payment.register'
+
+    payment_types = fields.Selection(related='journal_id.payment_types', selection=[
+        ('paypall', 'Pay Pall'), ('pos_machine', 'Pos Machine'),
+        ('cheque', 'Cheque'), ('exchange_company', 'Exchange Company'), ('cross_settlement', 'Cross Settlement'),
+        ('online_credit_card', 'Online Credit Card')
+    ], string='Payment Type', tracking=True)
+    due_date = fields.Date(string='Due Date', default=fields.Date.context_today, required=True, readonly=True,
+                           states={'draft': [('readonly', False)]}, copy=False, tracking=True)
+
+    journal_type = fields.Selection(related='journal_id.type', selection=[
+        ('cash', 'Cash'), ('sale', 'Sale'), ('bank', 'Bank'), ('general', 'Miscellaneous'), ('purchase', 'Purchase')
+    ], string='Journal Type', tracking=True)
+
+    invoice_ref = fields.Char('Invoice Reference')
+    attachment_ids = fields.Many2many('ir.attachment', string='Files', help='Attachments for the Payments.')
+
+    cheque_no = fields.Char('Cheque No')
+    cheque_date = fields.Date('Cheque Date')
+
+    # cross_vendor = fields.Many2one('res.partner', string='Vendor Name')
+    # cross_invoice = fields.Many2one('account.move', string='Invoice No')
+    # cross_amount = fields.Monetary(related='cross_invoice.amount_total', string='Invoice Amount')
+
+    exchange_company_id = fields.Many2one('exchange.company', string='Exchange Company')
+    receiver_name = fields.Char('Receiver Name')
+    exchange_receipt_no = fields.Char('Receipt No')
+
+    approval_code = fields.Char('Approval Code')
+    transaction_id = fields.Char('Transaction ID')
+    reference_cc = fields.Char('Reference No')
+
+    note_salesman = fields.Char('Note By Salesmen')
+    note_accountant = fields.Char('Note By Accountant')
+
+    bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
+    need_bank_deposit = fields.Boolean(default=False)
+
+    @api.depends('journal_id')
+    def _compute_saturday(self):
+        for rec in self:
+            rec.bank_deposit_due_date = False
+            if rec.journal_id.type == 'cash':
+                today = date.today()
+                rec.bank_deposit_due_date = today + timedelta((5 - today.weekday()) % 7)
+                rec.need_bank_deposit = True
+            # else:
+            #     rec.need_bank_deposit = False
+
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 

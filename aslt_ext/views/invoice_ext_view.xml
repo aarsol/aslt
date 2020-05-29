@@ -129,6 +129,97 @@
             </field>
         </record>
 
+        <record id="aslt_ext_view_account_payment_form_multi" model="ir.ui.view">
+            <field name="name">account.payment.multu.form.inherit</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_form_multi"/>
+            <field name="arch" type="xml">
+                <data>
+                    <field name="payment_date" position="after">
+                        <field name="note_accountant"/>
+                    </field>
+                    <xpath expr="//group" position="inside">
+                        <group name="note">
+                            <field name="journal_type" invisible="1"/>
+                            <field name="payment_types" invisible="1"/>
+                            <field name="need_bank_deposit" invisible="1"/>
+
+                            <field name="note_salesman"/>
+                            <field name="invoice_ref"/>
+                            <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files"
+                                   nolabel="1"/>
+                        </group>
+
+                        <group name="other_info">
+                            <field name="cheque_no"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'cheque')],
+                                	'required': [('payment_types', '=', 'cheque')]
+                                }"/>
+                            <field name="cheque_date"
+                                   attrs="{
+                            		'invisible': [('payment_types', '!=', 'cheque')],
+                            		'required': [('payment_types', '=', 'cheque')]
+                            	}"/>
+
+                            <field name="approval_code"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'pos_machine')],
+                            		'required': [('payment_types', '=', 'pos_machine')]
+                            	}"/>
+
+                            <field name="transaction_id"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'paypall')],
+                            		'required': [('payment_types', '=', 'paypall')]
+                            	}"/>
+
+                            <field name="reference_cc"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'online_credit_card')],
+                            		'required': [('payment_types', '=', 'online_credit_card')]
+                            	}"/>
+
+<!--                            <field name="cross_vendor"-->
+<!--                                   domain="[('supplier_rank','!=','0')]"-->
+<!--                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"-->
+<!--                                   attrs="{-->
+<!--                               		'invisible': [('payment_types', '!=', 'cross_settlement')],-->
+<!--                               	}"/>-->
+<!--                            <field name="cross_invoice"-->
+<!--                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"-->
+<!--                                   domain="[('partner_id','=',cross_vendor),('type', '=', 'in_invoice')]"-->
+<!--                                   attrs="{-->
+<!--                               		'invisible': [('payment_types', '!=', 'cross_settlement')],-->
+<!--                               	}"/>-->
+<!--                            <field name="cross_amount"-->
+<!--                                   attrs="{-->
+<!--                               		'invisible': [('payment_types', '!=', 'cross_settlement')],-->
+<!--                               		'required': [('payment_types', '=', 'cross_settlement')]-->
+<!--                               	}"/>-->
+
+                            <field name="exchange_company_id"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'exchange_company')],
+                                   	'required': [('payment_types', '=', 'exchange_company')]
+                                }"/>
+                            <field name="receiver_name"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'exchange_company')],
+                                   	'required': [('payment_types', '=', 'exchange_company')]
+                                }"/>
+                            <field name="exchange_receipt_no"
+                                   attrs="{
+                                	'invisible': [('payment_types', '!=', 'exchange_company')],
+                                   	'required': [('payment_types', '=', 'exchange_company')]
+                                }"/>
+                            <field name="bank_deposit_due_date"
+                                   attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
+                        </group>
+                    </xpath>
+                </data>
+            </field>
+        </record>
 
         <!-- ************ Account Payment *************** -->
 
