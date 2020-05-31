@@ -31,6 +31,7 @@
                 <t t-raw="0"/>
             </t>
         </template>
+
         <template id="web.external_layout_standard">
             <div t-attf-class="header o_company_#{company.id}_layout">
                 <div class="row" style="height: auto; display: table;">
@@ -107,6 +108,10 @@
         </template>
 
         <template id="aslt_ext_report_invoice_document" inherit_id="account.report_invoice_document">
+            <span t-if="o.type == 'out_invoice' and o.state == 'posted'" position="replace">
+                <span t-if="o.type == 'out_invoice' and o.state == 'posted'">Tax Invoice</span>
+            </span>
+
             <xpath expr="//div[@id='informations']//div[1]" position='before'>
                 <div class="col-auto mw-100 mb-2">
                     <strong>Completion Days:</strong>

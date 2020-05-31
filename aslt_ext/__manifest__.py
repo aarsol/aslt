@@ -27,7 +27,8 @@
         'views/sale_portal_templates.xml',
 
         'wizard/merge_customer_wiz.xml',
-
+        'wizard/invoice_rate_wiz.xml',
+        
         'report/sale_report_templates.xml',
         'data/invoice_mail_template.xml',
 
