@@ -195,7 +195,8 @@ class AccountMove(models.Model):
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
     service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Return')], 'Service Type', default='one_way')
-
+    invoice_rate = fields.Selection([('low','Low Rate'),('high','High Rate')],'Invoice Rate',default='low')
+    
     def _compute_payment_ids(self):
         for rec in self:
             rec.payment_count = False
