@@ -11,6 +11,7 @@
                         <field name="invoice_state" optional="show"/>
                         <field name="payment_state" optional="show" attrs="{'invisible': [('payment_state', '!=', 'cash_paid')]}"/>
                         <field name="invoice_rate" optional="hide" groups="account.group_account_manager"/>
+                        <field name="invoice_count" optional="show"/>
                     </xpath>
                     <xpath expr="//field[@name='invoice_user_id']" position="after">
                         <field name="marked_user_id" optional="hide"/>
@@ -41,6 +42,14 @@
                         <attribute name="invisible">1</attribute>
                     </xpath>
 
+                    <field name="invoice_vendor_bill_id" position="after">
+                        <field name="invoice_sale_id"
+                           attrs="{'invisible': [('type', '!=', 'in_invoice')]}"
+                           domain="[('type', '=', 'out_invoice')]"
+                           string="Linked Sale Invoice" placeholder="Select an Customer Invoice"
+                           options="{'no_create': True}" context="{'show_total_amount': True}"/>
+                    </field>
+
                     <xpath expr="//field[@name='date']" position="after">
                         <field name="invoice_state" invisible="1"/>
                         <field name="bank_deposit_due_date" invisible="1"/>
@@ -48,7 +57,8 @@
                     </xpath>
 
                     <xpath expr="//field[@name='invoice_date']" position="after">
-                        <field name="days_to_complete" readonly="1"/>
+                        <field name="days_to_complete" readonly="1"
+                            attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_receipt'))]}"/>
                     </xpath>
 
                     <label for="invoice_payment_term_id" position="replace">
@@ -81,7 +91,8 @@
                     </xpath>
 
                     <xpath expr="//page[@name='other_info']" position="before">
-                        <page id="transfer_liability_info" string="Transfer Liability" name="transfer_liability_info">
+                        <page id="transfer_liability_info" string="Transfer Liability" name="transfer_liability_info"
+                            attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_receipt'))]}">
                             <group id="transfer_tab_group">
                                 <group string="Transfer Liability  Details" name="marked_sale_info_group">
                                     <field name="marked_user_id"
