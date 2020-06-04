@@ -196,7 +196,19 @@ class AccountMove(models.Model):
     tracking_no = fields.Char('Tracking No')
     service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Return')], 'Service Type', default='one_way')
     invoice_rate = fields.Selection([('low','Low Rate'),('high','High Rate')],'Invoice Rate',default='low')
+    invoice_sale_id = fields.Many2one('account.move','Linked Sale Invoice')
+    invoice_count = fields.Integer('Count',compute="_compute_inv_count",store=True)
     
+    def unlink(self):
+        if not self.env.user.has_group('account.group_account_manager'):
+            raise UserError(_("Only Accounts Manager the delete the Entry"))
+        return super(AccountMove, self).unlink()
+    
+    @api.depends('partner_id','partner_id.invoice_ids')
+    def _compute_inv_count(self):
+        for rec in self:
+            rec.invoice_count = len(rec.partner_id.invoice_ids)
+            
     def _compute_payment_ids(self):
         for rec in self:
             rec.payment_count = False
