@@ -4,7 +4,6 @@ from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, emai
 from datetime import datetime, date, timedelta
 import pdb
 
-
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
@@ -346,14 +345,14 @@ class AccountPaymentweekly(models.Model):
             total_amount = 0
             for line in rec.account_weekly_line_ids:
                 total_amount += line.amount
-            if total_amount == rec.amount:
 
+            if float_is_zero(total_amount - rec.amount, precision_rounding=1):
                 for pay in rec.account_weekly_line_ids:
-                    search_invoice = self.env['account.move'].search([('name', '=', pay.payment_id.communication)])
+                    search_invoice = self.env['account.move'].sudo().search([('name', '=', pay.payment_id.communication)])
                     if search_invoice:
                         search_invoice.update({'payment_state': 'done_paid'})
                     else:
-                        search_invoice = self.env['account.move'].search([('ref', '=', pay.payment_id.communication)])
+                        search_invoice = self.env['account.move'].sudo().search([('ref', '=', pay.payment_id.communication)])
                         if search_invoice:
                             search_invoice.update({'payment_state': 'done_paid'})
                     pay.payment_id.update({
@@ -362,6 +361,7 @@ class AccountPaymentweekly(models.Model):
                         'need_bank_deposit': False,
                         'note_accountant': rec.note_accountant,
                     })
+                    pay.payment_id.post()
                 # for inv in rec.account_weekly_line_ids:
                 #     inv.move_id.update({'payment_state': 'done_paid'})
                 #     search_payment = self.env['account.payment'].search([('communication', '=', inv.move_id.name)])
