@@ -327,7 +327,8 @@ class AccountPaymentweekly(models.Model):
     amount = fields.Monetary(string="Amount",
                              currency_field='currency_id')
     invoice_ref = fields.Char('Bank Deposit Slip No')
-
+    journal_id = fields.Many2one('account.journal','Bank Journal')
+    
     note_accountant = fields.Char('Note By Accountant')
     account_weekly_line_ids = fields.One2many('account.weekly.payment.line', 'account_weekly_id',
                                               string='Weekly Payment')
@@ -361,13 +362,28 @@ class AccountPaymentweekly(models.Model):
                         'need_bank_deposit': False,
                         'note_accountant': rec.note_accountant,
                     })
-                    pay.payment_id.post()
+                    if pay.payment_id.state == 'draft':
+                        pay.payment_id.post()
                 # for inv in rec.account_weekly_line_ids:
                 #     inv.move_id.update({'payment_state': 'done_paid'})
                 #     search_payment = self.env['account.payment'].search([('communication', '=', inv.move_id.name)])
                 #     for pay in search_payment:
                 #         pay.update({'invoice_ref': self.invoice_ref, 'attachment_ids': self.attachment_ids})
                 self.update({'state': 'approve'})
+                data = {
+                    'payment_type': 'transfer',
+                    'destination_journal_id': self.journal_id.id,
+                    'state': 'draft',
+                    'payment_method_id': 2,
+                    'currency_id': 131,
+                    'payment_date': self.date,
+                    'amount': self.amount,
+                    'journal_id': 6,
+                    'bank_deposit_due_date': False,
+                    'need_bank_deposit': False,
+                }
+                payment = self.env['account.payment'].create(data)
+                payment.post()
             else:
                 raise UserError(_('Amount must be equal to sum of total Receipt Amount ! '))
 
