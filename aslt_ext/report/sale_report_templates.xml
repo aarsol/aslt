@@ -1,6 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_saleorder_document_aslt" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//t[@t-set='address']" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='page']" position="before">
+            <div class="row" style="">
+                <div class="col-12 mb4 text-center" name="moto">
+                    <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>
+                </div>
+            </div>
+            <p style="font-weight:bold; text-align:center; font-size:20px">
+                <span>Order</span>
+            </p>
+            <div class="row" style="" t-if="doc.branch_id">
+                <div class="col-6" name="company_address" style="font-size:14px">
+                    <div style="font-weight:bold">From:</div>
+                    <div t-field="doc.branch_id.name"/>
+                    <div style="">VAT TRN No.
+                        <span t-field="doc.branch_id.vat"/>
+                    </div>
+                    <div t-field="doc.branch_id.street"/>
+                    <div>
+                        <span>
+                            <span t-field="doc.branch_id.phone"/>
+                            |
+                            <span t-field="doc.branch_id.email"/>
+                            |
+                            <span t-field="doc.branch_id.city"/>
+                            <span t-field="doc.branch_id.state_id.name"/>
+                        </span>
+                    </div>
+                    <div>
+                        <span t-field="doc.branch_id.zip"/>
+                    </div>
+                    <div>
+                        <span t-field="doc.branch_id.country_id.name"/>
+                    </div>
+                </div>
+                <div class="col-6" name="customer_address" style="font-size:14px">
+                    <div style="font-weight:bold">To:</div>
+                    <div t-field="doc.partner_id.name"/>
+                    <div style="">VAT TRN No.
+                        <span t-field="doc.partner_id.vat"/>
+                    </div>
+                    <div t-field="doc.partner_id.street"/>
+                    <div>
+                        <span>
+                            <span t-field="doc.partner_id.phone"/>
+                            |
+                            <span t-field="doc.partner_id.city"/>
+                            <span t-field="doc.partner_id.state_id.name"/>
+                        </span>
+                    </div>
+                    <div>
+                        <span t-field="doc.partner_id.zip"/>
+                    </div>
+                    <div>
+                        <span t-field="doc.partner_id.country_id.name"/>
+                    </div>
+                </div>
+            </div>
+            <div t-if="doc.branch_id.logo or doc.branch_id.report_header" class="row zero_min_height">
+                <div class="col-12">
+                    <div style="border-bottom: 1px solid black;"/>
+                </div>
+            </div>
+        </xpath>
+
         <xpath expr="//div[@id='informations']//div[1]" position='before'>
             <div t-if="doc.branch_id.vat or doc.company_id.vat" class="col-auto mw-100 mb-2">
                 <strong>Completion Days:</strong>
@@ -23,11 +89,15 @@
         </xpath>
 
         <xpath expr="//th[@name = 'th_description']" position='before'>
-            <th name="th_product_name" class="text-left"><span>Code</span></th>
+            <th name="th_product_name" class="text-left">
+                <span>Code</span>
+            </th>
         </xpath>
 
         <xpath expr="//td[@name = 'td_name']" position='before'>
-             <td name="product_name"><span t-field="line.product_id.name" t-options="{'widget': 'text'}" t-if="line.product_id"/></td>
+            <td name="product_name">
+                <span t-field="line.product_id.name" t-options="{'widget': 'text'}" t-if="line.product_id"/>
+            </td>
         </xpath>
 
         <xpath expr="//div[@class='page']//p[2]" position='replace'>
