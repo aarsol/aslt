@@ -1,0 +1,106 @@
+<odoo>
+
+    <template id="aslt_ext.invoice_wise_profit_report">
+        <t t-call="web.basic_layout">
+            <style>
+                #invoice_report {
+                font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+
+                }
+
+                #invoice_report td, #invoice_report th {
+                border: 1px solid #ddd;
+                padding: 8px;
+                }
+
+                #invoice_report tr:nth-child(even){background-color: #f2f2f2;}
+
+                #invoice_report tr:hover {background-color: #ddd;}
+
+                #invoice_report th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #A9A9A9;
+                color: white;
+                }
+            </style>
+
+            <div class="page" style="font-size: 16px; padding:10px ">
+                <div class="row">
+                    <div class="col-12">
+                        <img style="display:block; margin:auto; width:300px" t-if="branch.logo" t-att-src="image_data_uri(branch.logo)" alt="Logo"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12" style="text-align:center; font-weight:bold; font-size:25px; text-transform: uppercase; text-decoration: underline;">
+                        <span style="display:block;" t-esc="branch.name"/>
+                        <span style="display:block;" t-esc="branch.street"/>
+                        <span t-esc="branch.street2"/>
+                        <span t-esc="branch.city"/>
+                        <span style="display:block; font-size:16px" t-esc="branch.country_id.name" t-if="branch.country_id"/>
+                    </div>
+                </div>
+                <p style="font-size:25px; font-weight:bold">Invoice Wise Profit:</p>
+                <table id="invoice_report">
+                    <tr>
+                        <th style="width:10%">Sr.No</th>
+                        <th name="student_id" style="width:15%">Bill Number</th>
+                        <th style="width:15%">Vendor</th>
+                        <th style="text-align:center; width:10%">Amount</th>
+                        <th style="width:15%">Invoice No</th>
+                        <th style="text-align:center; width:15%">Customer</th>
+                        <th style="text-align:center; width:10%">Amount</th>
+                        <th style="text-align:center; width:10%">Difference</th>
+                    </tr>
+                    <t t-foreach="sale_orders" t-as="rec">
+                        <t t-set="difference" t-value="rec.amount_total"/>
+                        <t t-if="rec.invoice_sale_id">
+                            <t t-set="difference" t-value="rec.invoice_sale_id.amount_total-rec.amount_total"/>
+                        </t>
+                        <t t-set="currency" t-value="rec.currency_id.name"/>
+                        <tr style="font-size:16px;">
+                            <td>
+                                <span t-esc="rec_index+1"/>
+                            </td>
+                            <td>
+                                <span t-esc="rec.name"/>
+                            </td>
+                            <td>
+                                <span t-esc="rec.partner_id.name"/>
+                            </td>
+                            <td style="text-align:center">
+                                <span t-esc="rec.amount_total" t-options='{"widget": "float", "precision": 2}'/>
+                                <span t-esc="currency"/>
+                            </td>
+                            <td>
+                                <span t-esc="rec.invoice_sale_id.name" t-if="rec.invoice_sale_id"/>
+                            </td>
+                            <td>
+                                <span t-esc="rec.invoice_sale_id.partner_id.name" t-if="rec.invoice_sale_id"/>
+                            </td>
+                            <td style="text-align:center">
+                                <span t-esc="rec.invoice_sale_id.amount_total" t-if="rec.invoice_sale_id" t-options='{"widget": "float", "precision": 2}'/>
+                                <span t-esc="currency"/>
+                            </td>
+                            <td style="text-align:center;font-weight:bold">
+                                <span t-esc="difference" t-options='{"widget": "float", "precision": 2}'/>
+                                <span t-esc="currency"/>
+                            </td>
+                        </tr>
+                    </t>
+                </table>
+                <p style="margin:100px; text-align:center" t-if="date_from">
+                    (From-
+                    <t t-esc="date_from"/>
+                     -To-
+                    <t t-esc="date_to"/>
+                    entries only)
+                </p>
+            </div>
+        </t>
+    </template>
+
+</odoo>

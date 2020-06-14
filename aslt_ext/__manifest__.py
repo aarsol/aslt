@@ -28,8 +28,12 @@
 
         'wizard/merge_customer_wiz.xml',
         'wizard/invoice_rate_wiz.xml',
-        
-        'report/sale_report_templates.xml',
+        'wizard/invoice_wise_profit_wiz.xml',
+
+        'reports/reports.xml',
+        'reports/sale_report_templates.xml',
+        'reports/invoice_wise_report.xml',
+
         'data/invoice_mail_template.xml',
 
     ],

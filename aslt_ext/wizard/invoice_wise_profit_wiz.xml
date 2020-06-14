@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_invoice_wise_profit_wiz" model="ir.ui.view">
+            <field name="name">aslt.invoice.wise.profit.wiz.form</field>
+            <field name="model">aslt.invoice.wise.profit.wiz</field>
+            <field name="arch" type="xml">
+                <form string="Invoice Wise Profit">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="print_report" string="Print Report" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_invoice_wise_profit_wiz" model="ir.actions.act_window">
+            <field name="name">Invoice Wise Profit</field>
+            <field name="res_model">aslt.invoice.wise.profit.wiz</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_invoice_wise_profit"
+                name="Invoice Wise Profit"
+                parent="account.menu_finance_reports"
+                action="aslt_ext.action_invoice_wise_profit_wiz"
+                groups="account.group_account_user"
+                sequence="10"
+        />
+
+    </data>
+</odoo>
