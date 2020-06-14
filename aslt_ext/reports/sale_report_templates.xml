@@ -4,7 +4,7 @@
         <xpath expr="//t[@t-set='address']" position="replace">
         </xpath>
         <xpath expr="//div[@class='page']" position="before">
-            <div class="row" style="">
+            <div class="row" style="margin-top:-20px">
                 <div class="col-12 mb4 text-center" name="moto">
                     <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>
                 </div>
@@ -13,7 +13,7 @@
                 <span>Order</span>
             </p>
             <div class="row" style="" t-if="doc.branch_id">
-                <div class="col-6" name="company_address" style="font-size:14px">
+                <div class="col-8" name="company_address" style="font-size:16px">
                     <div style="font-weight:bold">From:</div>
                     <div t-field="doc.branch_id.name"/>
                     <div style="">VAT TRN No.
@@ -37,7 +37,7 @@
                         <span t-field="doc.branch_id.country_id.name"/>
                     </div>
                 </div>
-                <div class="col-6" name="customer_address" style="font-size:14px">
+                <div class="col-4" name="customer_address" style="font-size:16px">
                     <div style="font-weight:bold">To:</div>
                     <div t-field="doc.partner_id.name"/>
                     <div style="">VAT TRN No.
