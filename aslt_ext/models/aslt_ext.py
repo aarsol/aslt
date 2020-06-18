@@ -425,15 +425,6 @@ class Partner(models.Model):
         string='Payment Methods')
     additional_user_ids = fields.Many2many('res.users', 'sale_person_id', string='Additional Sales Person')
     fax = fields.Char('Fax')
-    type = fields.Selection(
-        [('contact', 'Contact'),
-         ('invoice', 'Invoice Address'),
-         ('delivery', 'Delivery Address'),
-         ('other', 'Other Address'),
-         ("private", "Private Address"),
-         ], string='Address Type',
-        default='invoice',
-        help="Invoice & Delivery addresses are used in sales orders. Private addresses are only visible by authorized users.")
 
     @api.model_create_multi
     def create(self, vals_list):

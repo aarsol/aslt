@@ -29,12 +29,12 @@
             </style>
 
             <div class="page" style="font-size: 16px; padding:10px ">
-                <div class="row">
+                <div class="row" t-if="branch">
                     <div class="col-12">
                         <img style="display:block; margin:auto; width:300px" t-if="branch.logo" t-att-src="image_data_uri(branch.logo)" alt="Logo"/>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" t-if="branch">
                     <div class="col-12" style="text-align:center; font-weight:bold; font-size:25px; text-transform: uppercase; text-decoration: underline;">
                         <span style="display:block;" t-esc="branch.name"/>
                         <span style="display:block;" t-esc="branch.street"/>

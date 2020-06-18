@@ -4,12 +4,12 @@
         <xpath expr="//t[@t-set='address']" position="replace">
         </xpath>
         <xpath expr="//div[@class='page']" position="before">
-            <div class="row" style="margin-top:-20px">
+            <div class="row" style="margin-top:-15px" t-if="doc.branch_id and doc.branch_id.logo">
                 <div class="col-12 mb4 text-center" name="moto">
                     <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>
                 </div>
             </div>
-            <p style="font-weight:bold; text-align:center; font-size:20px">
+            <p style="text-align:center; font-size:33px">
                 <span>Order</span>
             </p>
             <div class="row" style="" t-if="doc.branch_id">
@@ -40,7 +40,7 @@
                 <div class="col-4" name="customer_address" style="font-size:16px">
                     <div style="font-weight:bold">To:</div>
                     <div t-field="doc.partner_id.name"/>
-                    <div style="">VAT TRN No.
+                    <div style="" t-if="doc.partner_id.vat">VAT TRN No.
                         <span t-field="doc.partner_id.vat"/>
                     </div>
                     <div t-field="doc.partner_id.street"/>
@@ -101,7 +101,7 @@
         </xpath>
 
         <xpath expr="//div[@class='page']//p[2]" position='replace'>
-            <span t-esc="doc.branch_id.other_details" t-options='{"widget": "html"}' t-if="doc.branch_id"/>
+            <span style="font-size:14px" t-esc="doc.branch_id.other_details" t-options='{"widget": "html"}' t-if="doc.branch_id"/>
         </xpath>
 
     </template>

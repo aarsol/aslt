@@ -137,12 +137,12 @@
                 <span t-if="o.type == 'out_invoice' and o.state == 'posted'">Tax Invoice</span>
             </span>-->
             <xpath expr="//div[@class='page']" position='before'>
-                 <div class="row" style="margin-top:-20px">
+                 <div class="row" style="margin-top:-20px" t-if="o.branch_id and o.branch_id.logo">
                     <div class="col-12 mb4 text-center"  name="moto">
                         <img t-if="o.branch_id.logo" t-att-src="image_data_uri(o.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>
                     </div>
                 </div>
-                <p style="font-weight:bold; text-align:center; font-size:20px">
+                <p style="text-align:center; font-size:28px">
                     <span t-if="o.type == 'out_invoice' and o.state == 'posted'">TAX INVOICE</span>
                     <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice</span>
                     <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
@@ -178,7 +178,7 @@
                     <div class="col-4" name="customer_address" style="font-size:16px">
                         <div style="font-weight:bold">To:</div>
                         <div t-field="o.partner_id.name"/>
-                        <div style="">VAT TRN No.
+                        <div style="" t-if="o.partner_id.vat">VAT TRN No.
                             <span t-field="o.partner_id.vat"/>
                         </div>
                         <div t-field="o.partner_id.street"/>
@@ -249,7 +249,7 @@
                 <span></span>
             </xpath>
             <xpath expr="//div[@class='page']/p[3]" position='replace'>
-                <span t-esc="o.branch_id.other_details" t-options='{"widget": "html"}'/>
+                <span style="font-size:14px" t-esc="o.branch_id.other_details" t-options='{"widget": "html"}'/>
             </xpath>
 
             <xpath expr="//div[@id='total']//table[1]/t" position='replace'>

@@ -36,7 +36,7 @@ class InvoiceWiseProfitReport(models.AbstractModel):
             'doc_model': report.model,
             'data': data['form'],
             'sale_orders': sale_orders or False,
-            'branch': current_user.branch_id or False,
+            'branch': current_user.company_id or current_user.branch_id or False,
             'date_from': date_from or False,
             'date_to': date_to or False,
             # 'company': current_user.company_id or False,
