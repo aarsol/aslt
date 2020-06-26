@@ -197,6 +197,7 @@ class AccountMove(models.Model):
     invoice_rate = fields.Selection([('low','Low Rate'),('high','High Rate')],'Invoice Rate',default='low')
     invoice_sale_id = fields.Many2one('account.move','Linked Sale Invoice')
     invoice_count = fields.Integer('Count',compute="_compute_inv_count",store=True)
+    doorstep = fields.Boolean('DoorStep?', default=False)
     
     def unlink(self):
         if not self.env.user.has_group('account.group_account_manager'):
@@ -291,7 +292,10 @@ class SaleOrder(models.Model):
         if self.env.user.has_group('sale.group_auto_done_setting'):
             self.action_done()
         invoice = self._create_invoices(final=True)
-        invoice.days_to_complete = self.days_to_complete
+        invoice.write({
+            'doorstep': self.doorstep,
+            'days_to_complete': self.days_to_complete,
+        })
         return self.action_view_invoice()
 
     partner_list = fields.Many2many('res.partner', default=_get_partner_domain)
@@ -302,6 +306,7 @@ class SaleOrder(models.Model):
     completion_time = fields.Datetime('Completion Time')
     days_to_complete = fields.Integer('No of Days to Complete')
     city = fields.Char('City')
+    doorstep = fields.Boolean('DoorStep?',default=False)
 
     payment_methods = fields.Selection([
         ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
@@ -425,6 +430,7 @@ class Partner(models.Model):
         string='Payment Methods')
     additional_user_ids = fields.Many2many('res.users', 'sale_person_id', string='Additional Sales Person')
     fax = fields.Char('Fax')
+    type = fields.Selection(default='invoice')
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -18,6 +18,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/aslt_security.xml',
         'views/invoice_ext_view.xml',
         'views/invoice_ext_template.xml',
         'views/weekly_payment_view.xml',

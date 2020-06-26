@@ -12,6 +12,7 @@
                         <field name="payment_state" optional="show" attrs="{'invisible': [('payment_state', '!=', 'cash_paid')]}"/>
                         <field name="invoice_rate" optional="hide" groups="account.group_account_manager"/>
                         <field name="invoice_count" optional="show"/>
+                        <field name="doorstep" optional="hide" groups="aslt_ext.group_aslt_doorstep"/>
                     </xpath>
                     <xpath expr="//field[@name='invoice_user_id']" position="after">
                         <field name="marked_user_id" optional="hide"/>
@@ -80,6 +81,7 @@
 
                      <xpath expr="//page[@name='other_info']//field[@name='invoice_user_id']" position="replace">
                         <field name="invoice_user_id" readonly="1" default="uid"/>
+                        <field name="doorstep" groups="aslt_ext.group_aslt_doorstep"/>
                     </xpath>
 
                     <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="attributes">
@@ -131,6 +133,10 @@
                 <xpath expr="//filter[@name='status']" position='after'>
                     <filter string="Partial Paid" name="partial_paid"
                             domain="[('invoice_state', '=', 'partial_paid')]"/>
+                    <filter string="DoorStep?" name="doorstep"
+                            domain="[('doorstep', '=', True)]"
+                            groups="aslt_ext.group_aslt_doorstep"
+                    />
                     <filter string="Needs Bank Deposit" name="need_bank_deposit"
                             domain="[('bank_deposit_due_date', '!=', False)]"/>
                     <filter string="Liability Accept" name="marked_state_accept"
