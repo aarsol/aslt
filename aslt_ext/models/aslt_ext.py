@@ -197,7 +197,8 @@ class AccountMove(models.Model):
     invoice_rate = fields.Selection([('low','Low Rate'),('high','High Rate')],'Invoice Rate',default='low')
     invoice_sale_id = fields.Many2one('account.move','Linked Sale Invoice')
     invoice_count = fields.Integer('Count',compute="_compute_inv_count",store=True)
-    doorstep = fields.Boolean('DoorStep?', default=False)
+    income_source = fields.Selection([('door_step', 'DoorStep'), ('walking', 'Walking'), ('web_mail', 'Web Mail')], 'Income Source')
+
     
     def unlink(self):
         if not self.env.user.has_group('account.group_account_manager'):
@@ -293,7 +294,7 @@ class SaleOrder(models.Model):
             self.action_done()
         invoice = self._create_invoices(final=True)
         invoice.write({
-            'doorstep': self.doorstep,
+            'income_source': self.income_source,
             'days_to_complete': self.days_to_complete,
         })
         return self.action_view_invoice()
@@ -306,7 +307,8 @@ class SaleOrder(models.Model):
     completion_time = fields.Datetime('Completion Time')
     days_to_complete = fields.Integer('No of Days to Complete')
     city = fields.Char('City')
-    doorstep = fields.Boolean('DoorStep?',default=False)
+    income_source = fields.Selection([('door_step', 'DoorStep'), ('walking', 'Walking'), ('web_mail', 'Web Mail')], 'Income Source')
+
 
     payment_methods = fields.Selection([
         ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),

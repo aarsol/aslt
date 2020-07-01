@@ -141,7 +141,7 @@
                         <field string="Payment Methods" name="payment_methods" widget="selection"
                                groups="account.group_account_invoice" required="0"/>
                         <field name="city" required="1"/>
-                        <field name="doorstep" groups="aslt_ext.group_aslt_doorstep"/>
+                        <field name="income_source" groups="aslt_ext.group_aslt_income_source"/>
                     </xpath>
 
                     <xpath expr="//page[@name='other_information']//field[@name='require_signature']" position="attributes">
