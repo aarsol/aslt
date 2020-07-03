@@ -198,7 +198,7 @@ class AccountMove(models.Model):
     invoice_sale_id = fields.Many2one('account.move','Linked Sale Invoice')
     invoice_count = fields.Integer('Count',compute="_compute_inv_count",store=True)
     income_source = fields.Selection([('door_step', 'DoorStep'), ('walking', 'Walking'), ('web_mail', 'Web Mail')], 'Income Source')
-
+    # reference = fields.Char('Reference')
     
     def unlink(self):
         if not self.env.user.has_group('account.group_account_manager'):
