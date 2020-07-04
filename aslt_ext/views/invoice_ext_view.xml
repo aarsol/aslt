@@ -81,7 +81,7 @@
 
                     <xpath expr="//page[@name='other_info']//field[@name='invoice_user_id']" position="replace">
                         <field name="invoice_user_id" readonly="1" default="uid"/>
-                        <field name="income_source" groups="aslt_ext.group_aslt_income_source" required="1"/>
+                        <field name="income_source" groups="aslt_ext.group_aslt_income_source" attrs="{'required':[('type','in',('out_invoice'))]}"/>
                     </xpath>
 
                     <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="attributes">
