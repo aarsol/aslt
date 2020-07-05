@@ -34,6 +34,7 @@
         'reports/reports.xml',
         'reports/sale_report_templates.xml',
         'reports/invoice_wise_report.xml',
+        'reports/report_payment_receipt_templates.xml',
 
         'data/invoice_mail_template.xml',
 
