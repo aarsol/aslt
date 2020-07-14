@@ -24,6 +24,17 @@
             </t>
         </template>
 
+        <template id="account.report_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.invoice_user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                    <t t-call="account.report_invoice_document" t-lang="lang" t-if="not o.journal_id"/>
+                    <t t-call="account.report_invoice_document" t-lang="lang" t-if="o.journal_id and o.journal_id.name != 'Non-Vat Invoice'"/>
+                    <t t-call="aslt_ext.report_payment_receipt_document2" t-lang="lang" t-if="o.journal_id and o.journal_id.name == 'Non-Vat Invoice'"/>
+                </t>
+            </t>
+        </template>
+
         <template id="web.external_layout">
             <t t-if="not o" t-set="o" t-value="doc"/>
             <t t-if="not company">
