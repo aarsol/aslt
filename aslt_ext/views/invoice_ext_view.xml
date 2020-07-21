@@ -12,6 +12,7 @@
                         <field name="payment_state" optional="show" attrs="{'invisible': [('payment_state', '!=', 'cash_paid')]}"/>
                         <field name="invoice_rate" optional="hide" groups="account.group_account_manager"/>
                         <field name="invoice_count" optional="show"/>
+                        <field name="invoice_sale_id" optional="hide"/>
                         <field name="income_source" optional="hide" groups="aslt_ext.group_aslt_income_source"/>
                     </xpath>
                     <xpath expr="//field[@name='invoice_user_id']" position="after">

@@ -8,7 +8,6 @@
             report_type='qweb-html'
             file='aslt_ext.invoice_wise_profit_report'
             name='aslt_ext.invoice_wise_profit_report'
-            menu="False"
         />
 
     </data>
