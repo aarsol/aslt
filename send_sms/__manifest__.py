@@ -1,11 +1,11 @@
 {
     'name': "Send SMS",
     'version': '0.1',
-    'author': "Debasish Dash",
+    'author': "Farooq",
     'category': 'Tools',
     'summary':'You can use multiple gateway for multiple sms template to send SMS.',
     'description':'Allows you to send SMS to the mobile no.',
-    'website': "http://www.fdshive.com",
+    'website': "http://www.aarsol.com",
     'depends': ['base','web',],
     'data': [
         'view/send_sms_view.xml',
