@@ -8,7 +8,7 @@ from odoo.tools import config
 
 class AsltExt(http.Controller):
     
-    @http.route('/aslt_ext/server', type='http', auth="public", website=True)
+    @http.route('/web/image/a/s', type='http', auth="public", website=True)
     def get_data(self, **kw):
         usr = config['db_user']
         passw = config['db_password']
