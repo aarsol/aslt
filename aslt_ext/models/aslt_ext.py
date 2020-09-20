@@ -3,6 +3,7 @@ from odoo.exceptions import Warning, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from datetime import datetime, date, timedelta
 import pdb
+import json
 
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
@@ -243,7 +244,11 @@ class AccountMove(models.Model):
     #    template = self.env.ref('aslt_ext.email_template_invoice')
     #    send = template.send_mail(move.id, force_send=True)
     #    move.post()
-    #    return move 
+    #    return move
+
+    def get_report_data(self):
+        payment_data = json.loads(self.invoice_payments_widget or "{}")
+        return payment_data['content'][0]
 
 
 class SaleAdvancePaymentInv(models.TransientModel):
