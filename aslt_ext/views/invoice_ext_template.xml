@@ -4,11 +4,88 @@
         <template id="report_payment_receipt_document2">
             <t t-call="web.external_layout">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
-                <div class="page">
+                <div class="page" t-if="o.invoice_payment_state == 'paid'">
+                    <t t-set="payment_data" t-value="o.get_report_data()"/>
                     <h3>
                         <strong>Payment Receipt:
+                            <span t-field="o.name"/>
                         </strong>
                     </h3>
+                    <div class="row mt64">
+                        <div class="col-6" t-if="payment_data['date']">
+                            <strong>Payment Date:</strong>
+                            <span t-esc="payment_data['date']"/>
+                        </div>
+                    </div>
+                   <div class="row">
+                        <div class="col-6">
+                            <t>
+                                <strong>Customer:</strong>
+                            </t>
+                            <span t-field="o.partner_id"/>
+                        </div>
+                        <div class="col-6" t-if="payment_data['payment_method_name']">
+                            <strong>Payment Method:</strong>
+                            <span t-esc="payment_data['payment_method_name']"/>
+                        </div>
+                    </div>
+                    <div class="row mb64">
+                        <div class="col-6" t-if="payment_data['amount']">
+                            <strong>Payment Amount:</strong>
+                            <span t-esc="payment_data['amount']"/>
+                        </div>
+                       <!-- <div class="col-6" t-if="o.communication">
+                            <strong>Memo:</strong>
+                            <span t-esc="o.communication"/>
+                        </div>-->
+                    </div>
+                     <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span>Invoice Date</span>
+                                </th>
+                                <th>
+                                    <span>Invoice Number</span>
+                                </th>
+                                <th>
+                                    <span>Reference</span>
+                                </th>
+                                <th class="text-right">
+                                    <span>Original Amount</span>
+                                </th>
+                                <th class="text-right">
+                                    <span>Amount Paid</span>
+                                </th>
+                                <th class="text-right">
+                                    <span>Balance</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span t-field="o.invoice_date"/>
+                                </td>
+                                <td>
+                                    <span t-field="o.name"/>
+                                </td>
+                                <td>
+                                    <span t-esc="payment_data['ref']"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_total"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="payment_data['amount']"/>
+                                    <span t-esc="payment_data['currency']"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_residual"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </t>
         </template>
