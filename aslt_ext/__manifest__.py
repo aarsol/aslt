@@ -31,6 +31,7 @@
         'wizard/merge_customer_wiz.xml',
         'wizard/invoice_rate_wiz.xml',
         'wizard/invoice_wise_profit_wiz.xml',
+        'wizard/account_tax_report_view.xml',
 
         'reports/reports.xml',
         'reports/sale_report_templates.xml',
