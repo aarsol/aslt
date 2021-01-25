@@ -367,6 +367,7 @@
                 <span style="font-size:14px" t-esc="o.branch_id.other_details" t-options='{"widget": "html"}'/>
             </xpath>
 
+
             <xpath expr="//div[@id='total']//table[1]/t" position='replace'>
                 <t t-foreach="o.amount_by_group" t-as="amount_by_group">
                     <tr style="">
