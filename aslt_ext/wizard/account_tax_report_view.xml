@@ -32,6 +32,7 @@
             <field name="target">new</field>
         </record>
 
+
         <menuitem
                 id="menu_account_tax_report"
                 name="Account Tax Report"
