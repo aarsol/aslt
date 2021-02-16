@@ -323,19 +323,27 @@ class SaleOrder(models.Model):
     partner_list = fields.Many2many('res.partner', default=_get_partner_domain)
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
-    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Written')], 'Service Type', default='one_way')
+    service_type = fields.Selection([('one_way', 'One Way'),
+                                     ('written', 'Written')
+                                     ], 'Service Type', default='one_way')
 
     completion_time = fields.Datetime('Completion Time')
     days_to_complete = fields.Integer('No of Days to Complete')
     city = fields.Char('City')
-    income_source = fields.Selection([('door_step', 'DoorStep'), ('walking', 'Walking'), ('web_mail', 'Web Mail')], 'Income Source')
+    income_source = fields.Selection([('door_step', 'DoorStep'),
+                                      ('walking', 'Walking'),
+                                      ('web_mail', 'Web Mail')
+                                      ], 'Income Source')
 
-    payment_methods = fields.Selection([
-        ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
-        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
-        ('cash_over_counter', 'Cash Over The Counter'),
-        ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
-        string='Payment Methods')
+    payment_methods = fields.Selection([('paypall', 'PayPall Link'),
+                                        ('credit_card_link', 'Credit Card Link'),
+                                        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'),
+                                        ('cash_deposit', 'Cash Deposit'),
+                                        ('cash_over_counter', 'Cash Over The Counter'),
+                                        ('cheque', 'Cheque'),
+                                        ('card_swipe_machine', 'Card Swipe Machine'),
+                                        ('exchange_company', 'Exchange Company')
+                                        ], string='Payment Methods')
 
     @api.onchange('partner_id')
     def _onchange_partner_id_payment(self):
