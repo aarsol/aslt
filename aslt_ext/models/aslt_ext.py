@@ -2,6 +2,8 @@ from odoo import api, fields, models, _
 from odoo.exceptions import Warning, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
+
 import pdb
 import json
 
@@ -367,6 +369,52 @@ class SaleOrder(models.Model):
             }
             mail_id = self.env['mail.mail'].create(main_content)
             mail_id.send()
+
+    @api.model
+    def cron_24_hours(self):
+        orders_list = []
+        email_orders = False
+        sale_orders = self.env['sale.order'].search([('state', '!=', 'cancel')])
+        for order in sale_orders:
+            invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
+            if not invoices:
+                orders_list.append(order.id)
+        email_orders = self.env['sale.order'].search([('id', 'in', orders_list)], order="create_date asc")
+        if email_orders:
+            mail_content = _(""" 
+                            <table class='table table-bordered'> 
+                                <tr>
+                                    <th>Sr#</th>
+                                    <th>Quotation</th>
+                                    <th>Create Date</th>
+                                    <th>Created By</th>
+                                    <th>State</th>
+                                    <th>Amount</th>
+                                </tr>
+                            """)
+            sr = 0
+            for email_order in email_orders:
+                sr += 1
+                mail_content += """
+                <tr>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                </tr>""" % (sr, email_order.name, email_order.create_date.strftime("%d-%m-%Y"), email_order.create_uid.name, email_order.state, email_order.amount_total)
+
+            mail_content += """</table>"""
+
+        main_content = {
+            'subject': _('Non Invoices Quotations %s') % fields.Date.today().strftime('%d-%m-%Y'),
+            'author_id': self.env.user.partner_id.id,
+            'body_html': mail_content,
+            'email_to': "info@translationindubai.com",
+        }
+        mail_id = self.env['mail.mail'].create(main_content)
+        mail_id.send()
 
 
 class AccountPaymentweekly(models.Model):
