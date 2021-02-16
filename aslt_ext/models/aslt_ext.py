@@ -367,7 +367,7 @@ class SaleOrder(models.Model):
                 'body_html': mail_content,
                 'email_to': "info@translationindubai.com",
             }
-            mail_id = self.env['mail.mail'].create(main_content)
+            mail_id = self.env['mail.mail'].sudo().create(main_content)
             mail_id.send()
 
     @api.model
@@ -413,7 +413,7 @@ class SaleOrder(models.Model):
             'body_html': mail_content,
             'email_to': "info@translationindubai.com",
         }
-        mail_id = self.env['mail.mail'].create(main_content)
+        mail_id = self.env['mail.mail'].sudo().create(main_content)
         mail_id.send()
 
 
