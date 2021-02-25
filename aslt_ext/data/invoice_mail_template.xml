@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="email_template_invoice" model="mail.template">
             <field name="name">Invoice: Send by email Aslt</field>
             <field name="model_id" ref="account.model_account_move"/>
@@ -132,6 +131,23 @@
             <field name="auto_delete" eval="True"/>
         </record>
 
+        <record id="aslt_mail_template_sale_quotation" model="mail.template">
+            <field name="name">Sale Quotation Email Template</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">(Quotation Ref ${object.name or 'n/a' })</field>
+            <field name="email_to">info@translationindubai.com</field>
+            <field name="body_html" type="xml">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        New a Quotation is Created.
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','-')}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="user_signature" eval="False"/>
+        </record>
 
     </data>
 </odoo>

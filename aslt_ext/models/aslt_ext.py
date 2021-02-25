@@ -353,8 +353,12 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
+        template = False
         result = super(SaleOrder, self).create(vals)
-        result.send_quotation_create_email()
+        # result.send_quotation_create_email()
+        template = self.env.ref('aslt_ext.aslt_mail_template_sale_quotation')
+        if template:
+            result.message_post_with_template(template.id, composition_mode='comment')
         return result
 
     def send_quotation_create_email(self):
