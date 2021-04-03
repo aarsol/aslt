@@ -218,6 +218,8 @@ class AccountMove(models.Model):
                                       ], 'Income Source')
 
     # reference = fields.Char('Reference')
+    bill_qty = fields.Float('Bill Qty', compute='_compute_bill_qty', store=True)
+    bill_price_unit = fields.Float('Bill Price Unit', compute='_compute_bill_qty', store=True)
 
     def unlink(self):
         if not self.env.user.has_group('account.group_account_manager'):
@@ -267,6 +269,14 @@ class AccountMove(models.Model):
     def get_report_data(self):
         payment_data = json.loads(self.invoice_payments_widget or "{}")
         return payment_data['content'][0]
+
+    @api.depends('invoice_line_ids', 'invoice_line_ids.quantity', 'invoice_line_ids.price_unit')
+    def _compute_bill_qty(self):
+        for rec in self:
+            if rec.invoice_line_ids:
+                line = rec.invoice_line_ids[0]
+                rec.bill_qty = line.quantity
+                rec.bill_price_unit = line.price_unit
 
 
 class SaleAdvancePaymentInv(models.TransientModel):
