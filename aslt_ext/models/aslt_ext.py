@@ -113,9 +113,11 @@ class account_payment(models.Model):
                     inv.update({'invoice_state': 'partial_paid', 'due_date': self.due_date})
                 else:
                     inv.update({'invoice_state': 'full_paid'})
-            template = self.env.ref('aslt_ext.aslt_mail_template_data_payment_receipt')
-            send = template.with_context(mail_create_nolog=True).send_mail(self.id, force_send=True)
 
+            # if payment received from Customer
+            if rec.payment_type=='inbound':
+                template = self.env.ref('aslt_ext.aslt_mail_template_data_payment_receipt')
+                send = template.with_context(mail_create_nolog=True).send_mail(self.id, force_send=True)
         return True
 
 
