@@ -6,7 +6,10 @@
         <xpath expr="//div[@class='page']" position="before">
             <div class="row" style="margin-top:-15px" t-if="doc.branch_id and doc.branch_id.logo">
                 <div class="col-12 mb4 text-center" name="moto">
-                    <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>
+                    <!-- Remarked By Sarfraz@05-01-2022-->
+                    <!--                    <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>-->
+                    <img t-if="doc.branch_id.logo" t-att-src="image_data_uri(doc.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>
+
                 </div>
             </div>
             <p style="text-align:center; font-size:33px">
