@@ -300,6 +300,7 @@ class AccountMove(models.Model):
             'email_to': "payments@translationindubai.com",
             # 'email_to': "sarfraz_g2009@yahoo.com",
         }
+
         mail_id = self.env['mail.mail'].sudo().create(main_content)
         mail_id.send()
 
