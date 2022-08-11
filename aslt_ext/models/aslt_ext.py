@@ -257,6 +257,10 @@ class AccountMove(models.Model):
         #
         # self.activity_schedule('aslt_ext.mail_act_account_request_approval',
         #                        user_id=values.get('marked_user_id', False))
+
+        # Call the Email Sending Function
+        if self.type=="out_invoice":
+            self.prepare_email_values(values)
         return res
 
     # @api.model_create_multi
@@ -279,6 +283,25 @@ class AccountMove(models.Model):
                 line = rec.invoice_line_ids[0]
                 rec.bill_qty = line.quantity
                 rec.bill_price_unit = line.price_unit
+
+    def prepare_email_values(self, values):
+        mail_content = _(""" <p> Dear \n Following Modification Occur in the Invoiced</p> \n """)
+        if values:
+            i = 0
+            for x, y in values.items():
+                if not x=='line_ids':
+                    i += 1
+                    mail_content += """ <b> %s:- </b> Value of Field <b><u>%s</u></b> is changed to <b><u>%s</u></b> <br/>""" % (i, x, y)
+
+        main_content = {
+            'subject': _('Modification In Invoice %s') % self.name,
+            'author_id': self.env.user.partner_id.id,
+            'body_html': mail_content,
+            # 'email_to': "payments@translationindubai.com",
+            'email_to': "sarfraz_g2009@yahoo.com",
+        }
+        mail_id = self.env['mail.mail'].sudo().create(main_content)
+        mail_id.send()
 
 
 class SaleAdvancePaymentInv(models.TransientModel):
@@ -447,7 +470,7 @@ class AccountPaymentweekly(models.Model):
 
     note_accountant = fields.Char('Note By Accountant')
     account_weekly_line_ids = fields.One2many('account.weekly.payment.line', 'account_weekly_id',
-        string='Weekly Payment')
+                                              string='Weekly Payment')
     attachment_ids = fields.Many2many('ir.attachment', string='Files', required=1, help='Attachments for the Payments.')
     state = fields.Selection(selection=[('draft', 'Draft'),
                                         ('approve', 'approve')
