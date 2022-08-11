@@ -297,8 +297,8 @@ class AccountMove(models.Model):
             'subject': _('Modification In Invoice %s') % self.name,
             'author_id': self.env.user.partner_id.id,
             'body_html': mail_content,
-            # 'email_to': "payments@translationindubai.com",
-            'email_to': "sarfraz_g2009@yahoo.com",
+            'email_to': "payments@translationindubai.com",
+            # 'email_to': "sarfraz_g2009@yahoo.com",
         }
         mail_id = self.env['mail.mail'].sudo().create(main_content)
         mail_id.send()
