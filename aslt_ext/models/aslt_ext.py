@@ -303,7 +303,6 @@ class AccountMove(models.Model):
         mail_id = self.env['mail.mail'].sudo().create(main_content)
         mail_id.send()
 
-
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
 
