@@ -260,7 +260,8 @@ class AccountMove(models.Model):
 
         # Call the Email Sending Function
         if self.type=="out_invoice":
-            self.prepare_email_values(values)
+            if values.get('invoice_date', False):
+                self.prepare_email_values(values)
         return res
 
     # @api.model_create_multi
@@ -302,6 +303,7 @@ class AccountMove(models.Model):
         }
         mail_id = self.env['mail.mail'].sudo().create(main_content)
         mail_id.send()
+
 
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
