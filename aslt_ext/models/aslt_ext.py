@@ -293,9 +293,12 @@ class AccountMove(models.Model):
                 if not x=='line_ids':
                     i += 1
                     mail_content += """ <b> %s:- </b> Value of Field <b><u>%s</u></b> is changed to <b><u>%s</u></b> <br/>""" % (i, x, y)
+        name = self.name
+        if name=='/':
+            name = self.partner_id.name
 
         main_content = {
-            'subject': _('Modification In Invoice %s') % self.name,
+            'subject': _('Modification In Invoice %s') % name,
             'author_id': self.env.user.partner_id.id,
             'body_html': mail_content,
             'email_to': "payments@translationindubai.com",
