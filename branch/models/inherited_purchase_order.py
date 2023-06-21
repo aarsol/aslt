@@ -4,7 +4,6 @@ from odoo import api, fields, models, _
 
 
 class purchase_order(models.Model):
-
     _inherit = 'purchase.order.line'
 
     @api.model
@@ -15,7 +14,7 @@ class purchase_order(models.Model):
             branch_id = self._context.get('branch_id')
         elif self.env.user.branch_id:
             branch_id = self.env.user.branch_id.id
-        res.update({'branch_id' : branch_id})
+        res.update({'branch_id': branch_id})
         return res
 
     branch_id = fields.Many2one('res.branch', string="Branch")
@@ -24,24 +23,21 @@ class purchase_order(models.Model):
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-
     @api.model
-    def default_get(self,fields):
+    def default_get(self, fields):
         res = super(PurchaseOrder, self).default_get(fields)
         branch_id = picking_type_id = False
 
         if self.env.user.branch_id:
             branch_id = self.env.user.branch_id.id
-        
 
         res.update({
-            'branch_id' : branch_id,
+            'branch_id': branch_id,
         })
 
         return res
 
     branch_id = fields.Many2one('res.branch', string='Branch')
-    
 
     def action_view_invoice(self):
         '''
@@ -57,11 +53,16 @@ class PurchaseOrder(models.Model):
         elif self.env.user.branch_id:
             branch_id = self.env.user.branch_id.id
 
-
         if 'context' in result:
             result['context'].update({
-                'default_branch_id' : branch_id,
-                'branch_id' : branch_id
+                'default_branch_id': branch_id,
+                'branch_id': branch_id
             })
 
         return result
+
+
+class StockPicking(models.Model):
+    _inherit = "stock.picking"
+
+    branch_id = fields.Many2one(string="Branch", related="purchase_id.branch_id")

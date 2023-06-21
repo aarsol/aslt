@@ -2,31 +2,30 @@
 <odoo>
     <data>
         <record id="aslt_ext_view_account_tree" model="ir.ui.view">
-            <field name="name">account.move.Tree</field>
+            <field name="name">account.move.tree</field>
             <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="inherit_id" ref="account.view_out_invoice_tree"/>
             <field name="arch" type="xml">
-                <data>
-                    <xpath expr="//field[@name='state']" position="after">
-                        <field name="invoice_state" optional="show"/>
-                        <field name="payment_state" optional="show" attrs="{'invisible': [('payment_state', '!=', 'cash_paid')]}"/>
-                        <field name="invoice_rate" optional="hide" groups="account.group_account_manager"/>
-                        <field name="invoice_count" optional="show"/>
-                        <field name="invoice_sale_id" optional="hide"/>
-                        <field name="income_source" optional="hide" groups="aslt_ext.group_aslt_income_source"/>
-                    </xpath>
-                    <xpath expr="//field[@name='invoice_user_id']" position="after">
-                        <field name="marked_user_id" optional="hide"/>
-                    </xpath>
-                    <xpath expr="//field[@name='company_id']" position="attributes">
-                        <attribute name="invisible">1</attribute>
-                    </xpath>
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="invoice_state" optional="show"/>
+                    <field name="payment_state" optional="show"
+                           attrs="{'invisible': [('payment_state', '!=', 'cash_paid')]}"/>
+                    <field name="invoice_rate" optional="hide" groups="account.group_account_manager"/>
+                    <field name="invoice_count" optional="show"/>
+                    <field name="invoice_sale_id" optional="hide"/>
+                    <field name="income_source" optional="hide" groups="aslt_ext.group_aslt_income_source"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_user_id']" position="after">
+                    <field name="marked_user_id" optional="hide"/>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
 
-                    <xpath expr="//field[@name='invoice_date_due']" position="after">
-                        <field name="bill_price_unit" string="Price"/>
-                        <field name="bill_qty" string="Quantity"/>
-                    </xpath>
-                </data>
+                <xpath expr="//field[@name='invoice_date_due']" position="after">
+                    <field name="bill_price_unit" string="Price"/>
+                    <field name="bill_qty" string="Quantity"/>
+                </xpath>
             </field>
         </record>
 
@@ -35,102 +34,100 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                <data>
-                    <xpath expr="//button[@name='action_invoice_register_payment']" position="replace">
-                        <!-- Changed ('invoice_payment_state', '!=', 'not_paid') 
-                        	to 'invoice_payment_state', 'not in', ( 'in_payment','not_paid') -->
-                        <button name="action_invoice_register_payment" id="account_invoice_payment_btn" type="object"
-                                class="oe_highlight"
-                                attrs="{'invisible': ['|', '|', ('state', '!=', 'posted'), ('invoice_payment_state', 'not in', ( 'in_payment','not_paid')), ('type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))]}"
-                                string="Register Payment" groups="account.group_account_invoice"/>
-                    </xpath>
+                <xpath expr="//button[@name='action_invoice_register_payment']" position="replace">
+                    <!-- Changed ('payment_state', '!=', 'not_paid')
+                        to 'payment_state', 'not in', ( 'in_payment','not_paid') -->
+                    <button name="action_invoice_register_payment" id="account_invoice_payment_btn" type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'posted'), ('payment_state', 'not in', ( 'in_payment','not_paid')), ('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))]}"
+                            string="Register Payment" groups="account.group_account_invoice"/>
+                </xpath>
 
-                    <!--                    <xpath expr="//field[@name='ref']" position="attributes">-->
-                    <!--                        <attribute name="invisible">1</attribute>-->
-                    <!--                    </xpath>-->
+                <!--                    <xpath expr="//field[@name='ref']" position="attributes">-->
+                <!--                        <attribute name="invisible">1</attribute>-->
+                <!--                    </xpath>-->
 
-                    <xpath expr="//group[@id = 'header_right_group']//field[@name='journal_id']" position="attributes">
-                        <attribute name="groups">base.group_user</attribute>
-                    </xpath>
+                <xpath expr="//group[@id = 'header_right_group']//field[@name='journal_id']" position="attributes">
+                    <attribute name="groups">base.group_user</attribute>
+                </xpath>
 
-                    <field name="invoice_vendor_bill_id" position="after">
-                        <field name="invoice_sale_id"
-                               attrs="{'invisible': [('type', '!=', 'in_invoice')]}"
-                               domain="[('type', '=', 'out_invoice')]"
-                               string="Linked Sale Invoice" placeholder="Select an Customer Invoice"
-                               options="{'no_create': True}" context="{'show_total_amount': True}"/>
-                    </field>
+                <field name="invoice_vendor_bill_id" position="after">
+                    <field name="invoice_sale_id"
+                           attrs="{'invisible': [('move_type', '!=', 'in_invoice')]}"
+                           domain="[('move_type', '=', 'out_invoice')]"
+                           string="Linked Sale Invoice" placeholder="Select an Customer Invoice"
+                           options="{'no_create': True}" context="{'show_total_amount': True}"/>
+                </field>
 
-                    <xpath expr="//field[@name='date']" position="after">
-                        <field name="invoice_state" invisible="1"/>
-                        <field name="bank_deposit_due_date" invisible="1"/>
-                        <field name="due_date" attrs="{'invisible': [('due_date', '=', False)]}"/>
-                    </xpath>
+                <xpath expr="//field[@name='date']" position="after">
+                    <field name="invoice_state" invisible="1"/>
+                    <field name="bank_deposit_due_date" invisible="1"/>
+                    <field name="due_date" attrs="{'invisible': [('due_date', '=', False)]}"/>
+                </xpath>
 
-                    <xpath expr="//field[@name='invoice_date']" position="after">
-                        <field name="days_to_complete" readonly="1"
-                               attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_receipt'))]}"/>
-                    </xpath>
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="days_to_complete" readonly="1"
+                           attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_receipt'))]}"/>
+                </xpath>
 
-                    <label for="invoice_payment_term_id" position="replace">
+                <label for="invoice_payment_term_id" position="replace">
 
-                    </label>
-                    <div class="d-flex" position="replace">
-                        <field name="invoice_payment_term_id" placeholder="Terms"
-                               attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))],
-                                'required': [('invoice_date_due', '=', False),('type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))]}"/>
-                        <field name="invoice_date_due" force_save="1"
-                               placeholder="Date" invisible="1"/>
-                    </div>
-                    <!--                    <xpath expr="//field[@name='invoice_payment_term_id']" position="replace">-->
-                    <!--                        <field name="invoice_payment_term_id" placeholder="Terms"-->
-                    <!--                            attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))],-->
-                    <!--                                'required': [('invoice_date_due', '=', False)]}"/>-->
+                </label>
+                <div class="d-flex" position="replace">
+                    <field name="invoice_payment_term_id" placeholder="Terms"
+                           attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))],
+                                'required': [('invoice_date_due', '=', False),('move_type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))]}"/>
+                    <field name="invoice_date_due" force_save="1"
+                           placeholder="Date" invisible="1"/>
+                </div>
+                <!--                    <xpath expr="//field[@name='invoice_payment_term_id']" position="replace">-->
+                <!--                        <field name="invoice_payment_term_id" placeholder="Terms"-->
+                <!--                            attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt'))],-->
+                <!--                                'required': [('invoice_date_due', '=', False)]}"/>-->
 
-                    <!--                    </xpath>-->
+                <!--                    </xpath>-->
 
-                    <xpath expr="//page[@name='other_info']//field[@name='invoice_user_id']" position="replace">
-                        <field name="invoice_user_id" readonly="1" default="uid"/>
-                        <field name="income_source" groups="aslt_ext.group_aslt_income_source" attrs="{'required':[('type','in',('out_invoice'))]}"/>
-                    </xpath>
+                <xpath expr="//page[@name='other_info']//field[@name='invoice_user_id']" position="replace">
+                    <field name="invoice_user_id" readonly="1" default="uid"/>
+                    <field name="income_source" groups="aslt_ext.group_aslt_income_source"
+                           attrs="{'required':[('move_type','in',('out_invoice'))]}"/>
+                </xpath>
 
-                    <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="attributes">
-                        <attribute name="invisible">1</attribute>
-                    </xpath>
+                <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']"
+                       position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
 
-                    <xpath expr="//page[@name='other_info']//group[@name='payments_info_group']" position="attributes">
-                        <attribute name="invisible">1</attribute>
-                    </xpath>
+                <xpath expr="//page[@name='other_info']//group[@name='payments_info_group']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
 
-                    <xpath expr="//page[@name='other_info']" position="before">
-                        <page id="transfer_liability_info" string="Transfer Liability" name="transfer_liability_info"
-                              attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_receipt'))]}">
-                            <group id="transfer_tab_group">
-                                <group string="Transfer Liability  Details" name="marked_sale_info_group">
-                                    <field name="marked_user_id"
-                                           attrs="{'readonly': [('invoice_payment_state', '!=','not_paid')]}"/>
+                <xpath expr="//page[@name='other_info']" position="before">
+                    <page id="transfer_liability_info" string="Transfer Liability" name="transfer_liability_info"
+                          attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_receipt'))]}">
+                        <group id="transfer_tab_group">
+                            <group string="Transfer Liability  Details" name="marked_sale_info_group">
+                                <field name="marked_user_id"
+                                       attrs="{'readonly': [('payment_state', '!=','not_paid')]}"/>
 
-                                    <field name="marked_duedate"
-                                           attrs="{'invisible': [('marked_user_id', '=',False)]}"/>
+                                <field name="marked_duedate"
+                                       attrs="{'invisible': [('marked_user_id', '=',False)]}"/>
 
-                                    <field name="marked_state" readonly="1"
-                                           attrs="{'invisible': [('marked_user_id', '=',False)]}"
-                                    />
-                                </group>
+                                <field name="marked_state" readonly="1"
+                                       attrs="{'invisible': [('marked_user_id', '=',False)]}"
+                                />
                             </group>
-                        </page>
-                    </xpath>
-
-                    <xpath expr="//page[@name='other_info']/group/group[@name='payments_info_group']" position="after">
-                        <group id="courier_group" string="Delivery Information">
-                            <field name="shipment_company_id"/>
-                            <field name="tracking_no"/>
-                            <field name="service_type" widget="radio"/>
                         </group>
-                    </xpath>
+                    </page>
+                </xpath>
 
-
-                </data>
+                <xpath expr="//page[@name='other_info']/group/group[@name='payments_info_group']" position="after">
+                    <group id="courier_group" string="Delivery Information">
+                        <field name="shipment_company_id"/>
+                        <field name="tracking_no"/>
+                        <field name="service_type" widget="radio"/>
+                    </group>
+                </xpath>
             </field>
         </record>
 
@@ -150,13 +147,14 @@
                             domain="[('marked_state', '=', 'cancel')]"/>
                 </xpath>
 
-                <!--Gourp by-->
+                <!--Group by-->
                 <xpath expr="//filter[@name='salesperson']" position='after'>
                     <filter name="invoice_state" string="Payment Status" context="{'group_by':'invoice_state'}"/>
                     <filter name="bank_deposit_due_date" string="Bank Deposit Due Date"
                             context="{'group_by':'bank_deposit_due_date'}"
                             domain="[('bank_deposit_due_date', '!=', False)]"/>
-                    <filter name="marked_user_id" string="Transferred Liability" context="{'group_by':'marked_user_id'}"/>
+                    <filter name="marked_user_id" string="Transferred Liability"
+                            context="{'group_by':'marked_user_id'}"/>
                     <filter name="income_source" string="Income Source" context="{'group_by':'income_source'}"/>
                 </xpath>
 
@@ -188,10 +186,12 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="aslt_ext_view_account_move_line_tree"/>
             <field name="domain">[('account_id','in',(89,109))]</field>
-            <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1}</field>
+            <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer',
+                'default_is_company': True, 'default_customer_rank': 1}
+            </field>
 
-            <!--<filter string="Customers" name="customer" domain="['|', ('type','=','out_invoice'),('type','=','out_refund')]"/>
-                <filter string="Vendors" name="supplier" domain="['|', ('type','=','in_invoice'),('type','=','in_refund')]"/>
+            <!--<filter string="Customers" name="customer" domain="['|', ('move_type','=','out_invoice'),('move_type','=','out_refund')]"/>
+                <filter string="Vendors" name="supplier" domain="['|', ('move_type','=','in_invoice'),('move_type','=','in_refund')]"/>
               -->
         </record>
 
@@ -211,10 +211,12 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="aslt_ext_view_account_move_line_tree"/>
             <field name="domain">['|', ('move_id.type','=','in_invoice'),('move_id.type','=','in_refund')]</field>
-            <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1}</field>
+            <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer',
+                'default_is_company': True, 'default_customer_rank': 1}
+            </field>
 
-            <!--<filter string="Customers" name="customer" domain="['|', ('type','=','out_invoice'),('type','=','out_refund')]"/>
-                <filter string="Vendors" name="supplier" domain="['|', ('type','=','in_invoice'),('type','=','in_refund')]"/>
+            <!--<filter string="Customers" name="customer" domain="['|', ('move_type','=','out_invoice'),('move_type','=','out_refund')]"/>
+                <filter string="Vendors" name="supplier" domain="['|', ('move_type','=','in_invoice'),('move_type','=','in_refund')]"/>
               -->
         </record>
 
@@ -227,95 +229,74 @@
                 groups="account.group_account_manager"
         />
 
-        <record id="aslt_ext_view_account_payment_form_multi" model="ir.ui.view">
-            <field name="name">account.payment.multu.form.inherit</field>
-            <field name="model">account.payment.register</field>
-            <field name="inherit_id" ref="account.view_account_payment_form_multi"/>
+        <record id="account_payment_form_view_inherit" model="ir.ui.view">
+            <field name="name">account.payment.form.view.inherit</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
-                <data>
-                    <field name="payment_date" position="after">
-                        <field name="note_accountant"/>
-                    </field>
-                    <xpath expr="//group" position="inside">
-                        <group name="note">
-                            <field name="journal_type" invisible="1"/>
-                            <field name="payment_types" invisible="1"/>
-                            <field name="need_bank_deposit" invisible="1"/>
+                <field name="date" position="after">
+                    <field name="note_accountant"/>
+                </field>
+                <xpath expr="//group" position="inside">
+                    <group name="note">
+                        <field name="journal_type" invisible="1"/>
+                        <field name="payment_types" invisible="1"/>
+                        <field name="need_bank_deposit" invisible="1"/>
 
-                            <field name="note_salesman"/>
-                            <field name="invoice_ref"/>
-                            <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files"
-                                   nolabel="1"/>
-                        </group>
+                        <field name="note_salesman"/>
+                        <field name="invoice_ref"/>
+                        <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files"
+                               nolabel="1"/>
+                    </group>
 
-                        <group name="other_info">
-                            <field name="cheque_no"
-                                   attrs="{
+                    <group name="other_info">
+                        <field name="cheque_no"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'cheque')],
                                 	'required': [('payment_types', '=', 'cheque')]
                                 }"/>
-                            <field name="cheque_date"
-                                   attrs="{
+                        <field name="cheque_date"
+                               attrs="{
                             		'invisible': [('payment_types', '!=', 'cheque')],
                             		'required': [('payment_types', '=', 'cheque')]
                             	}"/>
 
-                            <field name="approval_code"
-                                   attrs="{
+                        <field name="approval_code"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'pos_machine')],
                             		'required': [('payment_types', '=', 'pos_machine')]
                             	}"/>
 
-                            <field name="transaction_id"
-                                   attrs="{
+                        <field name="transaction_id"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'paypall')],
                             		'required': [('payment_types', '=', 'paypall')]
                             	}"/>
 
-                            <field name="reference_cc"
-                                   attrs="{
+                        <field name="reference_cc"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'online_credit_card')],
                             		'required': [('payment_types', '=', 'online_credit_card')]
                             	}"/>
-
-                            <!--                            <field name="cross_vendor"-->
-                            <!--                                   domain="[('supplier_rank','!=','0')]"-->
-                            <!--                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"-->
-                            <!--                                   attrs="{-->
-                            <!--                               		'invisible': [('payment_types', '!=', 'cross_settlement')],-->
-                            <!--                               	}"/>-->
-                            <!--                            <field name="cross_invoice"-->
-                            <!--                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"-->
-                            <!--                                   domain="[('partner_id','=',cross_vendor),('type', '=', 'in_invoice')]"-->
-                            <!--                                   attrs="{-->
-                            <!--                               		'invisible': [('payment_types', '!=', 'cross_settlement')],-->
-                            <!--                               	}"/>-->
-                            <!--                            <field name="cross_amount"-->
-                            <!--                                   attrs="{-->
-                            <!--                               		'invisible': [('payment_types', '!=', 'cross_settlement')],-->
-                            <!--                               		'required': [('payment_types', '=', 'cross_settlement')]-->
-                            <!--                               	}"/>-->
-
-                            <field name="exchange_company_id"
-                                   attrs="{
+                        <field name="exchange_company_id"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'exchange_company')],
                                    	'required': [('payment_types', '=', 'exchange_company')]
                                 }"/>
-                            <field name="receiver_name"
-                                   attrs="{
+                        <field name="receiver_name"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'exchange_company')],
                                    	'required': [('payment_types', '=', 'exchange_company')]
                                 }"/>
-                            <field name="exchange_receipt_no"
-                                   attrs="{
+                        <field name="exchange_receipt_no"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'exchange_company')],
                                    	'required': [('payment_types', '=', 'exchange_company')]
                                 }"/>
-                            <field name="bank_deposit_due_date"
-                                   attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
-                        </group>
-                    </xpath>
-                </data>
+                        <field name="bank_deposit_due_date"
+                               attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
+                    </group>
+                </xpath>
             </field>
         </record>
 
@@ -325,106 +306,100 @@
             <field name="name">account.payment.form.inherit</field>
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_form"/>
-
             <field name="arch" type="xml">
-                <data>
-                    <field name="journal_id" position="after">
-                        <field name="note_accountant"/>
-                    </field>
-                    <xpath expr="//group[@name='right_column']" position="after">
-                        <group name="note">
-                            <field name="journal_type" invisible="1"/>
-                            <field name="payment_types" invisible="1"/>
-                            <field name="need_bank_deposit" invisible="1"/>
+                <field name="journal_id" position="after">
+                    <field name="note_accountant"/>
+                </field>
+                <xpath expr="//group[@name='right_column']" position="after">
+                    <group name="note">
+                        <field name="journal_type" invisible="1"/>
+                        <field name="payment_types" invisible="1"/>
+                        <field name="need_bank_deposit" invisible="1"/>
 
-                            <field name="note_salesman"/>
-                            <field name="invoice_ref"/>
-                            <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files"
-                                   nolabel="1"/>
-                        </group>
+                        <field name="note_salesman"/>
+                        <field name="invoice_ref"/>
+                        <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files"
+                               nolabel="1"/>
+                    </group>
 
-                        <group name="other_info">
-                            <field name="cheque_no"
-                                   attrs="{
+                    <group name="other_info">
+                        <field name="cheque_no"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'cheque')], 
                                 	'required': [('payment_types', '=', 'cheque')] 
                                 }"/>
-                            <field name="cheque_date"
-                                   attrs="{
+                        <field name="cheque_date"
+                               attrs="{
                             		'invisible': [('payment_types', '!=', 'cheque')],
                             		'required': [('payment_types', '=', 'cheque')]
                             	}"/>
 
-                            <field name="approval_code"
-                                   attrs="{
+                        <field name="approval_code"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'pos_machine')],
                             		'required': [('payment_types', '=', 'pos_machine')]
                             	}"/>
 
-                            <field name="transaction_id"
-                                   attrs="{
+                        <field name="transaction_id"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'paypall')],
                             		'required': [('payment_types', '=', 'paypall')] 
                             	}"/>
 
-                            <field name="reference_cc"
-                                   attrs="{
+                        <field name="reference_cc"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'online_credit_card')],
                             		'required': [('payment_types', '=', 'online_credit_card')]
                             	}"/>
 
-                            <field name="cross_vendor"
-                                   domain="[('supplier_rank','!=','0')]"
-                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
-                                   attrs="{
+                        <field name="cross_vendor"
+                               domain="[('supplier_rank','!=','0')]"
+                               options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
+                               attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
                                	}"/>
-                            <field name="cross_invoice"
-                                   options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
-                                   domain="[('partner_id','=',cross_vendor),('type', '=', 'in_invoice')]"
-                                   attrs="{
+                        <field name="cross_invoice"
+                               options="{'no_quick_create':True, 'no_create_edit': True, 'limit': 10}"
+                               domain="[('partner_id','=',cross_vendor),('move_type', '=', 'in_invoice')]"
+                               attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
                                	}"/>
-                            <field name="cross_amount"
-                                   attrs="{
+                        <field name="cross_amount"
+                               attrs="{
                                		'invisible': [('payment_types', '!=', 'cross_settlement')],
                                		'required': [('payment_types', '=', 'cross_settlement')]
                                	}"/>
 
-                            <field name="exchange_company_id"
-                                   attrs="{
+                        <field name="exchange_company_id"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'exchange_company')],
                                    	'required': [('payment_types', '=', 'exchange_company')]
                                 }"/>
-                            <field name="receiver_name"
-                                   attrs="{
+                        <field name="receiver_name"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'exchange_company')],
                                    	'required': [('payment_types', '=', 'exchange_company')]
                                 }"/>
-                            <field name="exchange_receipt_no"
-                                   attrs="{
+                        <field name="exchange_receipt_no"
+                               attrs="{
                                 	'invisible': [('payment_types', '!=', 'exchange_company')],
                                    	'required': [('payment_types', '=', 'exchange_company')]
                                 }"/>
-                            <field name="bank_deposit_due_date"
-                                   attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
+                        <field name="bank_deposit_due_date"
+                               attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
+                    </group>
+                </xpath>
 
-
-                        </group>
-                    </xpath>
-
-                    <xpath expr="//group[@name='payment_difference']" position="inside">
-                        <field name="due_date" attrs="{'invisible': [('payment_difference_handling', '!=', 'open')]}"/>
-                    </xpath>
-
-                </data>
+                <xpath expr="//group[@name='payment_difference']" position="inside">
+                    <field name="due_date" attrs="{'invisible': [('payment_difference_handling', '!=', 'open')]}"/>
+                </xpath>
             </field>
         </record>
 
         <record id="aslt_ext_view_account_payment_invoice_form_inherit" model="ir.ui.view">
             <field name="name">account.payment.invoice.form.inherit</field>
             <field name="model">account.payment</field>
-            <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
                 <!--                <xpath expr="//field[@name='invoice_ref']" position='attributes'>-->
                 <!--                    <attribute name="invisible">1</attribute>-->
@@ -438,9 +413,9 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <button name="post" position="replace">
-                    <button string='Register' name="register_payment" type="object" class="btn-primary"/>
-                </button>
+<!--                <button name="post" position="replace">-->
+<!--                    <button string='Register' name="register_payment" type="object" class="btn-primary"/>-->
+<!--                </button>-->
             </field>
         </record>
 
@@ -469,7 +444,6 @@
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_tree"/>
             <field name="arch" type="xml">
-                <data>
                     <field name="payment_method_id" position='attributes'>
                         <attribute name="invisible">1</attribute>
                     </field>
@@ -484,7 +458,6 @@
                     <field name="partner_type" position='after'>
                         <field name="create_uid"/>
                     </field>
-                </data>
             </field>
         </record>
 

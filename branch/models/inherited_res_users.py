@@ -12,7 +12,6 @@ class ResUsers(models.Model):
     def write(self, values):
         if 'branch_id' in values or 'branch_ids' in values:
             self.env['ir.model.access'].sudo().call_cache_clearing_methods()
-            self.env['ir.rule'].sudo().clear_caches()
-            self.has_group.clear_cache(self)
+            self.env['ir.rule'].sudo()
         user = super(ResUsers, self).write(values)
         return user

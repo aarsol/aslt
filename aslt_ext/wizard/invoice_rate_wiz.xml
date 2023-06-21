@@ -25,16 +25,16 @@
 <!--            <field name="binding_view_types">list</field>-->
 <!--      -->
 
-		<act_window
-			id="act_invoice_rate"
-			name="Invoice Rate"
-			res_model="aslt.invoice.rate.wiz"
-			binding_model="account.move"
-			binding_views="form,list"
-			view_mode="form"
-			target="new"
-			groups="account.group_account_manager"
-		/>
+<!--		<act_window-->
+<!--			id="act_invoice_rate"-->
+<!--			name="Invoice Rate"-->
+<!--			res_model="aslt.invoice.rate.wiz"-->
+<!--			binding_model="account.move"-->
+<!--			binding_views="form,list"-->
+<!--			view_mode="form"-->
+<!--			target="new"-->
+<!--			groups="account.group_account_manager"-->
+<!--		/>-->
 
     </data>
 </odoo>
