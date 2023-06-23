@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <report
-            id='report_invoice_wise_profit'
-            string='Invoice Wise Profit'
-            model='account.move'
-            report_type='qweb-html'
-            file='aslt_ext.invoice_wise_profit_report'
-            name='aslt_ext.invoice_wise_profit_report'
-            menu="False"
-        />
+<!--        <report-->
+<!--            id='report_invoice_wise_profit'-->
+<!--            string='Invoice Wise Profit'-->
+<!--            model='account.move'-->
+<!--            report_type='qweb-pdf'-->
+<!--            file='aslt_ext.invoice_wise_profit_report'-->
+<!--            name='aslt_ext.invoice_wise_profit_report'-->
+<!--            menu="False"-->
+<!--        />-->
+
+        <record id="report_invoice_wise_profit" model="ir.actions.report">
+            <field name="name">Invoice Wise Profit</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">aslt_ext.invoice_wise_profit_report</field>
+            <field name="report_file">aslt_ext.invoice_wise_profit_report</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_type">report</field>
+        </record>
 
     </data>
 </odoo>

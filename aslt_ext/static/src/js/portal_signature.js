@@ -1,3 +1,4 @@
+console.log("Hello Portal File")
 odoo.define('portal.signature_form', function (require) {
 'use strict';
 

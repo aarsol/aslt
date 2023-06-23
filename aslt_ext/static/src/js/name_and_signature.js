@@ -1,3 +1,4 @@
+console.log("Hello Signature File")
 odoo.define('web.name_and_signature', function (require) {
 'use strict';
 

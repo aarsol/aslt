@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 class IrActionsServer(models.Model):
     _inherit = 'ir.actions.server'
 
-    state = fields.Selection(selection_add=[('sms', 'Send SMS'), ])
+    state = fields.Selection(selection_add=[('sms', 'Send SMS')], ondelete={"sms": "cascade"})
     sms_template_id = fields.Many2one('send_sms', string="SMS Template", ondelete='set null',
                                       domain="[('model_id', '=', model_id)]",)
 
