@@ -635,3 +635,9 @@ class ResBranch(models.Model):
     _inherit = 'res.branch'
 
     other_details = fields.Html('Other Details')
+
+
+class ResCompany(models.Model):
+    _inherit = 'res.company'
+
+    is_company_details_empty = fields.Boolean()
