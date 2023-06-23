@@ -88,10 +88,11 @@ class AccountMove(models.Model):
         branch_id = False
         if self.env.user.branch_id:
             branch_id = self.env.user.branch_id.id
-        res.update({'branch_id' : branch_id})
+        res.update({'branch_id': branch_id})
         return res
 
     branch_id = fields.Many2one('res.branch', string="Branch")
+
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
@@ -104,7 +105,7 @@ class AccountMoveLine(models.Model):
             branch_id = self._context.get('branch_id')
         elif self.env.user.branch_id:
             branch_id = self.env.user.branch_id.id
-        res.update({'branch_id' : branch_id})
+        res.update({'branch_id': branch_id})
         return res
 
     branch_id = fields.Many2one('res.branch', string="Branch")

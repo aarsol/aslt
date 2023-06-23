@@ -1,13 +1,10 @@
-import pdb
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 from datetime import date, datetime, timedelta
 
 import logging
 
 _logger = logging.getLogger(__name__)
 
-from io import StringIO
 import io
 
 try:
@@ -74,11 +71,14 @@ class AccountTaxReport(models.TransientModel):
         col10.width = 256 * 20
 
         current_time = fields.Datetime.now() + timedelta(hours=+5)
-        worksheet.write_merge(0, 1, 0, 7, 'Tax Report from ' + self.date_from.strftime('%d-%m-%Y') + " To " + self.date_to.strftime('%d-%m-%Y'), style=style_table_header2)
+        worksheet.write_merge(0, 1, 0, 7,
+                              'Tax Report from ' + self.date_from.strftime('%d-%m-%Y') + " To " + self.date_to.strftime(
+                                  '%d-%m-%Y'), style=style_table_header2)
         row = 2
         col = 0
 
-        table_header = ['SR# No.', 'Invoice Ref', 'Invoice Date', 'Payment Ref', 'Payment Date', 'Invoice Amount', 'Payment Amount', 'Tax Amount']
+        table_header = ['SR# No.', 'Invoice Ref', 'Invoice Date', 'Payment Ref', 'Payment Date', 'Invoice Amount',
+                        'Payment Amount', 'Tax Amount']
         for i in range(8):
             worksheet.write(row, col, table_header[i], style=style_table_header2)
             col += 1

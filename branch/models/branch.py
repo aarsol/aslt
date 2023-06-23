@@ -1,7 +1,6 @@
-# Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
+
 
 class ResBranch(models.Model):
     _name = 'res.branch'
@@ -9,7 +8,7 @@ class ResBranch(models.Model):
 
     def copy(self, default=None):
         raise UserError(_('Duplicating a company is not allowed. Please create a new company instead.'))
-    
+
     @api.model
     def _get_user_currency(self):
         currency_id = self.env['res.users'].browse(self._uid).company_id.currency_id
@@ -17,27 +16,32 @@ class ResBranch(models.Model):
 
     name = fields.Char(related='partner_id.name', string='Branch Name', required=True, store=True, readonly=False)
     company_id = fields.Many2one('res.company', required=True)
-    
-    currency_id = fields.Many2one('res.currency', string='Currency', required=True, default=lambda self: self._get_user_currency())
-    #user_ids = fields.Many2many('res.users', 'res_company_users_rel', 'cid', 'user_id', string='Accepted Users')
+
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True,
+                                  default=lambda self: self._get_user_currency())
+    # user_ids = fields.Many2many('res.users', 'res_company_users_rel', 'cid', 'user_id', string='Accepted Users')
     account_no = fields.Char(string='Account No.')
     street = fields.Char(compute='_compute_address', inverse='_inverse_street')
     street2 = fields.Char(compute='_compute_address', inverse='_inverse_street2')
     zip = fields.Char(compute='_compute_address', inverse='_inverse_zip')
     city = fields.Char(compute='_compute_address', inverse='_inverse_city')
-    state_id = fields.Many2one('res.country.state', compute='_compute_address', inverse='_inverse_state', string="Fed. State")
-    country_id = fields.Many2one('res.country', compute='_compute_address', inverse='_inverse_country', string="Country")
+    state_id = fields.Many2one('res.country.state', compute='_compute_address', inverse='_inverse_state',
+                               string="Fed. State")
+    country_id = fields.Many2one('res.country', compute='_compute_address', inverse='_inverse_country',
+                                 string="Country")
     email = fields.Char(related='partner_id.email', store=True, readonly=False)
     phone = fields.Char(related='partner_id.phone', store=True, readonly=False)
     website = fields.Char(related='partner_id.website', readonly=False)
     vat = fields.Char(related='partner_id.vat', string="Tax ID", readonly=False)
     company_registry = fields.Char()
-    
+
     logo = fields.Binary(related='partner_id.image_1920', string="Branch Logo", readonly=False)
     external_report_layout_id = fields.Many2one('ir.ui.view', 'Document Template')
     partner_id = fields.Many2one('res.partner', string='Partner', required=True)
-    report_header = fields.Text(string='Branch Tagline', help="Appears by default on the top right corner of your printed documents (report header).")
-    report_footer = fields.Text(string='Report Footer', translate=True, help="Footer text displayed at the bottom of all reports.")
+    report_header = fields.Text(string='Branch Tagline',
+                                help="Appears by default on the top right corner of your printed documents (report header).")
+    report_footer = fields.Text(string='Report Footer', translate=True,
+                                help="Footer text displayed at the bottom of all reports.")
 
     def _get_company_address_fields(self, partner):
         return {
@@ -108,7 +112,6 @@ class ResBranch(models.Model):
     @api.model
     def create(self, vals):
         if not vals.get('name') or vals.get('partner_id'):
-            self.clear_caches()
             return super(ResBranch, self).create(vals)
         partner = self.env['res.partner'].create({
             'name': vals['name'],
@@ -121,11 +124,10 @@ class ResBranch(models.Model):
         # compute stored fields, for example address dependent fields
         partner.flush()
         vals['partner_id'] = partner.id
-        self.clear_caches()
         branch = super(ResBranch, self).create(vals)
         # The write is made on the user to set it automatically in the multi company group.
         self.env.user.write({'branch_ids': [(4, branch.id)]})
-    
+
         # Make sure that the selected currency is enabled
         if vals.get('currency_id'):
             currency = self.env['res.currency'].browse(vals['currency_id'])
@@ -134,15 +136,14 @@ class ResBranch(models.Model):
         return branch
 
     def write(self, values):
-        self.clear_caches()
         # Make sure that the selected currency is enabled
         if values.get('currency_id'):
             currency = self.env['res.currency'].browse(values['currency_id'])
             if not currency.active:
                 currency.write({'active': True})
-    
+
         return super(ResBranch, self).write(values)
-    
+
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
         args = args or []

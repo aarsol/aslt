@@ -2,33 +2,49 @@ from odoo import api, fields, models, _
 from odoo.exceptions import Warning, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
+
 import pdb
 import json
+
 
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
-    payment_types = fields.Selection([
-        ('paypall', 'Pay Pall'), ('pos_machine', 'Pos Machine'),
-        ('cheque', 'Cheque'), ('exchange_company', 'Exchange Company'), ('cross_settlement', 'Cross Settlement'),
-        ('online_credit_card', 'Online Credit Card')
-    ], string='Payment Type', tracking=True)
+    payment_types = fields.Selection([('paypall', 'Pay Pall'),
+                                      ('pos_machine', 'Pos Machine'),
+                                      ('cheque', 'Cheque'),
+                                      ('exchange_company', 'Exchange Company'),
+                                      ('cross_settlement', 'Cross Settlement'),
+                                      ('online_credit_card', 'Online Credit Card')
+                                      ], string='Payment Type', tracking=True)
 
 
-class account_payment(models.Model):
+class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
-    payment_types = fields.Selection(related='journal_id.payment_types', selection=[
-        ('paypall', 'Pay Pall'), ('pos_machine', 'Pos Machine'),
-        ('cheque', 'Cheque'), ('exchange_company', 'Exchange Company'), ('cross_settlement', 'Cross Settlement'),
-        ('online_credit_card', 'Online Credit Card')
-    ], string='Payment Type', tracking=True)
+    payment_types = fields.Selection(related='journal_id.payment_types', string='Payment Type',
+                                     tracking=True)
+    # selection = [('paypall', 'Pay Pall'),
+    #              ('pos_machine', 'Pos Machine'),
+    #              ('cheque', 'Cheque'),
+    #              ('exchange_company',
+    #               'Exchange Company'),
+    #              ('cross_settlement',
+    #               'Cross Settlement'),
+    #              ('online_credit_card',
+    #               'Online Credit Card')
+    #              ],
+
     due_date = fields.Date(string='Due Date', default=fields.Date.context_today, required=True, readonly=True,
                            states={'draft': [('readonly', False)]}, copy=False, tracking=True)
-
-    journal_type = fields.Selection(related='journal_id.type', selection=[
-        ('cash', 'Cash'), ('sale', 'Sale'), ('bank', 'Bank'), ('general', 'Miscellaneous'), ('purchase', 'Purchase')
-    ], string='Journal Type', tracking=True)
+    journal_type = fields.Selection(related='journal_id.type', string='Journal Type', tracking=True)
+    # , selection = [('cash', 'Cash'),
+    #                ('sale', 'Sale'),
+    #                ('bank', 'Bank'),
+    #                ('general', 'Miscellaneous'),
+    #                ('purchase', 'Purchase')
+    #                ],
 
     invoice_ref = fields.Char('Invoice Reference')
     attachment_ids = fields.Many2many('ir.attachment', string='Files', help='Attachments for the Payments.')
@@ -54,7 +70,6 @@ class account_payment(models.Model):
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
 
-
     @api.depends('journal_id')
     def _compute_saturday(self):
         for rec in self:
@@ -63,8 +78,6 @@ class account_payment(models.Model):
                 today = date.today()
                 rec.bank_deposit_due_date = today + timedelta((5 - today.weekday()) % 7)
                 rec.need_bank_deposit = True
-            # else:
-            #     rec.need_bank_deposit = False
 
     def register_payment(self):
         for rec in self:
@@ -105,26 +118,37 @@ class account_payment(models.Model):
                     inv.update({'invoice_state': 'partial_paid', 'due_date': self.due_date})
                 else:
                     inv.update({'invoice_state': 'full_paid'})
-            template = self.env.ref('aslt_ext.aslt_mail_template_data_payment_receipt')
-            send = template.with_context(mail_create_nolog=True).send_mail(self.id, force_send=True)
 
+            # if payment received from Customer
+            if rec.payment_type == 'inbound':
+                template = self.env.ref('aslt_ext.aslt_mail_template_data_payment_receipt')
+                send = template.with_context(mail_create_nolog=True).send_mail(self.id, force_send=True)
         return True
 
 
 class account_payment_register(models.TransientModel):
     _inherit = 'account.payment.register'
 
-    payment_types = fields.Selection(related='journal_id.payment_types', selection=[
-        ('paypall', 'Pay Pall'), ('pos_machine', 'Pos Machine'),
-        ('cheque', 'Cheque'), ('exchange_company', 'Exchange Company'), ('cross_settlement', 'Cross Settlement'),
-        ('online_credit_card', 'Online Credit Card')
-    ], string='Payment Type', tracking=True)
+    payment_types = fields.Selection(related='journal_id.payment_types', string='Payment Type')
+    # selection = [('paypall', 'Pay Pall'),
+    #              ('pos_machine', 'Pos Machine'),
+    #              ('cheque', 'Cheque'),
+    #              ('exchange_company',
+    #               'Exchange Company'),
+    #              ('cross_settlement',
+    #               'Cross Settlement'),
+    #              ('online_credit_card',
+    #               'Online Credit Card')
+    #              ],
     due_date = fields.Date(string='Due Date', default=fields.Date.context_today, required=True, readonly=True,
-                           states={'draft': [('readonly', False)]}, copy=False, tracking=True)
-
-    journal_type = fields.Selection(related='journal_id.type', selection=[
-        ('cash', 'Cash'), ('sale', 'Sale'), ('bank', 'Bank'), ('general', 'Miscellaneous'), ('purchase', 'Purchase')
-    ], string='Journal Type', tracking=True)
+                           states={'draft': [('readonly', False)]}, copy=False)
+    journal_type = fields.Selection(related='journal_id.type', string='Journal Type')
+    # selection = [('cash', 'Cash'),
+    #              ('sale', 'Sale'),
+    #              ('bank', 'Bank'),
+    #              ('general', 'Miscellaneous'),
+    #              ('purchase', 'Purchase')
+    #              ],
 
     invoice_ref = fields.Char('Invoice Reference')
     attachment_ids = fields.Many2many('ir.attachment', string='Files', help='Attachments for the Payments.')
@@ -165,18 +189,26 @@ class account_payment_register(models.TransientModel):
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    invoice_state = fields.Selection(selection=[
-        ('draft', 'Draft'),
-        ('partial_paid', 'Partial Paid'),
-        ('full_paid', 'Full Paid'), ('not_paid', 'Not Paid'), ('cash_paid', 'Cash Paid')
-    ], string='Invoice Status', required=True, readonly=True, copy=False, tracking=True,
-        default='draft')
+    invoice_state = fields.Selection(selection=[('draft', 'Draft'),
+                                                ('partial_paid', 'Partial Paid'),
+                                                ('full_paid', 'Full Paid'),
+                                                ('not_paid', 'Not Paid'),
+                                                ('cash_paid', 'Cash Paid')
+                                                ], string='Invoice Status', required=True, readonly=True, copy=False,
+                                     default='draft')
 
-    payment_state = fields.Selection(selection=[
+    payment_state = fields.Selection(selection_add=[
         ('draft', 'Draft'),
-        ('bank_paid', 'Bank Paid'), ('cash_paid', 'Cash Paid'), ('done_paid', 'Done Paid')
-    ], string='Payment Status', required=True, readonly=True, copy=False, tracking=True,
-        default='draft')
+        ('bank_paid', 'Bank Paid'),
+        ('cash_paid', 'Cash Paid'),
+        ('done_paid', 'Done Paid')
+    ], ondelete={"draft": "set default"}, default='draft')
+    # payment_state = fields.Selection(selection=[('draft', 'Draft'),
+    #                                             ('bank_paid', 'Bank Paid'),
+    #                                             ('cash_paid', 'Cash Paid'),
+    #                                             ('done_paid', 'Done Paid')
+    #                                             ], string='Payment Status', required=True, readonly=True, copy=False,
+    #                                  tracking=True, default='draft')
 
     due_date = fields.Date('Due Date')
     completion_time = fields.Datetime('Completion Time')
@@ -185,32 +217,42 @@ class AccountMove(models.Model):
 
     marked_user_id = fields.Many2one('res.users', 'Transferred Liability')
     marked_duedate = fields.Date('Liability Due Date')
-    marked_state = fields.Selection(selection=[
-        ('draft', 'Draft'),
-        ('accept', 'Accept'), ('cancel', 'Cancel')
-    ], string='Liability Status', required=True, readonly=True, copy=False, tracking=True,
-        default='draft')
+    marked_state = fields.Selection(selection=[('draft', 'Draft'),
+                                               ('accept', 'Accept'),
+                                               ('cancel', 'Cancel')
+                                               ], string='Liability Status', required=True, readonly=True, copy=False,
+                                    tracking=True, default='draft')
 
     payment_count = fields.Integer(compute="_compute_payment_ids")
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
-    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Return')], 'Service Type', default='one_way')
-    invoice_rate = fields.Selection([('low','Low Rate'),('high','High Rate')],'Invoice Rate',default='low')
-    invoice_sale_id = fields.Many2one('account.move','Linked Sale Invoice')
-    invoice_count = fields.Integer('Count',compute="_compute_inv_count",store=True)
-    income_source = fields.Selection([('door_step', 'DoorStep'), ('walking', 'Walking'), ('web_mail', 'Web Mail')], 'Income Source')
+    service_type = fields.Selection([('one_way', 'One Way'),
+                                     ('written', 'Return')
+                                     ], 'Service Type', default='one_way')
+    invoice_rate = fields.Selection([('low', 'Low Rate'),
+                                     ('high', 'High Rate')
+                                     ], 'Invoice Rate', default='low')
+    invoice_sale_id = fields.Many2one('account.move', 'Linked Sale Invoice')
+    invoice_count = fields.Integer('Count', compute="_compute_inv_count", store=True)
+    income_source = fields.Selection([('door_step', 'DoorStep'),
+                                      ('walking', 'Walking'),
+                                      ('web_mail', 'Web Mail')
+                                      ], 'Income Source')
+
     # reference = fields.Char('Reference')
-    
+    bill_qty = fields.Float('Bill Qty', compute='_compute_bill_qty', store=True)
+    bill_price_unit = fields.Float('Bill Price Unit', compute='_compute_bill_qty', store=True)
+
     def unlink(self):
         if not self.env.user.has_group('account.group_account_manager'):
-            raise UserError(_("Only Accounts Manager the delete the Entry"))
+            raise UserError(_("Only Accounts Manager can delete the Entry"))
         return super(AccountMove, self).unlink()
-    
-    @api.depends('partner_id','partner_id.invoice_ids')
+
+    @api.depends('partner_id', 'partner_id.invoice_ids')
     def _compute_inv_count(self):
         for rec in self:
             rec.invoice_count = len(rec.partner_id.invoice_ids)
-            
+
     def _compute_payment_ids(self):
         for rec in self:
             rec.payment_count = False
@@ -235,6 +277,11 @@ class AccountMove(models.Model):
         #
         # self.activity_schedule('aslt_ext.mail_act_account_request_approval',
         #                        user_id=values.get('marked_user_id', False))
+
+        # Call the Email Sending Function
+        if self.move_type == "out_invoice":
+            if values.get('invoice_date', False):
+                self.prepare_email_values(values)
         return res
 
     # @api.model_create_multi
@@ -249,6 +296,37 @@ class AccountMove(models.Model):
     def get_report_data(self):
         payment_data = json.loads(self.invoice_payments_widget or "{}")
         return payment_data['content'][0]
+
+    @api.depends('invoice_line_ids', 'invoice_line_ids.quantity', 'invoice_line_ids.price_unit')
+    def _compute_bill_qty(self):
+        for rec in self:
+            if rec.invoice_line_ids:
+                line = rec.invoice_line_ids[0]
+                rec.bill_qty = line.quantity
+                rec.bill_price_unit = line.price_unit
+
+    def prepare_email_values(self, values):
+        mail_content = _(""" <p> Dear \n Following Modification Occur in the Invoiced</p> \n """)
+        if values:
+            i = 0
+            for x, y in values.items():
+                if not x == 'line_ids':
+                    i += 1
+                    mail_content += """ <b> %s:- </b> Value of Field <b><u>%s</u></b> is changed to <b><u>%s</u></b> <br/>""" % (
+                        i, x, y)
+        name = self.name
+        if name == '/':
+            name = self.partner_id.name
+
+        main_content = {
+            'subject': _('Modification In Invoice %s') % name,
+            'author_id': self.env.user.partner_id.id,
+            'body_html': mail_content,
+            'email_to': "payments@translationindubai.com",
+            # 'email_to': "sarfraz_g2009@yahoo.com",
+        }
+        mail_id = self.env['mail.mail'].sudo().create(main_content)
+        mail_id.send()
 
 
 class SaleAdvancePaymentInv(models.TransientModel):
@@ -265,19 +343,20 @@ class SaleOrder(models.Model):
 
     def _create_invoices(self, grouped=False, final=False):
         moves = super(SaleOrder, self)._create_invoices(grouped, final)
-        moves.post()
+        moves.action_post()
         return moves
 
     def _get_partner_domain(self):
         if self.env.user.id < 3:
-            domain = [('type', '=', 'invoice'), ]
+            domain = [('type', '=', 'invoice')]
         else:
-            domain = [('type', '=', 'invoice'), '|', ('additional_user_ids', 'in', self.env.user.id), ('user_id', '=', self.env.user.id)]
+            domain = [('type', '=', 'invoice'), '|', ('additional_user_ids', 'in', self.env.user.id),
+                      ('user_id', '=', self.env.user.id)]
             # domain = ['|', '|',
             #     ('user_id', '=', self.env.user.id),
             #     '&', ('user_id', '=', False), ('branch_id', '=', self.env.user.branch_id.id),
             #     '&', ('user_id', '=', False), ('branch_id', '=', False)]
-    
+
         partners = self.env['res.partner'].search(domain)
         partner_list = [x.id for x in partners]
         return partner_list
@@ -307,24 +386,103 @@ class SaleOrder(models.Model):
     partner_list = fields.Many2many('res.partner', default=_get_partner_domain)
     shipment_company_id = fields.Many2one('shipment.company', string="Shipment Company")
     tracking_no = fields.Char('Tracking No')
-    service_type = fields.Selection([('one_way', 'One Way'), ('written', 'Written')], 'Service Type', default='one_way')
+    service_type = fields.Selection([('one_way', 'One Way'),
+                                     ('written', 'Written')
+                                     ], 'Service Type', default='one_way')
 
     completion_time = fields.Datetime('Completion Time')
     days_to_complete = fields.Integer('No of Days to Complete')
     city = fields.Char('City')
-    income_source = fields.Selection([('door_step', 'DoorStep'), ('walking', 'Walking'), ('web_mail', 'Web Mail')], 'Income Source')
+    income_source = fields.Selection([('door_step', 'DoorStep'),
+                                      ('walking', 'Walking'),
+                                      ('web_mail', 'Web Mail')
+                                      ], 'Income Source')
 
-
-    payment_methods = fields.Selection([
-        ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
-        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
-        ('cash_over_counter', 'Cash Over The Counter'),
-        ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
-        string='Payment Methods')
+    payment_methods = fields.Selection([('paypall', 'PayPall Link'),
+                                        ('credit_card_link', 'Credit Card Link'),
+                                        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'),
+                                        ('cash_deposit', 'Cash Deposit'),
+                                        ('cash_over_counter', 'Cash Over The Counter'),
+                                        ('cheque', 'Cheque'),
+                                        ('card_swipe_machine', 'Card Swipe Machine'),
+                                        ('exchange_company', 'Exchange Company')
+                                        ], string='Payment Methods')
 
     @api.onchange('partner_id')
     def _onchange_partner_id_payment(self):
         self.payment_methods = self.partner_id.payment_methods
+
+    @api.model
+    def create(self, vals):
+        template = False
+        result = super(SaleOrder, self).create(vals)
+        # result.send_quotation_create_email()
+        template = self.env.ref('aslt_ext.aslt_mail_template_sale_quotation')
+        if template:
+            result.message_post_with_template(template.id, composition_mode='comment')
+        return result
+
+    def send_quotation_create_email(self):
+        for rec in self:
+            mail_content = _('New a Quotation <b> %s</b>, is Created at <b>%s</b> by the user <b>%s</b>.<br>') % \
+                           (rec.name, self.create_date.strftime("%d-%m-%Y"), self.env.user.name)
+            main_content = {
+                'subject': _('Quotation %s Creation Alert') % rec.name,
+                'author_id': self.env.user.partner_id.id,
+                'body_html': mail_content,
+                'email_to': "info@translationindubai.com",
+            }
+            mail_id = self.env['mail.mail'].sudo().create(main_content)
+            mail_id.send()
+
+    @api.model
+    def cron_24_hours(self):
+        orders_list = []
+        email_orders = False
+        sale_orders = self.env['sale.order'].search([('state', '!=', 'cancel')])
+        for order in sale_orders:
+            invoices = order.order_line.invoice_lines.move_id.filtered(
+                lambda r: r.type in ('out_invoice', 'out_refund'))
+            if not invoices:
+                orders_list.append(order.id)
+        email_orders = self.env['sale.order'].search([('id', 'in', orders_list)], order="create_date asc")
+        if email_orders:
+            mail_content = _(""" 
+                            <table class='table table-bordered'> 
+                                <tr>
+                                    <th>Sr#</th>
+                                    <th>Quotation</th>
+                                    <th>Create Date</th>
+                                    <th>Created By</th>
+                                    <th>State</th>
+                                    <th>Amount</th>
+                                </tr>
+                            """)
+            sr = 0
+            for email_order in email_orders:
+                sr += 1
+                mail_content += """
+                <tr>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                </tr>""" % (
+                    sr, email_order.name, email_order.create_date.strftime("%d-%m-%Y"), email_order.create_uid.name,
+                    email_order.state, email_order.amount_total)
+
+            mail_content += """</table>"""
+
+        main_content = {
+            'subject': _('Non Invoices Quotations %s') % fields.Date.today().strftime('%d-%m-%Y'),
+            'author_id': self.env.user.partner_id.id,
+            'body_html': mail_content,
+            'email_to': "info@translationindubai.com",
+        }
+        mail_id = self.env['mail.mail'].sudo().create(main_content)
+        mail_id.send()
 
 
 class AccountPaymentweekly(models.Model):
@@ -336,20 +494,18 @@ class AccountPaymentweekly(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     date = fields.Date('Date')
-    amount = fields.Monetary(string="Amount",
-                             currency_field='currency_id')
+    amount = fields.Monetary(string="Amount", currency_field='currency_id')
     invoice_ref = fields.Char('Bank Deposit Slip No')
-    journal_id = fields.Many2one('account.journal','Bank Journal')
-    
+    journal_id = fields.Many2one('account.journal', 'Bank Journal')
+
     note_accountant = fields.Char('Note By Accountant')
     account_weekly_line_ids = fields.One2many('account.weekly.payment.line', 'account_weekly_id',
                                               string='Weekly Payment')
     attachment_ids = fields.Many2many('ir.attachment', string='Files', required=1, help='Attachments for the Payments.')
-    state = fields.Selection(selection=[
-        ('draft', 'Draft'),
-        ('approve', 'approve')
-    ], string='Status', required=True, readonly=True, copy=False, tracking=True,
-        default='draft')
+    state = fields.Selection(selection=[('draft', 'Draft'),
+                                        ('approve', 'approve')
+                                        ], string='Status', required=True, readonly=True, copy=False, tracking=True,
+                             default='draft')
 
     _sql_constraints = [('name_invoice_ref', 'UNIQUE (invoice_ref)', 'Bank Deposit Slip No Must be unique.')]
 
@@ -361,11 +517,13 @@ class AccountPaymentweekly(models.Model):
 
             if float_is_zero(total_amount - rec.amount, precision_rounding=1):
                 for pay in rec.account_weekly_line_ids:
-                    search_invoice = self.env['account.move'].sudo().search([('name', '=', pay.payment_id.communication)])
+                    search_invoice = self.env['account.move'].sudo().search(
+                        [('name', '=', pay.payment_id.communication)])
                     if search_invoice:
                         search_invoice.update({'payment_state': 'done_paid'})
                     else:
-                        search_invoice = self.env['account.move'].sudo().search([('ref', '=', pay.payment_id.communication)])
+                        search_invoice = self.env['account.move'].sudo().search(
+                            [('ref', '=', pay.payment_id.communication)])
                         if search_invoice:
                             search_invoice.update({'payment_state': 'done_paid'})
                     pay.payment_id.update({
@@ -403,6 +561,7 @@ class AccountPaymentweekly(models.Model):
 class AccountPaymentweeklyLine(models.Model):
     _name = 'account.weekly.payment.line'
     _description = 'Account Weekly Payment Line'
+
     payment_id = fields.Many2one('account.payment', string='Payment Receipt No')
     amount = fields.Monetary(related='payment_id.amount', string='Amount', currency_field='currency_id')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
@@ -414,7 +573,7 @@ class AccountExchangeCompany(models.Model):
     _name = 'exchange.company'
     _description = 'Exchange Company'
 
-    name = fields.Char('Exchange Company', reqired=True)
+    name = fields.Char('Exchange Company', required=True)
     code = fields.Char('code')
 
 
@@ -422,22 +581,31 @@ class ShipmentCompany(models.Model):
     _name = 'shipment.company'
     _description = 'Shipment Company'
 
-    name = fields.Char('Name', reqired=True)
+    name = fields.Char('Name', required=True)
     code = fields.Char('code')
 
 
 class Partner(models.Model):
     _inherit = 'res.partner'
 
-    payment_methods = fields.Selection([
-        ('paypall', 'PayPall Link'), ('credit_card_link', 'Credit Card Link'),
-        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'), ('cash_deposit', 'Cash Deposit'),
-        ('cash_over_counter', 'Cash Over The Counter'),
-        ('cheque', 'Cheque'), ('card_swipe_machine', 'Card Swipe Machine'), ('exchange_company', 'Exchange Company')],
-        string='Payment Methods')
+    payment_methods = fields.Selection([('paypall', 'PayPall Link'),
+                                        ('credit_card_link', 'Credit Card Link'),
+                                        ('online_bank_transfer', 'Online Bank Transfer(Multiple)'),
+                                        ('cash_deposit', 'Cash Deposit'),
+                                        ('cash_over_counter', 'Cash Over The Counter'),
+                                        ('cheque', 'Cheque'),
+                                        ('card_swipe_machine', 'Card Swipe Machine'),
+                                        ('exchange_company', 'Exchange Company')
+                                        ], string='Payment Methods')
     additional_user_ids = fields.Many2many('res.users', 'sale_person_id', string='Additional Sales Person')
     fax = fields.Char('Fax')
     type = fields.Selection(default='invoice')
+    duplicated_bank_account_partners_count = fields.Integer(compute='_compute_duplicated_bank_account_partners_count')
+
+    @api.depends('bank_ids')
+    def _compute_duplicated_bank_account_partners_count(self):
+        for partner in self:
+            partner.duplicated_bank_account_partners_count = len(partner._get_duplicated_bank_accounts())
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -450,9 +618,6 @@ class Partner(models.Model):
 
         rec = super(Partner, self).create(vals_list)
         return rec
-
-    # _sql_constraints = [
-    #     ('name', 'unique(name)', "Name already exists"), ]
 
 
 class User(models.Model):
@@ -469,11 +634,4 @@ class User(models.Model):
 class ResBranch(models.Model):
     _inherit = 'res.branch'
 
-    # bank_name = fields.Char('Branch Bank Name')
-    # iban_account_no = fields.Char('IBAN Account No')
-    # account_no = fields.Char('Account No')
-    # swift = fields.Char('SWFT')
-    # account_type = fields.Char('Account Type')
-    # bank_address = fields.Char('Bank Address')
-    # paypal_id = fields.Char('Paypal ID')
     other_details = fields.Html('Other Details')

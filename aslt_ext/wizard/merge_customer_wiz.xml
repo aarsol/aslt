@@ -26,15 +26,15 @@
 			</field>
 		</record>
 
-		<act_window
-			id="act_merge_customer"
-			name="Merge Customer"
-			res_model="aslt.customer.merge.wiz"
-			binding_model="res.partner"
-			binding_views="form"
-			view_mode="form"
-			target="new"
-		/>
+<!--		<act_window-->
+<!--			id="act_merge_customer"-->
+<!--			name="Merge Customer"-->
+<!--			res_model="aslt.customer.merge.wiz"-->
+<!--			binding_model="res.partner"-->
+<!--			binding_views="form"-->
+<!--			view_mode="form"-->
+<!--			target="new"-->
+<!--		/>-->
 
     </data>
 </odoo>

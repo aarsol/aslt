@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="email_template_invoice" model="mail.template">
             <field name="name">Invoice: Send by email Aslt</field>
             <field name="model_id" ref="account.model_account_move"/>
-            <field name="email_from">${(object.invoice_user_id.email_formatted or user.email_formatted) |safe}</field>
-            <field name="email_to">${object.partner_id.email|safe}</field>
-            <field name="partner_to">${object.partner_id.id}</field>
-            <field name="subject">${object.company_id.name} Invoice (Ref ${object.name or 'n/a'})</field>
+            <field name="email_from">{{ (object.invoice_user_id.email_formatted or user.email_formatted) |safe }}</field>
+            <field name="email_to">{{ object.partner_id.email |safe }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">{{ object.company_id.name }} Invoice (Ref {{ object.name or 'n/a' }})</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         Dear
                         % if object.partner_id.parent_id:
-                        ${object.partner_id.name} (${object.partner_id.parent_id.name}),
+                        {{ object.partner_id.name }} ({{ object.partner_id.parent_id.name }}),
                         % else:
-                        ${object.partner_id.name},
+                        {{ object.partner_id.name }},
                         % endif
                         <br/>
                         <br/>
                         Here is your
                         % if object.name:
                         invoice
-                        <strong>${object.name}</strong>
+                        <strong>{{ object.name }}</strong>
                         % else:
                         invoice
                         %endif
                         % if object.invoice_origin:
-                        (with reference: ${object.invoice_origin})
+                        (with reference: {{ object.invoice_origin }})
                         % endif
                         amounting in
-                        <strong>${format_amount(object.amount_total, object.currency_id)}</strong>
-                        from ${object.company_id.name}.
-                        % if object.invoice_payment_state == 'paid':
+                        <strong>{{ format_amount(object.amount_total, object.currency_id) }}</strong>
+                        from {{ object.company_id.name }}.
+                        % if object.payment_state == 'paid':
                         This invoice is already paid.
                         % else:
                         Please remit payment at your earliest convenience.
@@ -46,29 +45,28 @@
             </field>
             <!--            <field name="report_template" ref="account_invoices"/>-->
             <field name="report_name">
-                Invoice_${(object.name or '').replace('/','_')}${object.state == 'draft' and '_draft' or ''}
+                Invoice_{{ (object.name or '').replace('/','_') }}{{ object.state == 'draft' }}
             </field>
-            <field name="lang">${object.partner_id.lang}</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="user_signature" eval="False"/>
             <field name="auto_delete" eval="True"/>
         </record>
 
-
         <record id="aslt_mail_template_data_payment_receipt" model="mail.template">
             <field name="name">Payment Receipt: Send by email</field>
             <field name="model_id" ref="account.model_account_payment"/>
-            <field name="subject">${object.company_id.name} Payment Receipt (Ref ${object.name or 'n/a' })</field>
-            <field name="partner_to">${object.partner_id.id}</field>
+            <field name="subject">{{ object.company_id.name }} Payment Receipt (Ref {{object.name or 'n/a' }})</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
             <field name="body_html" type="xml">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Dear ${object.partner_id.name}
+                        Dear {{ object.partner_id.name }}
                         <br/>
                         <br/>
                         Thank you for your payment.
-                        Here is your payment receipt <strong>${(object.name or '').replace('/','-')}</strong> amounting
-                        to <strong>${format_amount(object.amount, object.currency_id)}</strong> from
-                        ${object.company_id.name}.
+                        Here is your payment receipt <strong>{{ (object.name or '').replace('/','-') }}</strong> amounting
+                        to <strong>{{ format_amount(object.amount, object.currency_id) }}</strong> from
+                        {{ object.company_id.name }}.
                         <br/>
                         <br/>
                         Do not hesitate to contact us if you have any questions.
@@ -77,13 +75,13 @@
                         Best regards,
                         <br/>
                         % if user and user.signature:
-                        ${user.signature | safe}
+                        {{ user.signature | safe }}
                         % endif
                     </p>
                 </div>
             </field>
             <field name="report_template" ref="account.action_report_payment_receipt"/>
-            <field name="report_name">${(object.name or '').replace('/','-')}</field>
+            <field name="report_name">{{ (object.name or '').replace('/','-') }}</field>
             <field name="lang">${object.partner_id.lang}</field>
             <field name="auto_delete" eval="True"/>
             <field name="user_signature" eval="False"/>
@@ -92,29 +90,29 @@
         <record id="email_template_invoice_transfer" model="mail.template">
             <field name="name">Invoice Transfer: Send by email Aslt</field>
             <field name="model_id" ref="account.model_account_move"/>
-            <field name="email_from">${(object.invoice_user_id.email_formatted or user.email_formatted) |safe}</field>
-            <field name="email_to">${object.marked_user_id.partner_id.email|safe}</field>
-            <field name="partner_to">${object.marked_user_id.partner_id.id|safe}</field>
-            <field name="subject">Transfer Invoice (Ref ${object.name or 'n/a'})</field>
+            <field name="email_from">{{ (object.invoice_user_id.email_formatted or user.email_formatted) |safe }}</field>
+            <field name="email_to">{{ object.marked_user_id.partner_id.email|safe }}</field>
+            <field name="partner_to">{{ object.marked_user_id.partner_id.id|safe }}</field>
+            <field name="subject">Transfer Invoice (Ref {{ object.name or 'n/a' }})</field>
             <field name="body_html" type="html">
                 <div style="margin:0px;padding: 0px;">
                     <p style="padding:0px;font-size: 13px;">
                         Dear
                         % if object.marked_user_id:
-                        ${object.marked_user_id.name} ,
+                        {{ object.marked_user_id.name }} ,
                         % else:
-                        ${object.marked_user_id.name},
+                        {{ object.marked_user_id.name }},
                         % endif
                         <br/>
                         <br/>
-                        Liability of Invoice ${object.name} has been transfered from ${object.invoice_user_id.name}.
+                        Liability of Invoice ${object.name} has been transfered from {{ object.invoice_user_id.name }}.
                         Please accept it for further action.
-                        <a href="/aslt_ext/invoice_move/${object.id}"
+                        <a href="/aslt_ext/invoice_move/{{ object.id }}"
                            style="padding:5px 10px;color: #FFFFFF; text-decoration: none; background-color: #00A09D; border: 1px solid #875A7B; border-radius: 3px"
                            widget="url">
                             Accept
                         </a>
-                        <a href="/aslt_ext/invoice_move_reject/${object.id}"
+                        <a href="/aslt_ext/invoice_move_reject/{{ object.id }}"
                            style="padding:5px 10px;color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #00A09D; border-radius: 3px"
                            widget="url">
                             Reject
@@ -125,13 +123,30 @@
                 </div>
             </field>
             <field name="report_name">
-                Invoice_${(object.name or '').replace('/','_')}${object.state == 'draft' and '_draft' or ''}
+                Invoice_{{ (object.name or '').replace('/','_') }}{{ object.state == 'draft' and '_draft' or '' }}
             </field>
-            <field name="lang">${object.partner_id.lang}</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="user_signature" eval="False"/>
             <field name="auto_delete" eval="True"/>
         </record>
 
+        <record id="aslt_mail_template_sale_quotation" model="mail.template">
+            <field name="name">Sale Quotation Email Template</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">(Quotation Ref {{ object.name or 'n/a' }})</field>
+            <field name="email_to">info@translationindubai.com</field>
+            <field name="body_html" type="xml">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        New a Quotation is Created.
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">{{ (object.name or '').replace('/','-') }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="user_signature" eval="False"/>
+        </record>
 
     </data>
 </odoo>

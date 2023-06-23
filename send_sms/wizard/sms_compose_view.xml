@@ -17,35 +17,23 @@
             </group>
           </group>
           <footer>
-              <button string="Send" name="send_sms_action"  type="object" class="btn-primary"/>
+              <button string="Send" name="send_sms_action" type="object" class="btn-primary"/>
               <button string="Cancel" class="btn-default" special="cancel" />
           </footer>
-          <script>
-            jQuery('footer button:first').click(function() { alert('Message sent Successfully......'); });
-          </script>
         </form>
       </field>
     </record>
 
-    <!--
+
     <record id="action_sms_compose_wizard" model="ir.actions.act_window">
         <field name="name">Compose SMS</field>
         <field name="res_model">sms.compose</field>
-        <field name="src_model">sms.compose</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-    -->
 
-     <act_window
-			id="action_sms_compose_wizard"
-			name="Compose SMS"
-			res_model="sms.compose"
-			binding_model="sms.compose"
-			binding_views="form"
-			view_mode="form"
-		/>
+
+<!--     <menuitem id="action_sms_compose_wizard" name="Compose SMS" parent="account.account_reports_management_menu" string="SMS Compose Wizard"/>-->
   </data>
 </odoo>

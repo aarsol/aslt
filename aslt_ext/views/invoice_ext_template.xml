@@ -357,15 +357,15 @@
             </xpath>
 
 
-            <xpath expr="//div[@class='page']/p[1]" position='replace'>
-                <span></span>
-            </xpath>
-            <xpath expr="//div[@class='page']/p[2]" position='replace'>
-                <span></span>
-            </xpath>
-            <xpath expr="//div[@class='page']/p[3]" position='replace'>
+<!--            <xpath expr="//div[@class='page']/p[1]" position='replace'>-->
+<!--                <span></span>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//div[@class='page']/p[2]" position='replace'>-->
+<!--                <span></span>-->
+<!--            </xpath>-->
+            <field name="partner_shipping_id" position='after'>
                 <span style="font-size:14px" t-esc="o.branch_id.other_details" t-options='{"widget": "html"}'/>
-            </xpath>
+            </field>
 
 
             <xpath expr="//div[@id='total']//table[1]/t" position='replace'>
