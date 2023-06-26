@@ -21,5 +21,15 @@
             <field name="binding_type">report</field>
         </record>
 
+        <record id="invoice_report_template_branch_wise" model="ir.actions.report">
+            <field name="name">Invoice BranchWise</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">account.report_invoice_document</field>
+            <field name="report_file">account.report_invoice_document</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_type">report</field>
+        </record>
+
     </data>
 </odoo>

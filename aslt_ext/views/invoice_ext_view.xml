@@ -51,7 +51,7 @@
                     <attribute name="groups">base.group_user</attribute>
                 </xpath>
 
-                <field name="invoice_vendor_bill_id" position="after">
+                <field name="ref" position="after">
                     <field name="invoice_sale_id"
                            attrs="{'invisible': [('move_type', '!=', 'in_invoice')]}"
                            domain="[('move_type', '=', 'out_invoice')]"
@@ -413,9 +413,9 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-<!--                <button name="post" position="replace">-->
-<!--                    <button string='Register' name="register_payment" type="object" class="btn-primary"/>-->
-<!--                </button>-->
+                <!--                <button name="post" position="replace">-->
+                <!--                    <button string='Register' name="register_payment" type="object" class="btn-primary"/>-->
+                <!--                </button>-->
             </field>
         </record>
 
@@ -444,20 +444,20 @@
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_tree"/>
             <field name="arch" type="xml">
-                    <field name="payment_method_id" position='attributes'>
-                        <attribute name="invisible">1</attribute>
-                    </field>
-                    <xpath expr="//field[@name='partner_id']" position="after">
-                        <field name="journal_type" invisible="1"/>
-                        <field name="bank_deposit_due_date" attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
-                    </xpath>
+                <field name="payment_method_id" position='attributes'>
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="journal_type" invisible="1"/>
+                    <field name="bank_deposit_due_date" attrs="{'invisible': [('journal_type', '!=', 'cash')]}"/>
+                </xpath>
 
-                    <field name="company_id" position='attributes'>
-                        <attribute name="invisible">1</attribute>
-                    </field>
-                    <field name="partner_type" position='after'>
-                        <field name="create_uid"/>
-                    </field>
+                <field name="company_id" position='attributes'>
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="partner_type" position='after'>
+                    <field name="create_uid"/>
+                </field>
             </field>
         </record>
 
@@ -493,6 +493,23 @@
             <field name="header_line" eval="False"/>
             <field name="header_spacing">38</field>
             <field name="dpi">90</field>
+        </record>
+
+        <!-- Payment View -->
+        <record id="payment_register_form_inherit" model="ir.ui.view">
+            <field name="name">account.payment.register.inherit</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_bank_id" position="after">
+                    <field name="invoice_ref"/>
+                    <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Files" nolabel="1" can_create="true" can_write="true"/>
+                </field>
+                <field name="communication" position="after">
+                    <field name="note_salesman"/>
+                    <field name="note_accountant"/>
+                </field>
+            </field>
         </record>
     </data>
 </odoo>
