@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-<!--        <report-->
-<!--            id='report_invoice_wise_profit'-->
-<!--            string='Invoice Wise Profit'-->
-<!--            model='account.move'-->
-<!--            report_type='qweb-pdf'-->
-<!--            file='aslt_ext.invoice_wise_profit_report'-->
-<!--            name='aslt_ext.invoice_wise_profit_report'-->
-<!--            menu="False"-->
-<!--        />-->
+
+        <record id="custom_paperformat_id" model="report.paperformat">
+            <field name="name">Invoice Paper Format</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">20</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
 
         <record id="report_invoice_wise_profit" model="ir.actions.report">
             <field name="name">Invoice Wise Profit</field>
@@ -19,6 +26,17 @@
             <field name="report_file">aslt_ext.invoice_wise_profit_report</field>
             <field name="binding_model_id" ref="model_account_move"/>
             <field name="binding_type">report</field>
+        </record>
+
+        <record id="invoice_report_template_branch_wise" model="ir.actions.report">
+            <field name="name">Invoice BranchWise</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">aslt_ext.report_invoice_document_branch_wise_id</field>
+            <field name="report_file">aslt_ext.report_invoice_document_branch_wise_id</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="custom_paperformat_id"/>
         </record>
 
     </data>

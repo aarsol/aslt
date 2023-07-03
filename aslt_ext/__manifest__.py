@@ -32,9 +32,10 @@
         'wizard/invoice_wise_profit_wiz.xml',
         'wizard/account_tax_report_view.xml',
 
-        # 'reports/reports.xml',
-        # 'reports/sale_report_templates.xml',
-        # 'reports/invoice_wise_report.xml',
+        'reports/reports.xml',
+        'reports/sale_report_templates.xml',
+        'reports/invoice_report_templates.xml',
+        'reports/invoice_wise_report.xml'
 
         # 'data/invoice_mail_template.xml',
 
