@@ -82,23 +82,24 @@ class AccountTaxReport(models.TransientModel):
         for i in range(8):
             worksheet.write(row, col, table_header[i], style=style_table_header2)
             col += 1
-
-        payments = self.env['account.payment'].search([('payment_date', '>=', self.date_from),
-                                                       ('payment_date', '<=', self.date_to),
+        payments = self.env['account.payment'].search([('date', '>=', self.date_from),
+                                                       ('date', '<=', self.date_to),
                                                        ('payment_type', '=', 'inbound'),
-                                                       ('partner_type', '=', 'customer')], order='payment_date')
+                                                       ('partner_type', '=', 'customer')], order='date')
         sr = 1
         total_tax = 0
 
         if payments:
             for payment in payments:
-                if payment.invoice_ids:
-                    for invoice in payment.invoice_ids:
+                # if payment.invoice_ids:
+                # Changes By Fahad
+                if payment.reconciled_invoice_ids:
+                    # for invoice in payment.invoice_ids:
+                    for invoice in payment.reconciled_invoice_ids:
                         if invoice.amount_tax > 0:
                             row += 1
                             col = 0
                             total_tax += invoice.amount_tax
-
                             worksheet.write(row, col, sr, style=style_date_col2)
                             col += 1
                             worksheet.write(row, col, invoice.name, style=style_date_col2)
@@ -107,7 +108,7 @@ class AccountTaxReport(models.TransientModel):
                             col += 1
                             worksheet.write(row, col, payment.name, style=style_date_col2)
                             col += 1
-                            worksheet.write(row, col, payment.payment_date.strftime("%d-%m-%Y"), style=style_date_col2)
+                            worksheet.write(row, col, payment.date.strftime("%d-%m-%Y"), style=style_date_col2)
                             col += 1
                             worksheet.write(row, col, invoice.amount_total, style=style_date_col2)
                             col += 1

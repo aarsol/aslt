@@ -11,24 +11,28 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='company_id']"
                        position="before">
-                        <!-- Add your fields or attributes here -->
-                        <field name="branch_id"/>
+                    <!-- Add your fields or attributes here -->
+                    <field name="branch_id"/>
                 </xpath>
-                
+
+                <xpath expr="//field[@name='invoice_line_ids']//field[@name='name']" position="after">
+                    <field name="branch_id" />
+                </xpath>
+
                 <field name="partner_id" position="replace">
-		            <field name="partner_id" widget="res_partner_many2one" nolabel="1"
-		                context="{
+                    <field name="partner_id" widget="res_partner_many2one" nolabel="1"
+                           context="{
 		                  'res_partner_search_mode': 
 		                  	(context.get('default_type', 'entry') in ('out_invoice', 'out_refund', 'out_receipt') and 'customer') 
 		                  	or 
 		                  	(context.get('default_type', 'entry') in ('in_invoice', 'in_refund', 'in_receipt') and 'supplier') or False,
 		                   'show_address': 1, 'default_is_company': True, 'show_vat': True}"
-		                options='{"always_reload": True, "no_quick_create": True}'
-		                attrs="{'invisible': [(
+                           options='{"always_reload": True, "no_quick_create": True}'
+                           attrs="{'invisible': [(
 		                	'move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt')
 		                )]}"
-		             />
-		       </field>
+                    />
+                </field>
 
             </field>
         </record>
@@ -41,11 +45,10 @@
             <field name="inherit_id" ref="account.view_account_invoice_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//group" position="inside">
-                        <filter string="Branch" name="branch"  context="{'group_by':'branch_id'}"/>
+                    <filter string="Branch" name="branch" context="{'group_by':'branch_id'}"/>
                 </xpath>
             </field>
         </record>
-
 
 
         <record id="view_move_line_tree_inherit_branch" model="ir.ui.view">
@@ -53,7 +56,7 @@
             <field name="model">account.move.line</field>
             <field name="inherit_id" ref="account.view_move_line_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='partner_id']" position="after">
+                <xpath expr="//field[@name='name']" position="after">
                     <field name="branch_id"/>
                 </xpath>
             </field>
@@ -65,7 +68,7 @@
             <field name="inherit_id" ref="account.view_account_move_line_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//group" position="inside">
-                    <filter string="Branch" name="branch"  context="{'group_by':'branch_id'}"/>
+                    <filter string="Branch" name="branch" context="{'group_by':'branch_id'}"/>
                 </xpath>
             </field>
         </record>

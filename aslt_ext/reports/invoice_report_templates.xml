@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_invoice_document_branch_wise_id">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <div class="row" style="margin:0 0 0 0;">
+                            <div class="col-12" style="text-align:center;">
+                                <t t-if="o.branch_id.name == 'Prime Quality Translation and Interpretation LLC'">
+                                    <img t-if="o.branch_id.logo"
+                                         t-att-src="image_data_uri(o.branch_id.logo)"
+                                         style="height:300px;width:100%;margin:10px 0 0 0;"
+                                         alt="Logo"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-if="o.branch_id.logo"
+                                         t-att-src="image_data_uri(o.branch_id.logo)"
+                                         style="height:230px;width:500px;margin:10px 0 0 0;"
+                                         alt="Logo"/>
+                                </t>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row" style="text-align:center;">
+                            <div class="col-12" style="">
+                                <h1 style="color:black;width:100%;padding:3px;margin:1% 0 0 0;"
+                                    id="invoice_branch">TAX INVOICE
+                                </h1>
+                            </div>
+                        </div>
+                        <br/>
+                        <!-- From & To -->
+                        <div class="row" style="margin:2% 0 0 0.3%;">
+                            <div style="width:400px;">
+                                <div style="color:black;width:450px;padding:4px;margin:0 0 0 -5px;font-size:25px;">
+                                    <b>From:</b>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.branch_id"/>
+                                </div>
+                                <div>
+                                    <strong style="font-size:25px;">VAT TRN No.</strong>
+                                    <span style="font-size:25px;" t-field="o.branch_id.vat"/>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.branch_id.street"/>
+                                    <span style="font-size:25px;" t-field="o.branch_id.city"/>
+                                    <span style="font-size:25px;" t-field="o.branch_id.state_id"/>
+                                    <span style="font-size:25px;" t-field="o.branch_id.zip"/>
+                                </div>
+                                <div>
+                                    <t t-if="o.branch_id.phone">
+                                        <span style="font-size:25px;" t-field="o.branch_id.phone"/>
+                                        |
+                                    </t>
+                                    <t t-if="o.branch_id.email">
+                                        <span style="font-size:25px;" t-field="o.branch_id.email"/>
+                                        |
+                                    </t>
+                                    <t t-if="o.branch_id.state_id">
+                                        <span style="font-size:25px;" t-field="o.branch_id.state_id"/>
+                                        /
+                                    </t>
+                                    <t t-if="o.branch_id.country_id">
+                                        <span style="font-size:25px;" t-field="o.branch_id.country_id"/>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!--ship to-->
+                            <div style="width:360px; margin:0 0 0 30%;">
+                                <div style="color:black;width:360px;padding:4px;margin:0 0 0 -5px;font-size:25px;">
+                                    <b>To:</b>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.partner_id"/>
+                                </div>
+                                <div>
+                                    <t t-if="o.partner_id.phone">
+                                        <span style="font-size:25px;" t-field="o.partner_id.phone"/>
+                                        |
+                                    </t>
+                                    <t t-if="o.partner_id.country_id">
+                                        <span style="font-size:25px;" t-field="o.partner_id.country_id"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                        <hr style="border:1px solid black;"/>
+                        <!-- Invoice No. & Table -->
+                        <div class="page">
+                            <h1>
+                                <span style="font-size:45   px;" t-if="o.move_type == 'out_invoice'">Invoice No:</span>
+                                <span style="font-size:45px;font-weight:500;" t-if="o.name != '/'" t-field="o.name"/>
+                            </h1>
+
+                            <div id="information" class="row mt-3 mb-3" style="font-size:25px;">
+                                <div class="ml-4">
+                                    <strong>Completion Days:</strong>
+                                    <t t-if="o.invoice_date">
+                                        <p class="m-0" t-field="o.invoice_date"/>
+                                    </t>
+                                </div>
+                                <div class="" style="margin:0 0 0 -80%;">
+                                    <strong>Invoice Date:</strong>
+                                    <t t-if="o.invoice_date">
+                                        <p class="m-0" t-field="o.invoice_date"/>
+                                    </t>
+                                </div>
+                                <div style="margin:0 0 0 -80%;">
+                                    <strong>Due Date:</strong>
+                                    <t t-if="o.invoice_date_due">
+                                        <p class="m-0" t-field="o.invoice_date_due"/>
+                                    </t>
+                                </div>
+                                <div class="">
+                                    <t t-if="o.invoice_origin">
+                                        <strong>Source:</strong>
+                                    </t>
+                                    <t t-if="o.invoice_origin">
+                                        <p class="m-0" t-field="o.invoice_origin"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Table Start -->
+                        <table class="table table-borderless" style="width:100%;margin-top:3%;font-size:25px;">
+                            <thead style="border-top:1px solid black;border-bottom:1px solid lightgray;">
+                                <tr style="margin:5px 0 5px 0;">
+                                    <th style="padding:3px;width:50px;">
+                                        Code
+                                    </th>
+                                    <th style="padding:3px;width:80px;">
+                                        Description
+                                    </th>
+                                    <th style="padding:3px;width:50px;">
+                                        Quantity
+                                    </th>
+                                    <th style="padding:3px;width:80px;">
+                                        Unit Price
+                                    </th>
+                                    <th style="padding:3px;width:50px;">
+                                        Taxes
+                                    </th>
+                                    <th style="padding:3px;width:50px;">
+                                        Total Price
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <t t-set="rate" t-value="0.00"/>
+                            <t t-set="other_rate1" t-value="0.00"/>
+                            <!--Will Apply Loop here-->
+                            <t t-set="i" t-value="1"/>
+                            <t t-set="discount_totals" t-value="0"/>
+                            <t t-foreach="o.invoice_line_ids" t-as="c">
+                                <t t-set="discount_totals"
+                                   t-value="((c.quantity)*(c.price_unit)-(c.price_subtotal)+(discount_totals))"/>
+                                <tr style="text-align:center;">
+                                    <td style="padding:3px;text-align:left;">
+                                        <span t-field="c.product_id"/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.name"/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.quantity"/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.price_unit" t-options='{"widget": "float","precision":2}'/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <t t-foreach="c.tax_ids" t-as="tax">
+                                            <span t-field="tax.name"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.price_subtotal"/>
+                                    </td>
+
+                                </tr>
+                                <t t-set="index" t-value="0"/>
+                                <t t-foreach="c.tax_ids" t-as="tax">
+                                    <t t-if="index==0">
+                                        <t t-set="rate"
+                                           t-value="rate+((tax.amount/100)*c.price_subtotal)"/>
+                                        <t t-set="index" t-value="index+1"/>
+                                    </t>
+                                </t>
+                                <t t-set="index" t-value="0"/>
+                                <t t-foreach="c.tax_ids" t-as="tax">
+                                    <t t-if="index==1">
+                                        <t t-set="other_rate1"
+                                           t-value="other_rate1+((tax.amount/100)*c.price_subtotal)"/>
+                                    </t>
+                                    <t t-set="index" t-value="index+1"/>
+                                </t>
+                            </t>
+                        </table>
+                        <!-- Calculations Here -->
+                        <div style="margin:5% 0 0 66%;font-size:25px;">
+                            <table style="width:100%;" class="table-borderless">
+                                <tr style="text-align:center;border-top:1px solid black;border-bottom:1px solid lightgray;">
+                                    <td style="padding:3px;width:100px;margin:5px 0 5px 0;">
+                                        Subtotal
+                                    </td>
+                                    <td>
+                                        <span t-field="o.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <tr style="text-align:center;border-bottom:1px solid black;">
+                                    <td style="padding:3px;width:120px;margin:5px 0 5px 0;">
+                                        VAT 5%
+                                        <t t-if="o.branch_id.vat">
+                                            <div>
+                                                <p t-field="o.branch_id.vat"/>
+                                            </div>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t t-esc="rate" t-options='{"widget": "float","precision":2}'/>
+                                    </td>
+                                </tr>
+                                <tr style="text-align:center;margin-top:5px;">
+                                    <td style="padding:3px;width:100px;">
+                                        <b>Total</b>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <t t-if="o.branch_id.other_details">
+                                <span style="font-size:25px;" t-field="o.branch_id.other_details"/>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

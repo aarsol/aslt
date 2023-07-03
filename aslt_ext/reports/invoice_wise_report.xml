@@ -7,9 +7,7 @@
                 font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
                 border-collapse: collapse;
                 width: 100%;
-
                 }
-
                 #invoice_report td, #invoice_report th {
                 border: 1px solid #ddd;
                 padding: 8px;
@@ -55,7 +53,7 @@
                         <th style="text-align:center; width:10%">Amount</th>
                         <th style="text-align:center; width:10%">Difference</th>
                     </tr>
-                    <t t-foreach="sale_orders" t-as="rec">
+                    <t t-foreach="docs" t-as="rec">
                         <t t-set="difference" t-value="rec.amount_total"/>
                         <t t-if="rec.invoice_sale_id">
                             <t t-set="difference" t-value="rec.invoice_sale_id.amount_total-rec.amount_total"/>
@@ -102,5 +100,4 @@
             </div>
         </t>
     </template>
-
 </odoo>
