@@ -122,7 +122,6 @@
                         <field name="partner_list" invisible="1"/>
                         <field name="partner_id"
                                context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
-                               domain="[('id','in',partner_list)]"
                                options='{"always_reload": True, "no_create": True}'
                         />
                     </xpath>

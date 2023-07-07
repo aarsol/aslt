@@ -2,11 +2,11 @@ from odoo import api, fields, models, _
 from odoo.exceptions import Warning, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare, safe_eval, date_utils, email_split, email_escape_char, email_re
 from datetime import datetime, date, timedelta
-from dateutil.relativedelta import relativedelta
-
-import pdb
 import json
+import logging
+from itertools import groupby
 
+_logger = logging.getLogger(__name__)
 
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
@@ -69,6 +69,20 @@ class AccountPayment(models.Model):
 
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
+
+    def get_attachment_ids(self):
+        print("Start")
+        for rec in self.search([('note_accountant', '!=', False)]):
+            self.env.cr.execute(f"""
+            select id from ir_attachment where res_model='account.payment';
+            """)
+            res = self.env.cr.dictfetchall()
+            for res_id in res:
+                attachment_id = res_id['id']
+                attachment = self.env['ir.attachment'].browse(attachment_id)
+                rec.attachment_ids = [(4, attachment.id)]
+                _logger.info(f"Attachments are attached here: {rec.attachment_ids}")
+                print("Attachment attached!")
 
     @api.depends('journal_id')
     def _compute_saturday(self):
@@ -226,7 +240,9 @@ class account_payment_register(models.TransientModel):
 
                 open_amount_currency = self.payment_difference * (-1 if self.payment_type == 'outbound' else 1)
                 open_balance = self.company_id.currency_id.round(open_amount_currency * conversion_rate)
-                early_payment_values = self.env['account.move']._get_invoice_counterpart_amls_for_early_payment_discount(epd_aml_values_list, open_balance)
+                early_payment_values = self.env[
+                    'account.move']._get_invoice_counterpart_amls_for_early_payment_discount(epd_aml_values_list,
+                                                                                             open_balance)
                 for aml_values_list in early_payment_values.values():
                     payment_vals['write_off_line_vals'] += aml_values_list
 
@@ -234,7 +250,7 @@ class account_payment_register(models.TransientModel):
                 if self.payment_type == 'inbound':
                     # Receive money.
                     write_off_amount_currency = self.payment_difference
-                else: # if self.payment_type == 'outbound':
+                else:  # if self.payment_type == 'outbound':
                     # Send money.
                     write_off_amount_currency = -self.payment_difference
 
@@ -411,19 +427,20 @@ class SaleOrder(models.Model):
         return moves
 
     def _get_partner_domain(self):
-        if self.env.user.id < 3:
-            domain = [('type', '=', 'invoice')]
-        else:
-            domain = [('type', '=', 'invoice'), '|', ('additional_user_ids', 'in', self.env.user.id),
-                      ('user_id', '=', self.env.user.id)]
-            # domain = ['|', '|',
-            #     ('user_id', '=', self.env.user.id),
-            #     '&', ('user_id', '=', False), ('branch_id', '=', self.env.user.branch_id.id),
-            #     '&', ('user_id', '=', False), ('branch_id', '=', False)]
-
-        partners = self.env['res.partner'].search(domain)
-        partner_list = [x.id for x in partners]
-        return partner_list
+        pass
+        # if self.env.user.id < 3:
+        #     domain = [('type', '=', 'invoice')]
+        # else:
+        #     domain = [('type', '=', 'invoice'), '|', ('additional_user_ids', 'in', self.env.user.id),
+        #               ('user_id', '=', self.env.user.id)]
+        #     # domain = ['|', '|',
+        #     #     ('user_id', '=', self.env.user.id),
+        #     #     '&', ('user_id', '=', False), ('branch_id', '=', self.env.user.branch_id.id),
+        #     #     '&', ('user_id', '=', False), ('branch_id', '=', False)]
+        #
+        # partners = self.env['res.partner'].search(domain)
+        # partner_list = [x.id for x in partners]
+        # return partner_list
 
     def action_confirm(self):
         if self._get_forbidden_state_confirm() & set(self.mapped('state')):
@@ -476,77 +493,78 @@ class SaleOrder(models.Model):
     def _onchange_partner_id_payment(self):
         self.payment_methods = self.partner_id.payment_methods
 
-    @api.model
-    def create(self, vals):
-        template = False
-        result = super(SaleOrder, self).create(vals)
-        # result.send_quotation_create_email()
-        template = self.env.ref('aslt_ext.aslt_mail_template_sale_quotation')
-        if template:
-            result.message_post_with_template(template.id, composition_mode='comment')
-        return result
+    # @api.model
+    # def create(self, vals):
+    #     template = False
+    #     result = super(SaleOrder, self).create(vals)
+    #     # result.send_quotation_create_email()
+    #     template = self.env.ref('aslt_ext.aslt_mail_template_sale_quotation')
+    #     if template:
+    #         result.message_post_with_template(template.id, composition_mode='comment')
+    #     return result
 
     def send_quotation_create_email(self):
-        for rec in self:
-            mail_content = _('New a Quotation <b> %s</b>, is Created at <b>%s</b> by the user <b>%s</b>.<br>') % \
-                           (rec.name, self.create_date.strftime("%d-%m-%Y"), self.env.user.name)
-            main_content = {
-                'subject': _('Quotation %s Creation Alert') % rec.name,
-                'author_id': self.env.user.partner_id.id,
-                'body_html': mail_content,
-                'email_to': "info@translationindubai.com",
-            }
-            mail_id = self.env['mail.mail'].sudo().create(main_content)
-            mail_id.send()
+        pass
+        # for rec in self:
+        #     mail_content = _('New a Quotation <b> %s</b>, is Created at <b>%s</b> by the user <b>%s</b>.<br>') % \
+        #                    (rec.name, self.create_date.strftime("%d-%m-%Y"), self.env.user.name)
+        #     main_content = {
+        #         'subject': _('Quotation %s Creation Alert') % rec.name,
+        #         'author_id': self.env.user.partner_id.id,
+        #         'body_html': mail_content,
+        #         'email_to': "info@translationindubai.com",
+        #     }
+        #     mail_id = self.env['mail.mail'].sudo().create(main_content)
+        #     mail_id.send()
 
-    @api.model
-    def cron_24_hours(self):
-        orders_list = []
-        email_orders = False
-        sale_orders = self.env['sale.order'].search([('state', '!=', 'cancel')])
-        for order in sale_orders:
-            invoices = order.order_line.invoice_lines.move_id.filtered(
-                lambda r: r.type in ('out_invoice', 'out_refund'))
-            if not invoices:
-                orders_list.append(order.id)
-        email_orders = self.env['sale.order'].search([('id', 'in', orders_list)], order="create_date asc")
-        if email_orders:
-            mail_content = _(""" 
-                            <table class='table table-bordered'> 
-                                <tr>
-                                    <th>Sr#</th>
-                                    <th>Quotation</th>
-                                    <th>Create Date</th>
-                                    <th>Created By</th>
-                                    <th>State</th>
-                                    <th>Amount</th>
-                                </tr>
-                            """)
-            sr = 0
-            for email_order in email_orders:
-                sr += 1
-                mail_content += """
-                <tr>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                </tr>""" % (
-                    sr, email_order.name, email_order.create_date.strftime("%d-%m-%Y"), email_order.create_uid.name,
-                    email_order.state, email_order.amount_total)
-
-            mail_content += """</table>"""
-
-        main_content = {
-            'subject': _('Non Invoices Quotations %s') % fields.Date.today().strftime('%d-%m-%Y'),
-            'author_id': self.env.user.partner_id.id,
-            'body_html': mail_content,
-            'email_to': "info@translationindubai.com",
-        }
-        mail_id = self.env['mail.mail'].sudo().create(main_content)
-        mail_id.send()
+    # @api.model
+    # def cron_24_hours(self):
+    #     orders_list = []
+    #     email_orders = False
+    #     sale_orders = self.env['sale.order'].search([('state', '!=', 'cancel')])
+    #     for order in sale_orders:
+    #         invoices = order.order_line.invoice_lines.move_id.filtered(
+    #             lambda r: r.type in ('out_invoice', 'out_refund'))
+    #         if not invoices:
+    #             orders_list.append(order.id)
+    #     email_orders = self.env['sale.order'].search([('id', 'in', orders_list)], order="create_date asc")
+    #     if email_orders:
+    #         mail_content = _("""
+    #                         <table class='table table-bordered'>
+    #                             <tr>
+    #                                 <th>Sr#</th>
+    #                                 <th>Quotation</th>
+    #                                 <th>Create Date</th>
+    #                                 <th>Created By</th>
+    #                                 <th>State</th>
+    #                                 <th>Amount</th>
+    #                             </tr>
+    #                         """)
+    #         sr = 0
+    #         for email_order in email_orders:
+    #             sr += 1
+    #             mail_content += """
+    #             <tr>
+    #                 <td>%s</td>
+    #                 <td>%s</td>
+    #                 <td>%s</td>
+    #                 <td>%s</td>
+    #                 <td>%s</td>
+    #                 <td>%s</td>
+    #             </tr>""" % (
+    #                 sr, email_order.name, email_order.create_date.strftime("%d-%m-%Y"), email_order.create_uid.name,
+    #                 email_order.state, email_order.amount_total)
+    #
+    #         mail_content += """</table>"""
+    #
+    #     main_content = {
+    #         'subject': _('Non Invoices Quotations %s') % fields.Date.today().strftime('%d-%m-%Y'),
+    #         'author_id': self.env.user.partner_id.id,
+    #         'body_html': mail_content,
+    #         'email_to': "info@translationindubai.com",
+    #     }
+    #     mail_id = self.env['mail.mail'].sudo().create(main_content)
+    #     mail_id.send()
 
 
 class AccountPaymentweekly(models.Model):

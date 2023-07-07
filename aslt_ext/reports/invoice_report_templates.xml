@@ -76,6 +76,19 @@
                                 <div>
                                     <span style="font-size:25px;" t-field="o.partner_id"/>
                                 </div>
+
+                                <div>
+                                    <strong style="font-size:25px;">VAT:</strong>
+                                    <span style="font-size:25px;" t-field="o.partner_id.vat"/>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.partner_id.street"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.street2"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.city"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.state_id"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.zip"/>
+                                </div>
+
                                 <div>
                                     <t t-if="o.partner_id.phone">
                                         <span style="font-size:25px;" t-field="o.partner_id.phone"/>
@@ -91,7 +104,7 @@
                         <!-- Invoice No. & Table -->
                         <div class="page">
                             <h1>
-                                <span style="font-size:45   px;" t-if="o.move_type == 'out_invoice'">Invoice No:</span>
+                                <span style="font-size:45px;" t-if="o.move_type == 'out_invoice'">Invoice No:</span>
                                 <span style="font-size:45px;font-weight:500;" t-if="o.name != '/'" t-field="o.name"/>
                             </h1>
 
@@ -237,6 +250,28 @@
                                 <span style="font-size:25px;" t-field="o.branch_id.other_details"/>
                             </t>
                         </div>
+                        <div t-attf-class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+                             t-att-data-oe-lang="o and o.env.context.get('lang')">
+                            <t t-out="0"/>
+                        </div>
+<!--                        <style>-->
+<!--                            #page_break {-->
+<!--                            page-break-inside: avoid;-->
+<!--                            border:1px solid red;-->
+<!--                            }-->
+<!--                            #page_break::after {-->
+<!--                            content: "";-->
+<!--                            display: block;-->
+<!--                            height: 100px;-->
+<!--                            margin-bottom: -100px;-->
+<!--                            }-->
+<!--                        </style>-->
+<!--                        <div style="position:absolute;right:15px;top:1px;bottom:0px;border:1px solid red">-->
+<!--                            <span>Page</span>-->
+<!--                            <span class="page"/>-->
+<!--                            of-->
+<!--                            <span class="topage"/>-->
+<!--                        </div>-->
                     </t>
                 </t>
             </t>
