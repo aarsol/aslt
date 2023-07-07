@@ -70,8 +70,10 @@ class AccountPayment(models.Model):
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
 
-    # def get_attachment_ids(self):
-    #     print("Start")
+    def get_attachment_ids(self):
+        _logger.info("Attachments went wrong so just passing it now")
+        pass
+        # print("Start")
     #     for rec in self.search([('note_accountant', '!=', False)]):
     #         self.env.cr.execute(f"""
     #         select id from ir_attachment where res_model='account.payment';
