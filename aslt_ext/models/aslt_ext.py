@@ -70,21 +70,18 @@ class AccountPayment(models.Model):
     bank_deposit_due_date = fields.Date('Bank Deposit Due Date', compute='_compute_saturday', store=True)
     need_bank_deposit = fields.Boolean(default=False)
 
-    def get_attachment_ids(self):
-        _logger.info("Attachments went wrong so just passing it now")
-        pass
-        # print("Start")
-    #     for rec in self.search([('note_accountant', '!=', False)]):
-    #         self.env.cr.execute(f"""
-    #         select id from ir_attachment where res_model='account.payment';
-    #         """)
-    #         res = self.env.cr.dictfetchall()
-    #         for res_id in res:
-    #             attachment_id = res_id['id']
-    #             attachment = self.env['ir.attachment'].browse(attachment_id)
-    #             rec.attachment_ids = [(4, attachment.id)]
-    #             _logger.info(f"Attachments are attached here: {rec.attachment_ids}")
-    #             print("Attachment attached!")
+    def get_attachment_ids(self, start, end, ign):
+        print("Start")
+        for rec in self.search([('note_accountant', '!=', False)], offset=ign):
+            self.env.cr.execute(f"""
+            select id from ir_attachment where res_model='account.payment';
+            """)
+            res = self.env.cr.dictfetchall()
+            for res_id in res[start:end]:
+                attachment_id = res_id['id']
+                attachment = self.env['ir.attachment'].browse(attachment_id)
+                rec.attachment_ids = [(4, attachment.id)]
+                _logger.info(f"Attachments are attached here: {rec.attachment_ids}")
 
     @api.depends('journal_id')
     def _compute_saturday(self):
