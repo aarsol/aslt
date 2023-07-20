@@ -39,5 +39,18 @@
             <field name="paperformat_id" ref="custom_paperformat_id"/>
         </record>
 
+        <record id="sale_report_template_branch_wise" model="ir.actions.report">
+            <field name="name">Sale Quotation - ASLT</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">aslt_ext.report_sale_document_branch_wise_id</field>
+            <field name="report_file">aslt_ext.report_sale_document_branch_wise_id</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment">(object.state == 'draft') and ((object.name or 'Quotation').replace('/','_')+'.pdf')</field>
+            <field name="binding_model_id" ref="model_sale_order"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="custom_paperformat_id"/>
+        </record>
+        
     </data>
 </odoo>
