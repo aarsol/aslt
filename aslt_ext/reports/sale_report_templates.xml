@@ -1,119 +1,378 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_saleorder_document_aslt">
-        <!-- inherit_id="sale.report_saleorder_document" -->
-        <t t-call="web.html_container">
-            <t t-call="web.external_layout">
-                <xpath expr="//t[@t-set='address']" position="replace">
-                </xpath>
-                <xpath expr="//div[@class='page']" position="before">
-                    <div class="row" style="margin-top:-15px" t-if="doc.branch_id and doc.branch_id.logo">
-                        <div class="col-12 mb4 text-center" name="moto">
-                            <!-- Remarked By Sarfraz@05-01-2022-->
-                            <!--                    <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>-->
-                            <img t-if="doc.branch_id.logo" t-att-src="image_data_uri(doc.branch_id.logo)"
-                                 style="display:block; height: 200px; margin:auto" alt="Logo"/>
-
-                        </div>
-                    </div>
-                    <p style="text-align:center; font-size:33px">
-                        <span>Order</span>
-                    </p>
-                    <div class="row" style="" t-if="doc.branch_id">
-                        <div class="col-8" name="company_address" style="font-size:16px">
-                            <div style="font-weight:bold">From:</div>
-                            <div t-field="doc.branch_id.name"/>
-                            <div style="">VAT TRN No.
-                                <span t-field="doc.branch_id.vat"/>
-                            </div>
-                            <div t-field="doc.branch_id.street"/>
-                            <div>
-                                <span>
-                                    <span t-field="doc.branch_id.phone"/>
-                                    |
-                                    <span t-field="doc.branch_id.email"/>
-                                    |
-                                    <span t-field="doc.branch_id.city"/>
-                                    <span t-field="doc.branch_id.state_id.name"/>
-                                </span>
-                            </div>
-                            <div>
-                                <span t-field="doc.branch_id.zip"/>
-                            </div>
-                            <div>
-                                <span t-field="doc.branch_id.country_id.name"/>
+    <data>
+        <template id="report_sale_document_branch_wise_id">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <div class="row" style="margin:0 0 0 0;">
+                            <div class="col-12" style="text-align:center;">
+                                <t t-if="o.branch_id.name == 'Prime Quality Translation and Interpretation LLC'">
+                                    <img t-if="o.branch_id.logo"
+                                         t-att-src="image_data_uri(o.branch_id.logo)"
+                                         style="height:300px;width:100%;margin:10px 0 0 0;"
+                                         alt="Logo"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-if="o.branch_id.logo"
+                                         t-att-src="image_data_uri(o.branch_id.logo)"
+                                         style="height:230px;width:500px;margin:10px 0 0 0;"
+                                         alt="Logo"/>
+                                </t>
                             </div>
                         </div>
-                        <div class="col-4" name="customer_address" style="font-size:16px">
-                            <div style="font-weight:bold">To:</div>
-                            <div t-field="doc.partner_id.name"/>
-                            <div style="" t-if="doc.partner_id.vat">VAT TRN No.
-                                <span t-field="doc.partner_id.vat"/>
-                            </div>
-                            <div t-field="doc.partner_id.street"/>
-                            <div>
-                                <span>
-                                    <span t-field="doc.partner_id.phone"/>
-                                    |
-                                    <span t-field="doc.partner_id.city"/>
-                                    <span t-field="doc.partner_id.state_id.name"/>
-                                </span>
-                            </div>
-                            <div>
-                                <span t-field="doc.partner_id.zip"/>
-                            </div>
-                            <div>
-                                <span t-field="doc.partner_id.country_id.name"/>
+                        <br/>
+                        <div class="row" style="text-align:center;">
+                            <div class="col-12" style="">
+                                <h1 style="color:black;width:100%;padding:3px;margin:1% 0 0 0;"
+                                    id="invoice_branch">Order
+                                </h1>
                             </div>
                         </div>
-                    </div>
-                    <div t-if="doc.branch_id.logo or doc.branch_id.report_header" class="row zero_min_height">
-                        <div class="col-12">
-                            <div style="border-bottom: 1px solid black;"/>
+                        <br/>
+                        <!-- From & To -->
+                        <div class="row" style="margin:2% 0 0 0.3%;">
+                            <div style="width:400px;">
+                                <div style="color:black;width:450px;padding:4px;margin:0 0 0 -5px;font-size:25px;">
+                                    <b>From:</b>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.branch_id"/>
+                                </div>
+                                <div>
+                                    <strong style="font-size:25px;">VAT TRN No.</strong>
+                                    <span style="font-size:25px;" t-field="o.branch_id.vat"/>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.branch_id.street"/>
+                                    <span style="font-size:25px;" t-field="o.branch_id.city"/>
+                                    <span style="font-size:25px;" t-field="o.branch_id.state_id"/>
+                                    <span style="font-size:25px;" t-field="o.branch_id.zip"/>
+                                </div>
+                                <div>
+                                    <t t-if="o.branch_id.phone">
+                                        <span style="font-size:25px;" t-field="o.branch_id.phone"/>
+                                        |
+                                    </t>
+                                    <t t-if="o.branch_id.email">
+                                        <span style="font-size:25px;" t-field="o.branch_id.email"/>
+                                        |
+                                    </t>
+                                    <t t-if="o.branch_id.state_id">
+                                        <span style="font-size:25px;" t-field="o.branch_id.state_id"/>
+                                        /
+                                    </t>
+                                    <t t-if="o.branch_id.country_id">
+                                        <span style="font-size:25px;" t-field="o.branch_id.country_id"/>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!--ship to-->
+                            <div style="width:360px; margin:0 0 0 30%;">
+                                <div style="color:black;width:360px;padding:4px;margin:0 0 0 -5px;font-size:25px;">
+                                    <b>To:</b>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.partner_id"/>
+                                </div>
+
+                                <div>
+                                    <strong style="font-size:25px;">VAT:</strong>
+                                    <span style="font-size:25px;" t-field="o.partner_id.vat"/>
+                                </div>
+                                <div>
+                                    <span style="font-size:25px;" t-field="o.partner_id.street"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.street2"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.city"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.state_id"/>
+                                    <span style="font-size:25px;" t-field="o.partner_id.zip"/>
+                                </div>
+
+                                <div>
+                                    <t t-if="o.partner_id.phone">
+                                        <span style="font-size:25px;" t-field="o.partner_id.phone"/>
+                                        |
+                                    </t>
+                                    <t t-if="o.partner_id.country_id">
+                                        <span style="font-size:25px;" t-field="o.partner_id.country_id"/>
+                                    </t>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </xpath>
+                        <hr style="border:1px solid black;"/>
+                        <!-- Invoice No. & Table -->
+                        <div class="page">
+                            <h1>
+                                <span style="font-size:45px;">Quotation #</span>
+                                <span style="font-size:45px;font-weight:500;" t-if="o.name != '/'" t-field="o.name"/>
+                            </h1>
 
-                <xpath expr="//div[@id='informations']//div[1]" position='before'>
-                    <div t-if="doc.branch_id.vat or doc.company_id.vat" class="col-auto mw-100 mb-2">
-                        <strong>Completion Days:</strong>
-                        <p class="m-0" t-esc="doc.days_to_complete"/>
-                    </div>
-                </xpath>
+                            <div id="information" class="row mt-3 mb-3" style="font-size:25px;">
+                                <div class="ml-4">
+                                    <strong>Completion Days:</strong>
+                                    <t t-if="o.days_to_complete">
+                                        <p class="m-0" t-field="o.days_to_complete"/>
+                                    </t>
+                                </div>
+                                <div class="" style="margin:0 0 0 -80%;">
+                                    <strong>Quotation Date:</strong>
+                                    <t t-if="o.date_order">
+                                        <p class="m-0" t-field="o.date_order"/>
+                                    </t>
+                                </div>
+                                <div style="margin:0 0 0 -80%;">
+                                    <strong>Salesperson:</strong>
+                                    <t t-if="o.user_id">
+                                        <p class="m-0" t-field="o.user_id"/>
+                                    </t>
+                                </div>
+                                <div class="">
+                                    <t t-if="o.income_source">
+                                        <strong>Source:</strong>
+                                    </t>
+                                    <t t-if="o.income_source">
+                                        <p class="m-0" t-field="o.income_source"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Table Start -->
+                        <table class="table table-borderless" style="width:100%;margin-top:3%;font-size:25px;">
+                            <thead style="border-top:1px solid black;border-bottom:1px solid lightgray;">
+                                <tr style="margin:5px 0 5px 0;">
+                                    <th style="padding:3px;width:50px;">
+                                        Code
+                                    </th>
+                                    <th style="padding:3px;width:80px;">
+                                        Description
+                                    </th>
+                                    <th style="padding:3px;width:50px;">
+                                        Quantity
+                                    </th>
+                                    <th style="padding:3px;width:80px;">
+                                        Unit Price
+                                    </th>
+                                    <th style="padding:3px;width:50px;">
+                                        Taxes
+                                    </th>
+                                    <th style="padding:3px;width:50px;">
+                                        Total Price
+                                    </th>
+                                </tr>
+                            </thead>
 
-                <xpath expr="//td[@name='td_amount_by_group_label_3']" position='replace'>
-                    <td name="td_amount_by_group_label_3">
-                        VAT<span t-esc="amount_by_group[0][3:]"/>(<span
-                            t-esc="doc.branch_id.vat or doc.company_id.vat"/>)
-                        <span>&amp;nbsp;<span>on</span>&amp;nbsp;
-                            <t t-esc="amount_by_group[2]"
-                               t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                        </span>
-                    </td>
-                </xpath>
-                <xpath expr="//td[@name='td_amount_by_group_label']" position='replace'>
-                    <td name="td_amount_by_group_label">VAT(<span t-esc="doc.branch_id.vat or doc.company_id.vat"/>)
-                        <span t-esc="amount_by_group[0][3:]"/>
-                    </td>
-                </xpath>
+                            <t t-set="rate" t-value="0.00"/>
+                            <t t-set="other_rate1" t-value="0.00"/>
+                            <!--Will Apply Loop here-->
+                            <t t-set="i" t-value="1"/>
+                            <t t-set="discount_totals" t-value="0"/>
+                            <t t-foreach="o.order_line" t-as="c">
+                                <t t-set="discount_totals"
+                                   t-value="((c.product_uom_qty)*(c.price_unit)-(c.price_subtotal)+(discount_totals))"/>
+                                <tr style="text-align:center;">
+                                    <td style="padding:3px;text-align:left;">
+                                        <span t-field="c.product_id"/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.name"/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.product_uom_qty"/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.price_unit" t-options='{"widget": "float","precision":2}'/>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <t t-foreach="c.tax_id" t-as="tax">
+                                            <span t-field="tax.name"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding:3px;">
+                                        <span t-field="c.price_subtotal"/>
+                                    </td>
 
-                <xpath expr="//th[@name = 'th_description']" position='before'>
-                    <th name="th_product_name" class="text-left">
-                        <span>Code</span>
-                    </th>
-                </xpath>
-
-                <xpath expr="//td[@name = 'td_name']" position='before'>
-                    <td name="product_name">
-                        <span t-field="line.product_id.name" t-options="{'widget': 'text'}" t-if="line.product_id"/>
-                    </td>
-                </xpath>
-
-                <xpath expr="//div[@class='page']//p[2]" position='replace'>
-                    <span style="font-size:14px" t-esc="doc.branch_id.other_details" t-options='{"widget": "html"}'
-                          t-if="doc.branch_id"/>
-                </xpath>
+                                </tr>
+                                <t t-set="index" t-value="0"/>
+                                <t t-foreach="c.tax_id" t-as="tax">
+                                    <t t-if="index==0">
+                                        <t t-set="rate"
+                                           t-value="rate+((tax.amount/100)*c.price_subtotal)"/>
+                                        <t t-set="index" t-value="index+1"/>
+                                    </t>
+                                </t>
+                                <t t-set="index" t-value="0"/>
+                                <t t-foreach="c.tax_id" t-as="tax">
+                                    <t t-if="index==1">
+                                        <t t-set="other_rate1"
+                                           t-value="other_rate1+((tax.amount/100)*c.price_subtotal)"/>
+                                    </t>
+                                    <t t-set="index" t-value="index+1"/>
+                                </t>
+                            </t>
+                        </table>
+                        <!-- Calculations Here -->
+                        <div style="margin:5% 0 0 66%;font-size:25px;">
+                            <table style="width:100%;" class="table-borderless">
+                                <tr style="text-align:center;border-top:1px solid black;border-bottom:1px solid lightgray;">
+                                    <td style="padding:3px;width:100px;margin:5px 0 5px 0;">
+                                        Subtotal
+                                    </td>
+                                    <td>
+                                        <span t-field="o.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <tr style="text-align:center;border-bottom:1px solid black;">
+                                    <td style="padding:3px;width:120px;margin:5px 0 5px 0;">
+                                        VAT 5%
+                                        <t t-if="o.branch_id.vat">
+                                            <div>
+                                                <p t-field="o.branch_id.vat"/>
+                                            </div>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t t-esc="rate" t-options='{"widget": "float","precision":2}'/>
+                                    </td>
+                                </tr>
+                                <tr style="text-align:center;margin-top:5px;">
+                                    <td style="padding:3px;width:100px;">
+                                        <b>Total</b>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <t t-if="o.branch_id.other_details">
+                                <span style="font-size:25px;" t-field="o.branch_id.other_details"/>
+                            </t>
+                        </div>
+                        <div t-attf-class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+                             t-att-data-oe-lang="o and o.env.context.get('lang')">
+                            <t t-out="0"/>
+                        </div>
+                    </t>
+                </t>
             </t>
-        </t>
-    </template>
+        </template>
+    </data>
 </odoo>
+
+    <!--    <template id="report_saleorder_document_aslt" inherit_id="sale.report_saleorder">-->
+    <!--        <t t-call="web.html_container">-->
+    <!--            <t t-call="web.external_layout">-->
+    <!--                <xpath expr="//t[@t-set='address']" position="replace">-->
+    <!--                </xpath>-->
+    <!--                <xpath expr="//div[@class='page']" position="before">-->
+    <!--                    <div class="row" style="margin-top:-15px" t-if="doc.branch_id and doc.branch_id.logo">-->
+    <!--                        <div class="col-12 mb4 text-center" name="moto">-->
+    <!--                            &lt;!&ndash; Remarked By Sarfraz@05-01-2022&ndash;&gt;-->
+    <!--                            &lt;!&ndash;                    <img t-if="doc.partner_id.branch_id.logo" t-att-src="image_data_uri(doc.partner_id.branch_id.logo)" style="display:block; height: 200px; margin:auto" alt="Logo"/>&ndash;&gt;-->
+    <!--                            <img t-if="doc.branch_id.logo" t-att-src="image_data_uri(doc.branch_id.logo)"-->
+    <!--                                 style="display:block; height: 200px; margin:auto" alt="Logo"/>-->
+
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                    <p style="text-align:center; font-size:33px">-->
+    <!--                        <span>Order</span>-->
+    <!--                    </p>-->
+    <!--                    <div class="row" style="" t-if="doc.branch_id">-->
+    <!--                        <div class="col-8" name="company_address" style="font-size:16px">-->
+    <!--                            <div style="font-weight:bold">From:</div>-->
+    <!--                            <div t-field="doc.branch_id.name"/>-->
+    <!--                            <div style="">VAT TRN No.-->
+    <!--                                <span t-field="doc.branch_id.vat"/>-->
+    <!--                            </div>-->
+    <!--                            <div t-field="doc.branch_id.street"/>-->
+    <!--                            <div>-->
+    <!--                                <span>-->
+    <!--                                    <span t-field="doc.branch_id.phone"/>-->
+    <!--                                    |-->
+    <!--                                    <span t-field="doc.branch_id.email"/>-->
+    <!--                                    |-->
+    <!--                                    <span t-field="doc.branch_id.city"/>-->
+    <!--                                    <span t-field="doc.branch_id.state_id.name"/>-->
+    <!--                                </span>-->
+    <!--                            </div>-->
+    <!--                            <div>-->
+    <!--                                <span t-field="doc.branch_id.zip"/>-->
+    <!--                            </div>-->
+    <!--                            <div>-->
+    <!--                                <span t-field="doc.branch_id.country_id.name"/>-->
+    <!--                            </div>-->
+    <!--                        </div>-->
+    <!--                        <div class="col-4" name="customer_address" style="font-size:16px">-->
+    <!--                            <div style="font-weight:bold">To:</div>-->
+    <!--                            <div t-field="doc.partner_id.name"/>-->
+    <!--                            <div style="" t-if="doc.partner_id.vat">VAT TRN No.-->
+    <!--                                <span t-field="doc.partner_id.vat"/>-->
+    <!--                            </div>-->
+    <!--                            <div t-field="doc.partner_id.street"/>-->
+    <!--                            <div>-->
+    <!--                                <span>-->
+    <!--                                    <span t-field="doc.partner_id.phone"/>-->
+    <!--                                    |-->
+    <!--                                    <span t-field="doc.partner_id.city"/>-->
+    <!--                                    <span t-field="doc.partner_id.state_id.name"/>-->
+    <!--                                </span>-->
+    <!--                            </div>-->
+    <!--                            <div>-->
+    <!--                                <span t-field="doc.partner_id.zip"/>-->
+    <!--                            </div>-->
+    <!--                            <div>-->
+    <!--                                <span t-field="doc.partner_id.country_id.name"/>-->
+    <!--                            </div>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                    <div t-if="doc.branch_id.logo or doc.branch_id.report_header" class="row zero_min_height">-->
+    <!--                        <div class="col-12">-->
+    <!--                            <div style="border-bottom: 1px solid black;"/>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                </xpath>-->
+
+    <!--                <xpath expr="//div[@id='informations']//div[1]" position='before'>-->
+    <!--                    <div t-if="doc.branch_id.vat or doc.company_id.vat" class="col-auto mw-100 mb-2">-->
+    <!--                        <strong>Completion Days:</strong>-->
+    <!--                        <p class="m-0" t-esc="doc.days_to_complete"/>-->
+    <!--                    </div>-->
+    <!--                </xpath>-->
+
+    <!--                <xpath expr="//td[@name='td_amount_by_group_label_3']" position='replace'>-->
+    <!--                    <td name="td_amount_by_group_label_3">-->
+    <!--                        VAT&lt;!&ndash;<span t-esc="amount_by_group[0][3:]"/>&ndash;&gt;(<span-->
+    <!--                            t-esc="doc.branch_id.vat or doc.company_id.vat"/>)-->
+    <!--                        <span>&amp;nbsp;<span>on</span>&amp;nbsp;-->
+    <!--                            <t t-esc="amount_by_group[2]"-->
+    <!--                               t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>-->
+    <!--                        </span>-->
+    <!--                    </td>-->
+    <!--                </xpath>-->
+    <!--                <xpath expr="//td[@name='td_amount_by_group_label']" position='replace'>-->
+    <!--                    <td name="td_amount_by_group_label">VAT(<span t-esc="doc.branch_id.vat or doc.company_id.vat"/>)-->
+    <!--                        <span t-esc="amount_by_group[0][3:]"/>-->
+    <!--                    </td>-->
+    <!--                </xpath>-->
+
+    <!--                <xpath expr="//th[@name = 'th_description']" position='before'>-->
+    <!--                    <th name="th_product_name" class="text-left">-->
+    <!--                        <span>Code</span>-->
+    <!--                    </th>-->
+    <!--                </xpath>-->
+
+    <!--                <xpath expr="//td[@name = 'td_name']" position='before'>-->
+    <!--                    <td name="product_name">-->
+    <!--                        <span t-field="line.product_id.name" t-options="{'widget': 'text'}" t-if="line.product_id"/>-->
+    <!--                    </td>-->
+    <!--                </xpath>-->
+
+    <!--                <xpath expr="//div[@class='page']//p[2]" position='replace'>-->
+    <!--                    <span style="font-size:14px" t-esc="doc.branch_id.other_details" t-options='{"widget": "html"}'-->
+    <!--                          t-if="doc.branch_id"/>-->
+    <!--                </xpath>-->
+    <!--            </t>-->
+    <!--        </t>-->
+    <!--    </template>-->
