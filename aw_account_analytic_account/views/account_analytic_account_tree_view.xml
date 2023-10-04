@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- <template id="your_template_id" name="Your Template Name">
+        <link rel="stylesheet" href="/aw_account_analytic_account/static/src/css/style.css"/>
+     
+    </template> -->
+    <record id="analytic_account_view_inherit" model="ir.ui.view">
+        <field name="name">account analytic</field>
+        <field name="model">account.analytic.account</field>
+        <!-- Reference to the view you are extending -->
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_list"></field>
+        <!-- The changes you want to make to the inherited view -->
+        <field name="arch" type="xml">
+            <!-- Add the 'adjust_cost' field before the 'value' field -->
+
+            <!-- <xpath expr="//tree" position="attributes">
+                <attribute name="string">Product Confidentials</attribute>
+            </xpath> -->
+            <field name="credit" position="after">
+                <field name="cost_percentage" decoration-danger="cost_percentage >= 35"/>
+                <field name="vendor_bill_count" />
+                <field name="invoice_user_id"  widget="many2one_avatar_user"/>
+                <field name="payment_state" widget='badge' class='green-badge'/>
+        
+            </field>
+
+        </field>
+    </record>
+</odoo>
