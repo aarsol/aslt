@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<record id="view_invoice_form" model="ir.ui.view">
-    <field name="name">account.payemnt.form</field>
-    <field name="model">account.payment</field>
-    <field name="inherit_id" ref="account.view_account_payment_form"/>
-    <field name="arch" type="xml">
-        <data>
-            <div class="oe_button_box" name="button_box">
-                 <button name="action_view_vendor_bills" string="Zakat Donation" type="object" class="oe_stat_button" icon="fa-pencil-square-o" groups="account.group_account_invoice" attrs="{'invisible': [('has_vendor_bill', '=', False)]}"/>
-<!--                <field name="has_vendor_bill" invisible="1"/>-->
-            </div>
-        </data>
-    </field>
-</record>
-</odoo>
 
+    <record id="cron_automated_generate_vendor_bill" model="ir.cron">
+        <field name="name">Generate Vendor Bill</field>
+        <field name="model_id" ref="aw_invoice_vendor_bill_generate.model_account_move"/>
+        <field name="state">code</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+        <field name="code">model.generate_vendor_bill()</field>
+        <field name="doall" eval="False" />
+        <field name="nextcall" eval="(DateTime.now() + relativedelta(day=1, hour=0, minute=0, second=0)).strftime('%Y-%m-%d %H:%M:%S')" />
+    </record>
+
+</odoo>
