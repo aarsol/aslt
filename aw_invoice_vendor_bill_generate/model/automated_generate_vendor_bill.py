@@ -17,7 +17,7 @@ class GenerateVendorBills(models.Model):
             # Filter invoice lines based on conditions
             posted_invoice_lines = analytic_account.line_ids.filtered(lambda line:
                 line.account_id and
-                line.move_line_id.move_id.invoice_date >= datetime(2024, 1, 1).date() and  # 1- invoice_date >= 1-jan-2024
+                line.move_line_id.move_id.invoice_date >= datetime(2023, 4, 1).date() and  # 1- invoice_date >= 1-jan-2024
                 line.move_line_id.move_id.payment_state == 'in_payment' and                       # 2- invoice status paid
                 not line.move_line_id.move_id.vendor_bill_generated and         # 3- no previous vendor bill
                 line.move_line_id.move_id.invoice_date + relativedelta(months=3) <= fields.Date.today())  # 4- invoice date 3 months ago
